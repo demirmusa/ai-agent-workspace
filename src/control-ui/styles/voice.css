@@ -1,0 +1,23 @@
+/* Voice dictation (voice.js): a microphone button next to the focused field, and a listening panel with the active provider icon and a
+   live waveform under it. Each bar is full height and scales to its --level, so the waveform moves on the compositor instead of
+   re-laying out the panel every frame. */
+:is(.voice-panel,.voice-button){position:fixed;inset:auto;margin:0;overflow:visible}
+.voice-button{display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;padding:0;color:var(--muted);font-size:16px;cursor:pointer}
+/* Typing fades the button out (the popup surface's opacity transition) and leaves clicks to the field under it until the mouse is
+   pressed again; moving to another field meanwhile must not replay its entrance. */
+.voice-button.is-away{opacity:0;pointer-events:none;animation:none}
+.voice-button:hover{background:var(--raised);color:var(--accent)}
+.voice-button:active{transform:scale(.94)}
+.voice-button:not(:popover-open){display:none}
+.voice-panel{display:flex;align-items:center;gap:8px;width:max-content;max-width:min(420px,calc(100vw - 16px));padding:6px 12px}
+.voice-panel:not(:popover-open){display:none}
+.voice-provider{display:inline-flex;align-items:center;flex:none}
+.voice-provider:empty{display:none}
+.voice-provider .provider-icon{width:20px;height:20px}
+.voice-provider .provider-icon img{width:16px;height:16px}
+.voice-wave{display:flex;align-items:center;gap:3px;height:24px;flex:none}
+.voice-wave i{width:3px;height:24px;border-radius:var(--radius-pill);background:var(--accent);transform:scaleY(calc((4 + 20 * var(--level,0)) / 24));transition:transform 90ms linear}
+.voice-panel[data-state=connecting] .voice-wave i{transform:scaleY(calc(4 / 24));background:var(--faint);animation:voice-wait 1s var(--ease-in-out) infinite}
+.voice-panel[data-state=connecting] .voice-wave i:nth-child(odd){animation-delay:.25s}
+.voice-panel[data-state=finishing] .voice-wave i{background:var(--faint)}
+@keyframes voice-wait{50%{transform:scaleY(.5)}}

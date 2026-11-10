@@ -1,0 +1,52 @@
+/* The application modal: the native dialog under it, its entrance and exit motion and the shared header/body/footer frame. */
+/* The native dialog element under every application modal. */
+dialog{width:570px;max-width:calc(100vw - 32px);max-height:calc(100dvh - 40px);padding:0;border:1px solid var(--line);border-radius:var(--radius-xl);background:var(--surface);color:var(--ink);box-shadow:var(--shadow-float)}
+dialog::backdrop{background:var(--overlay)}
+/* Dialogs rise in over a dimming backdrop and sink back out when they close. The backdrop only fades: a backdrop blur would re-blur the
+   whole live window under it on every frame. The exit is a discrete display/overlay transition, so close() and the close event keep
+   their timing while the box fades out. A floating files panel inside the dialog is position:fixed
+   and a transform would re-anchor it to the dialog, so that case only fades. */
+dialog{opacity:0;transform:translateY(14px) scale(.96);transition:opacity var(--dur) var(--ease-out),transform var(--dur) var(--ease-out),overlay var(--dur) allow-discrete,display var(--dur) allow-discrete}
+dialog[open]{opacity:1;transform:none;transition-duration:var(--dur-enter);transition-timing-function:var(--ease-spring)}
+dialog::backdrop{opacity:0;transition:opacity var(--dur) var(--ease-out),overlay var(--dur) allow-discrete,display var(--dur) allow-discrete}
+dialog[open]::backdrop{opacity:1;transition-duration:var(--dur-slow)}
+@starting-style{dialog[open]{opacity:0;transform:translateY(14px) scale(.96)}dialog[open]::backdrop{opacity:0}}
+.app-shell.files-open~dialog#modal{transform:none}
+/* All application dialogs share one fixed header/body/footer frame. */
+.app-modal{width:min(720px,calc(100vw - 48px));max-width:900px;max-height:calc(100dvh - 56px);padding:0;overflow:hidden}
+.app-modal[data-size=wide]{width:min(900px,calc(100vw - 48px))}
+.app-modal[data-size=full]{width:calc(100vw - 48px);max-width:none;height:calc(100dvh - 56px)}
+.app-modal[open]{display:flex;flex-direction:column}
+.app-modal #modal-content{display:flex;flex-direction:column;max-height:calc(100dvh - 56px);min-height:0;width:100%;overflow:hidden}
+.app-modal .modal-header{display:flex;flex:none;align-items:center;gap:12px;padding:16px 22px 14px;border-bottom:1px solid var(--line);background:var(--surface)}
+.app-modal .modal-heading{flex:1;min-width:0}
+.app-modal .modal-header h2{margin:0;font-size:16px;font-weight:600;letter-spacing:0;overflow-wrap:anywhere}
+.app-modal .modal-heading p{font-size:13px;color:var(--muted);line-height:1.7;margin-top:5px}
+.app-modal #close-modal{flex:none}
+.app-modal .modal-frame{display:flex;flex-direction:column;flex:1;min-height:0;overflow:hidden;margin:0}
+.app-modal .modal-body{flex:1;min-height:0;overflow-y:auto;overscroll-behavior:contain;padding:18px 22px 22px}
+.app-modal .modal-body>.form-field:first-child,.app-modal .modal-body>.form-field:first-of-type,.app-modal .modal-body>.form-grid:first-child{margin-top:0}
+.app-modal .modal-footer{display:flex;flex:none;flex-wrap:wrap;align-items:center;gap:12px;position:static;margin:0;padding:12px 22px;border-top:1px solid var(--line);background:var(--ground)}
+.app-modal .modal-footer-right{display:flex;align-items:center;gap:8px;margin-left:auto}
+.app-modal .modal-footer>.form-hint{flex:1;font-size:12.5px;min-width:180px}
+.app-modal .modal-footer>.form-error{flex-basis:100%;margin:0;max-height:95px;overflow:auto;font-size:12px;line-height:1.6}
+.app-modal .modal-footer>.form-error:empty{display:none}
+.app-modal .modal-footer>.danger{padding-left:0;font-size:11px}
+.app-modal .modal-footer .button{white-space:normal}
+.app-modal .template-preview pre{max-height:none;overflow:visible}
+@media(max-width:650px){
+.app-modal,.app-modal[data-size=wide]{width:calc(100vw - 20px);max-width:none;max-height:calc(100dvh - 20px);border-radius:10px}
+.app-modal #modal-content{max-height:calc(100dvh - 20px)}
+.app-modal .modal-header{padding:15px 16px 13px;gap:8px}
+.app-modal .modal-header h2{font-size:16px}
+.app-modal .modal-body{padding:16px 16px 20px}
+.app-modal .modal-footer{padding:12px 16px;gap:10px}
+.app-modal .modal-footer>.form-hint{flex-basis:100%}
+.app-modal .modal-footer .button{font-size:11px;padding:8px 10px}
+}
+/* Application modals on narrow windows: tighter header, body and footer padding. */
+@media(max-width:760px){
+.app-modal .modal-header{padding:14px 16px 12px}
+.app-modal .modal-body{padding:14px 16px 18px}
+.app-modal .modal-footer{padding:10px 16px}
+}

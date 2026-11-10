@@ -1,0 +1,13 @@
+/* Board drag and drop: the whole card is the drag source; columns and cards highlight as drop targets. */
+/* A status move covers the whole target column; a blocker drag (Ctrl) labels the card it would wait for. */
+.column.drag-over,.overview-column.drag-over{position:relative;outline:1px dashed var(--accent);outline-offset:-1px;background:color-mix(in srgb,var(--accent) 8%,var(--sidebar))}
+.column.drag-over{border-radius:6px}
+.column.drag-over::after,.overview-column.drag-over::after{content:"";position:absolute;inset:0;z-index:1;border-radius:inherit;background:color-mix(in srgb,var(--accent) 14%,transparent);pointer-events:none}
+.task-card[draggable="true"]{-webkit-user-drag:element}
+.task-card:focus-visible{outline:2px solid var(--focus);outline-offset:-1px}
+.task-card.dragging{opacity:.45}
+.drop-placeholder{position:relative;z-index:2;display:flex;align-items:center;justify-content:center;min-height:52px;padding:10px;border:1px dashed var(--accent);border-radius:4px;background:color-mix(in srgb,var(--accent) 10%,transparent);color:var(--accent);font-size:12px;pointer-events:none}
+.dragging-project-path #board .task-card:not(.organize-locked){outline:1px dashed color-mix(in srgb,var(--accent) 45%,transparent);outline-offset:2px}
+#board .task-card.blocker-drop-target,#board .task-card.file-drop-target{outline:2px solid var(--accent);outline-offset:2px;background:color-mix(in srgb,var(--accent) 8%,var(--surface))}
+#board .task-card.blocker-drop-target{position:relative}
+#board .task-card.blocker-drop-target::after{content:attr(data-blocker-label);position:absolute;inset:0;z-index:1;display:flex;align-items:center;justify-content:center;padding:8px;border-radius:inherit;background:color-mix(in srgb,var(--accent) 22%,var(--surface));color:var(--accent);font-size:13px;font-weight:600;text-align:center;pointer-events:none}

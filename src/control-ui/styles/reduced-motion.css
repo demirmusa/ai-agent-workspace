@@ -1,0 +1,4 @@
+/* Reduced motion: transitions finish at once, entrances and loops stop, spinners slow down but keep turning so running stays visible. */
+:root[data-motion=reduced] *,:root[data-motion=reduced] ::before,:root[data-motion=reduced] ::after,:root[data-motion=reduced] ::backdrop{transition-duration:.01ms!important;transition-delay:0s!important;scroll-behavior:auto!important}
+:root[data-motion=reduced] .ui-enter,:root[data-motion=reduced] .ui-enter-fade,:root[data-motion=reduced] .ui-tooltip,:root[data-motion=reduced] .skeleton::after,:root[data-motion=reduced] .console-skeleton-row,:root[data-motion=reduced] .ui-dot.is-live::after,:root[data-motion=reduced] :is(.popup-menu,.terminal-shortcuts-pop){animation:none!important}
+:root[data-motion=reduced] .ui-spinner,:root[data-motion=reduced] .task-status-chip:is(.running,.completing)::before,:root[data-motion=reduced] .button.is-busy::before{animation-duration:2.4s}

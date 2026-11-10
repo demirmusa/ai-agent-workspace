@@ -1,0 +1,16 @@
+/* Run summaries in the task information tab: one collapsed entry per run. */
+.run-summaries{display:flex;flex-direction:column;margin-bottom:6px}
+.run-summary{border-top:1px solid var(--line)}
+.run-summary:first-child{border-top:0}
+.run-summary>summary{display:flex;flex-wrap:wrap;align-items:center;gap:8px;min-height:34px;cursor:pointer;font-size:12.5px;color:var(--ink)}
+.run-summary-index{flex:none;min-width:20px;height:18px;padding:0 6px;border-radius:var(--radius-pill);background:var(--raised);color:var(--muted);font-size:11px;line-height:18px;text-align:center;font-variant-numeric:tabular-nums}
+.run-summary-title{flex:1 1 90px;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.run-summary-pull{flex:none;font-size:11.5px;white-space:nowrap}
+.run-summary>summary time{flex:none;font-size:11.5px;color:var(--muted);font-variant-numeric:tabular-nums}
+.run-summary-body dd small{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin-top:4px}
+.run-summary-body dd{min-width:0}
+.copy-field{display:block;max-width:100%;border:0;background:none;color:inherit;padding:0;cursor:pointer;font:inherit;text-align:left}
+.copy-field code{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.copy-field.is-open code{white-space:normal;overflow-wrap:anywhere}
+.copy-field:hover code{text-decoration:underline}
+.run-summary-body{display:flex;flex-direction:column;gap:10px;padding:2px 0 12px 28px;min-width:0}

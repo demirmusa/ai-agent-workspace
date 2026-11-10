@@ -1,0 +1,384 @@
+<!doctype html>
+<html lang="tr" data-theme="dark">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="color-scheme" content="dark light">
+  <title>AI Agent Workspace</title>
+  <link rel="icon" type="image/svg+xml" href="/icons/aiws.svg">
+  <link rel="stylesheet" href="/styles.css">
+  <link rel="stylesheet" href="/styles/base.css">
+  <link rel="stylesheet" href="/styles/text-selection.css">
+  <link rel="stylesheet" href="/styles/foundation.css">
+  <link rel="stylesheet" href="/styles/source-badge.css">
+  <link rel="stylesheet" href="/styles/board.css">
+  <link rel="stylesheet" href="/styles/task-card.css">
+  <link rel="stylesheet" href="/styles/form-fields.css">
+  <link rel="stylesheet" href="/styles/toast.css">
+  <link rel="stylesheet" href="/styles/board-toolbar.css">
+  <link rel="stylesheet" href="/styles/reduced-motion.css">
+  <link rel="stylesheet" href="/styles/library.css">
+  <link rel="stylesheet" href="/styles/overview.css">
+  <link rel="stylesheet" href="/styles/dashboard.css">
+  <link rel="stylesheet" href="/styles/workflows.css">
+  <link rel="stylesheet" href="/styles/repository-detection.css">
+  <link rel="stylesheet" href="/styles/agent-library.css">
+  <link rel="stylesheet" href="/styles/task-panel.css">
+  <link rel="stylesheet" href="/styles/task-draft-dock.css">
+  <link rel="stylesheet" href="/styles/floating-console.css">
+  <link rel="stylesheet" href="/styles/modal.css">
+  <link rel="stylesheet" href="/styles/image-viewer.css">
+  <link rel="stylesheet" href="/styles/repository-folder-picker.css">
+  <link rel="stylesheet" href="/styles/detail-console.css">
+  <link rel="stylesheet" href="/styles/provider-icon.css">
+  <link rel="stylesheet" href="/styles/task-panel-resizer.css">
+  <link rel="stylesheet" href="/styles/side-panel.css">
+  <link rel="stylesheet" href="/styles/agent-screen.css">
+  <link rel="stylesheet" href="/styles/context-map.css">
+  <link rel="stylesheet" href="/styles/changes-panel.css">
+  <link rel="stylesheet" href="/styles/provider-cli-settings.css">
+  <link rel="stylesheet" href="/styles/provider-accounts.css">
+  <link rel="stylesheet" href="/styles/board-selection.css">
+  <link rel="stylesheet" href="/styles/markdown-editor.css">
+  <link rel="stylesheet" href="/styles/token-usage.css">
+  <link rel="stylesheet" href="/styles/usage-trigger-fields.css">
+  <link rel="stylesheet" href="/styles/task-editor.css">
+  <link rel="stylesheet" href="/styles/model-picker.css">
+  <link rel="stylesheet" href="/styles/card-agent.css">
+  <link rel="stylesheet" href="/styles/buttons.css">
+  <link rel="stylesheet" href="/styles/sidebar.css">
+  <link rel="stylesheet" href="/styles/header.css">
+  <link rel="stylesheet" href="/styles/error-banner.css">
+  <link rel="stylesheet" href="/styles/welcome.css">
+  <link rel="stylesheet" href="/styles/segmented-control.css">
+  <link rel="stylesheet" href="/styles/popup-menu.css">
+  <link rel="stylesheet" href="/styles/progress.css">
+  <link rel="stylesheet" href="/styles/board-drag.css">
+  <link rel="stylesheet" href="/styles/list-view.css">
+  <link rel="stylesheet" href="/styles/skill-discovery.css">
+  <link rel="stylesheet" href="/styles/ai-sheet.css">
+  <link rel="stylesheet" href="/styles/ai-canvas.css">
+  <link rel="stylesheet" href="/styles/flow-canvas.css">
+  <link rel="stylesheet" href="/styles/ai-draft-cards.css">
+  <link rel="stylesheet" href="/styles/ai-dock.css">
+  <link rel="stylesheet" href="/styles/voice.css">
+  <link rel="stylesheet" href="/styles/ai-conversation.css">
+  <link rel="stylesheet" href="/styles/terminals.css">
+  <link rel="stylesheet" href="/styles/switch-row.css">
+  <link rel="stylesheet" href="/styles/provider-models.css">
+  <link rel="stylesheet" href="/styles/provider-models-dialog.css">
+  <link rel="stylesheet" href="/styles/card-icon-box.css">
+  <link rel="stylesheet" href="/styles/button-glyph.css">
+  <link rel="stylesheet" href="/styles/library-cards.css">
+  <link rel="stylesheet" href="/styles/workflow-cards.css">
+  <link rel="stylesheet" href="/styles/empty-state.css">
+  <link rel="stylesheet" href="/styles/agent-templates.css">
+  <link rel="stylesheet" href="/styles/project-sessions.css">
+  <link rel="stylesheet" href="/styles/task-key.css">
+  <link rel="stylesheet" href="/styles/task-information.css">
+  <link rel="stylesheet" href="/styles/run-summaries.css">
+  <link rel="stylesheet" href="/styles/task-usage.css">
+  <link rel="stylesheet" href="/styles/console-skeleton.css">
+  <link rel="stylesheet" href="/styles/dependency-picker.css">
+  <link rel="stylesheet" href="/styles/settings-tabs.css">
+  <link rel="stylesheet" href="/styles/project-settings.css">
+  <link rel="stylesheet" href="/styles/settings-savebar.css">
+  <link rel="stylesheet" href="/styles/settings-page.css">
+  <link rel="stylesheet" href="/styles/settings-subtabs.css">
+  <link rel="stylesheet" href="/styles/plugins.css">
+  <link rel="stylesheet" href="/styles/organizer.css">
+  <link rel="stylesheet" href="/styles/input-requests.css">
+  <link rel="stylesheet" href="/styles/labels.css">
+  <link rel="stylesheet" href="/styles/project-labels.css">
+  <link rel="stylesheet" href="/styles/milestones.css">
+  <link rel="stylesheet" href="/styles/run-control.css">
+  <link rel="stylesheet" href="/styles/run-scripts-settings.css">
+  <link rel="stylesheet" href="/styles/run-script-dialog.css">
+  <link rel="stylesheet" href="/styles/footer-git.css">
+  <link rel="stylesheet" href="/styles/terminal-board.css">
+  <link rel="stylesheet" href="/styles/new-project-modal.css">
+  <link rel="stylesheet" href="/styles/layout.css">
+  <link rel="stylesheet" href="/styles/schedules-page.css">
+  <link rel="stylesheet" href="/styles/schedule-editor.css">
+  <link rel="stylesheet" href="/styles/task-agents.css">
+  <link rel="stylesheet" href="/styles/live-sessions.css">
+  <link rel="stylesheet" href="/styles/file-tree.css">
+  <link rel="stylesheet" href="/styles/file-editor.css">
+  <link rel="stylesheet" href="/styles/files-panel.css">
+  <link rel="stylesheet" href="/styles/shell-reduced-motion.css">
+  <link rel="stylesheet" href="/styles/card-focus.css">
+  <link rel="stylesheet" href="/styles/timeline.css">
+  <link rel="stylesheet" href="/styles/conversation/console.css">
+  <link rel="stylesheet" href="/styles/conversation/agent-panel.css">
+  <link rel="stylesheet" href="/styles/conversation/run-timeline.css">
+  <link rel="stylesheet" href="/styles/conversation/messages.css">
+  <link rel="stylesheet" href="/styles/conversation/markdown.css">
+  <link rel="stylesheet" href="/styles/conversation/tool-cards.css">
+  <link rel="stylesheet" href="/styles/conversation/tool-views.css">
+  <link rel="stylesheet" href="/styles/conversation/live-activity.css">
+  <link rel="stylesheet" href="/styles/conversation/requests.css">
+  <link rel="stylesheet" href="/styles/conversation/composer.css">
+  <link rel="stylesheet" href="/styles/conversation/empty-states.css">
+  <link rel="stylesheet" href="/styles/conversation/agent-flow.css">
+  <link rel="stylesheet" href="/vendor/xterm.css">
+  <script src="/vendor/xterm.js" defer></script>
+  <script src="/vendor/addon-fit.js" defer></script>
+  <link rel="stylesheet" href="/vendor/easymde.css">
+  <script src="/vendor/easymde.js" defer></script>
+  <script src="/vendor/purify.js" defer></script>
+  <script src="/translations-en.js" defer></script>
+  <script src="/i18n.js" defer></script>
+  <script src="/ui-common.js" defer></script>
+  <script src="/ui/motion.js" defer></script>
+  <script src="/ui/icons.js" defer></script>
+  <script src="/ui/flow.js" defer></script>
+  <script src="/ui/pan-zoom.js" defer></script>
+  <script src="/voice/field-writer.js" defer></script>
+  <script src="/voice/caret.js" defer></script>
+  <script src="/voice.js" defer></script>
+  <script src="/images/attachments.js" defer></script>
+  <script src="/images/file-mentions.js" defer></script>
+  <script src="/images/markdown-editor.js" defer></script>
+  <script src="/images/image-viewer.js" defer></script>
+  <script src="/images/paste-path.js" defer></script>
+  <script src="/terminal.js" defer></script>
+  <script src="/files/context-menu.js" defer></script>
+  <script src="/files/changes.js" defer></script>
+  <script src="/files/explorer.js" defer></script>
+  <script src="/files/editor.js" defer></script>
+  <script src="/context.js" defer></script>
+  <script src="/conversation/helpers.js" defer></script>
+  <script src="/conversation/markdown.js" defer></script>
+  <script src="/conversation/command-insight.js" defer></script>
+  <script src="/conversation/tool-presentation.js" defer></script>
+  <script src="/conversation/provider-events.js" defer></script>
+  <script src="/conversation/transcript.js" defer></script>
+  <script src="/conversation/agent-tree.js" defer></script>
+  <script src="/conversation/glyphs.js" defer></script>
+  <script src="/conversation/agent-summary.js" defer></script>
+  <script src="/conversation/requests.js" defer></script>
+  <script src="/conversation/tool-views.js" defer></script>
+  <script src="/conversation/node-cards.js" defer></script>
+  <script src="/conversation/agent-panel.js" defer></script>
+  <script src="/conversation/run-timeline.js" defer></script>
+  <script src="/conversation/composer.js" defer></script>
+  <script src="/conversation/native-terminal.js" defer></script>
+  <script src="/conversation/agent-flow.js" defer></script>
+  <script src="/conversation/live-activity.js" defer></script>
+  <script src="/conversation/console.js" defer></script>
+  <script src="/timeline/time-scale.js" defer></script>
+  <script src="/timeline.js" defer></script>
+  <script src="/plugin-host/core.js" defer></script>
+  <script src="/plugin-host/conversation.js" defer></script>
+  <script src="/plugin-host/api-object.js" defer></script>
+  <script src="/plugin-host/themes.js" defer></script>
+  <script src="/plugin-host/lifecycle.js" defer></script>
+  <script src="/plugin-host/extension-points.js" defer></script>
+  <script src="/plugin-host/settings-page.js" defer></script>
+  <script src="/plugins.js" defer></script>
+  <script src="/app/core.js" defer></script>
+  <script src="/app/task-statuses.js" defer></script>
+  <script src="/app/app-state.js" defer></script>
+  <script src="/app/render-cache.js" defer></script>
+  <script src="/app/provider-registry.js" defer></script>
+  <script src="/app/board-selection.js" defer></script>
+  <script src="/app/board-moves.js" defer></script>
+  <script src="/app/detail-resize.js" defer></script>
+  <script src="/app/session-data.js" defer></script>
+  <script src="/app/theme.js" defer></script>
+  <script src="/app/header.js" defer></script>
+  <script src="/app/selectors.js" defer></script>
+  <script src="/app/format.js" defer></script>
+  <script src="/app/voice-setup.js" defer></script>
+  <script src="/app/notifications.js" defer></script>
+  <script src="/app/request-progress.js" defer></script>
+  <script src="/app/api.js" defer></script>
+  <script src="/app/sidebar-status.js" defer></script>
+  <script src="/app/input-requests.js" defer></script>
+  <script src="/app/request-toasts.js" defer></script>
+  <script src="/app/header-notifications.js" defer></script>
+  <script src="/app/live-state.js" defer></script>
+  <script src="/app/task-navigation.js" defer></script>
+  <script src="/app/navigation.js" defer></script>
+  <script src="/app/links.js" defer></script>
+  <script src="/app/run-args-history.js" defer></script>
+  <script src="/app/run-args-popover.js" defer></script>
+  <script src="/app/run-control.js" defer></script>
+  <script src="/app/welcome.js" defer></script>
+  <script src="/app/sidebar-archive.js" defer></script>
+  <script src="/app/sidebar.js" defer></script>
+  <script src="/app/board-toolbar.js" defer></script>
+  <script src="/app/board-columns.js" defer></script>
+  <script src="/app/list-view.js" defer></script>
+  <script src="/app/organizer.js" defer></script>
+  <script src="/app/task-draft-dock.js" defer></script>
+  <script src="/app/floating-console.js" defer></script>
+  <script src="/app/modal.js" defer></script>
+  <script src="/app/form-fields.js" defer></script>
+  <script src="/app/settings-layout.js" defer></script>
+  <script src="/app/project-form.js" defer></script>
+  <script src="/app/repository-folder-picker.js" defer></script>
+  <script src="/app/new-project-wizard.js" defer></script>
+  <script src="/app/page-icons.js" defer></script>
+  <script src="/app/empty-state.js" defer></script>
+  <script src="/app/settings-tab-pill.js" defer></script>
+  <script src="/app/project-github-sync.js" defer></script>
+  <script src="/app/project-settings.js" defer></script>
+  <script src="/app/run-script-entries.js" defer></script>
+  <script src="/app/run-script-dialog.js" defer></script>
+  <script src="/app/run-scripts-settings.js" defer></script>
+  <script src="/app/project-labels.js" defer></script>
+  <script src="/app/project-milestones.js" defer></script>
+  <script src="/app/settings-draft.js" defer></script>
+  <script src="/app/zoom-setting.js" defer></script>
+  <script src="/app/settings-panels.js" defer></script>
+  <script src="/app/settings-page.js" defer></script>
+  <script src="/app/access-token-dialog.js" defer></script>
+  <script src="/app/provider-choices.js" defer></script>
+  <script src="/app/project-provider-editor.js" defer></script>
+  <script src="/app/provider-detection.js" defer></script>
+  <script src="/app/provider-accounts.js" defer></script>
+  <script src="/app/provider-cards.js" defer></script>
+  <script src="/app/provider-models.js" defer></script>
+  <script src="/app/provider-models-dialog.js" defer></script>
+  <script src="/app/settings-providers.js" defer></script>
+  <script src="/app/task-files.js" defer></script>
+  <script src="/app/text-selection.js" defer></script>
+  <script src="/app/keyboard-shortcuts.js" defer></script>
+  <script src="/app/project-actions.js" defer></script>
+  <script src="/app/sidebar-drag.js" defer></script>
+  <script src="/app/board-drag.js" defer></script>
+  <script src="/app/file-drop.js" defer></script>
+  <script src="/app/image-setup.js" defer></script>
+  <script src="/app/skill-choices.js" defer></script>
+  <script src="/app/library-page.js" defer></script>
+  <script src="/app/agent-templates.js" defer></script>
+  <script src="/app/skill-discovery.js" defer></script>
+  <script src="/app/skill-share-dialog.js" defer></script>
+  <script src="/app/model-catalog.js" defer></script>
+  <script src="/app/agent-picker-markup.js" defer></script>
+  <script src="/app/agent-picker.js" defer></script>
+  <script src="/app/agent-editor-dialog.js" defer></script>
+  <script src="/app/skill-editor-dialog.js" defer></script>
+  <script src="/app/task-dependency-picker.js" defer></script>
+  <script src="/app/task-editor-dialog.js" defer></script>
+  <script src="/app/library-actions.js" defer></script>
+  <script src="/app/workflow-editor-dialog.js" defer></script>
+  <script src="/app/task-usage.js" defer></script>
+  <script src="/app/task-activity.js" defer></script>
+  <script src="/app/labels.js" defer></script>
+  <script src="/app/milestones.js" defer></script>
+  <script src="/app/card-agent.js" defer></script>
+  <script src="/app/task-card.js" defer></script>
+  <script src="/app/system-control.js" defer></script>
+  <script src="/app/page-chrome.js" defer></script>
+  <script src="/app/render.js" defer></script>
+  <script src="/app/board-view.js" defer></script>
+  <script src="/app/overview.js" defer></script>
+  <script src="/app/dashboard.js" defer></script>
+  <script src="/app/timeline-view.js" defer></script>
+  <script src="/app/file-editor.js" defer></script>
+  <script src="/app/project-tabs.js" defer></script>
+  <script src="/app/history-session-cards.js" defer></script>
+  <script src="/app/project-sessions.js" defer></script>
+  <script src="/app/history-viewer.js" defer></script>
+  <script src="/app/task-detail-frame.js" defer></script>
+  <script src="/app/task-detail-header.js" defer></script>
+  <script src="/app/task-information-view.js" defer></script>
+  <script src="/app/task-information-editor.js" defer></script>
+  <script src="/app/task-dependencies.js" defer></script>
+  <script src="/app/run-summaries.js" defer></script>
+  <script src="/app/task-detail.js" defer></script>
+  <script src="/app/task-console.js" defer></script>
+  <script src="/app/task-agents.js" defer></script>
+  <script src="/app/handoff.js" defer></script>
+  <script src="/app/run-transcripts.js" defer></script>
+  <script src="/app/agent-sources.js" defer></script>
+  <script src="/app/agent-console-mount.js" defer></script>
+  <script src="/app/side-panel.js" defer></script>
+  <script src="/app/agent-tree.js" defer></script>
+  <script src="/app/agent-tree-screen.js" defer></script>
+  <script src="/app/changes-panel.js" defer></script>
+  <script src="/app/context-panel.js" defer></script>
+  <script src="/app/terminal-mount.js" defer></script>
+  <script src="/app/terminal-labels.js" defer></script>
+  <script src="/app/live-session-entries.js" defer></script>
+  <script src="/app/live-sessions.js" defer></script>
+  <script src="/app/all-terminals.js" defer></script>
+  <script src="/app/workflows-page.js" defer></script>
+  <script src="/app/schedule-time.js" defer></script>
+  <script src="/app/usage-trigger-fields.js" defer></script>
+  <script src="/app/schedule-editor-dialog.js" defer></script>
+  <script src="/app/schedules-page.js" defer></script>
+  <script src="/app/general-workspace.js" defer></script>
+  <script src="/app/task-actions.js" defer></script>
+  <script src="/app/workflow-actions.js" defer></script>
+  <script src="/app/clocks.js" defer></script>
+  <script src="/app/terminal-layout.js" defer></script>
+  <script src="/app/terminal-workspace.js" defer></script>
+  <script src="/app/terminal-pane-drag.js" defer></script>
+  <script src="/app/project-terminals.js" defer></script>
+  <script src="/app/project-terminal-menu.js" defer></script>
+  <script src="/app/files-panel.js" defer></script>
+  <script src="/app/project-terminal-tab.js" defer></script>
+  <script src="/app/ai-workspace.js" defer></script>
+  <script src="/app/ai-sheet.js" defer></script>
+  <script src="/app/ai-chat.js" defer></script>
+  <script src="/app/ai-dock.js" defer></script>
+  <script src="/app/ai-draft-cards.js" defer></script>
+  <script src="/app/ai-canvas.js" defer></script>
+  <script src="/app/ai-actions.js" defer></script>
+  <script src="/app/plugin-bridge.js" defer></script>
+  <script src="/app/token-usage-format.js" defer></script>
+  <script src="/app/token-usage-data.js" defer></script>
+  <script src="/app/token-usage-footer.js" defer></script>
+  <script src="/app/token-usage-dialog.js" defer></script>
+  <script src="/app/window-controls.js" defer></script>
+  <script src="/app/git-panel-view.js" defer></script>
+  <script src="/app/git-panel.js" defer></script>
+  <script src="/app/main.js" defer></script>
+</head>
+<body>
+  <div class="app-shell" data-ui>
+    <header class="topbar"><button id="sidebar-toggle" class="icon-button sidebar-toggle" type="button" aria-label="Kenar çubuğunu daralt" title="Kenar çubuğunu daralt" aria-expanded="true" aria-controls="main-sidebar"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true"><rect x="2.5" y="3.5" width="13" height="11" rx="2"/><path d="M7 3.5v11"/><rect class="sidebar-toggle-pane" x="3.2" y="4.2" width="3.1" height="9.6" rx="1.2" fill="currentColor" stroke="none" opacity=".55"/></svg></button><div class="topbar-title"><div class="breadcrumb" id="breadcrumb"><strong id="breadcrumb-project">Projeler</strong></div><span id="page-summary" class="page-summary" hidden></span></div><nav id="project-view-tabs" class="project-view-tabs" role="tablist" aria-label="Proje görünümü" hidden><button id="overview-tab-board" class="view-tab" role="tab" aria-selected="false" aria-controls="workspace-scroll" hidden>Pano</button><button id="overview-tab-sessions" class="view-tab" role="tab" aria-selected="false" aria-controls="workspace-scroll" hidden>Canlı oturumlar<span id="sessions-count" class="nav-count">0</span></button><button id="overview-tab-terminal" class="view-tab" role="tab" aria-selected="false" aria-controls="workspace-scroll" hidden>Terminal</button><button id="project-tab-board" class="view-tab active" role="tab" aria-selected="true" aria-controls="workspace-scroll">Pano</button><button id="project-tab-editor" class="view-tab" role="tab" aria-selected="false" aria-controls="workspace-scroll" tabindex="-1" hidden>Editör</button><button id="project-tab-terminal" class="view-tab" role="tab" aria-selected="false" aria-controls="workspace-scroll" tabindex="-1">Terminal</button><button id="project-tab-schedules" class="view-tab" role="tab" aria-selected="false" aria-controls="workspace-scroll" tabindex="-1">Zamanlanmış görevler</button><button id="project-tab-sessions" class="view-tab" role="tab" aria-selected="false" aria-controls="workspace-scroll" tabindex="-1">Oturumlar</button><button id="project-tab-settings" class="view-tab" role="tab" aria-selected="false" aria-controls="workspace-scroll" tabindex="-1">Proje ayarları</button><span class="project-tabs-indicator" aria-hidden="true"></span></nav><div class="topbar-right"><div class="run-control" id="run-control" role="group" aria-label="Run script" hidden><select id="run-script-select" aria-label="Çalıştırılacak script"></select><button class="button small" id="run-script-button" type="button" title="Seçili scripti terminalde çalıştır" aria-controls="run-args-popover" aria-expanded="false"><svg class="ui-icon run-script-icon" width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="M5.25 3.4v9.2l7.25-4.6z" fill="currentColor" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/></svg><span id="run-script-label">Run</span></button><section id="run-args-popover" class="run-args-popover popup-menu" aria-label="Parametrelerle çalıştır" hidden><form id="run-args-form" novalidate><label class="run-args-label" for="run-args-input">Parametreler <span>(isteğe bağlı)</span></label><div id="run-args-fields" class="run-args-fields" hidden></div><textarea id="run-args-input" name="args" class="run-script-mono" rows="2" maxlength="1000" spellcheck="false" placeholder="-Ip 10.0.0.5" aria-describedby="run-args-hint run-args-history-hint"></textarea><small id="run-args-hint">Boşluk veya satırla ayır; boşluk içeren değerleri tırnak içine al.</small><small id="run-args-history-hint" class="run-args-history-hint" hidden>Geçmişi görmek için ↑ tuşuna bas.</small><div id="run-args-history" class="run-args-history popup-menu" role="menu" aria-label="Son parametreler" hidden></div><div class="run-args-actions"><button class="button small primary" type="submit">Çalıştır</button></div></form></section></div><span id="plugin-topbar" class="plugin-slot"></span><button class="button small ai-button" id="ai-create-task" type="button" aria-pressed="false" hidden><span data-sparkle="accent"></span>AI ile hazırla<span id="project-tab-ai-count" class="ai-tab-count" hidden></span></button><button class="button small primary" id="create-task" hidden><span aria-hidden="true">+</span> Yeni görev</button><div id="notifications" class="notifications"><button id="notifications-button" class="icon-button notifications-button" type="button" aria-label="Bildirimler" title="Bildirimler" aria-haspopup="menu" aria-expanded="false" aria-controls="notifications-menu"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.75V8a4 4 0 0 1 8 0v4.75M3.5 12.75h11M7.5 15.25h3"/></svg><span id="notifications-badge" class="notifications-badge" hidden></span></button><section id="notifications-menu" class="notifications-menu popup-menu" role="menu" aria-label="Bildirimler" hidden><p class="notifications-title">Bildirimler</p><div id="notifications-list" class="input-request-list"></div><p id="notifications-empty" class="notifications-empty">Bekleyen bildirim yok</p><div id="notifications-foot" class="input-request-foot" hidden></div></section></div><button id="theme-button" class="icon-button header-icon-button" type="button" aria-label="Açık temaya geç" title="Açık temaya geç"><span id="theme-icon" class="theme-icon" aria-hidden="true"><span class="theme-sun"><svg width="18" height="18" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><circle cx="8" cy="8" r="2.75"/><path d="M8 1.75v1.5M8 12.75v1.5M1.75 8h1.5M12.75 8h1.5M3.58 3.58l1.06 1.06M11.36 11.36l1.06 1.06M3.58 12.42l1.06-1.06M11.36 4.64l1.06-1.06"/></svg></span><span class="theme-moon" hidden><svg width="18" height="18" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"><path d="M13.25 9.75A5.5 5.5 0 0 1 6.25 2.75a5.5 5.5 0 1 0 7 7z"/></svg></span></span></button><button id="settings-button" class="icon-button header-icon-button" type="button" aria-label="Ayarlar" title="Ayarlar"><svg width="18" height="18" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" aria-hidden="true"><path d="M2.5 4.75h6M12.25 4.75h1.25M2.5 11.25h1.25M7.5 11.25h6"/><circle cx="10.25" cy="4.75" r="1.75"/><circle cx="5.75" cy="11.25" r="1.75"/></svg></button><button id="files-toggle" class="icon-button files-toggle" type="button" aria-label="Dosyaları göster" title="Dosyaları göster" aria-expanded="false" aria-controls="files-panel" hidden><svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true"><rect x="2.5" y="3.5" width="13" height="11" rx="2"/><path d="M11 3.5v11"/><rect class="files-toggle-pane" x="11.7" y="4.2" width="3.1" height="9.6" rx="1.2" fill="currentColor" stroke="none" opacity=".55"/></svg></button></div><div class="window-controls" id="window-controls" hidden><button type="button" id="win-min" aria-label="Küçült" title="Küçült"><svg width="12" height="12" viewBox="0 0 12 12"><path d="M2 6h8" stroke="currentColor" stroke-width="1.2" fill="none"/></svg></button><button type="button" id="win-max" aria-label="Büyüt" title="Büyüt"><svg width="12" height="12" viewBox="0 0 12 12"><rect x="2" y="2" width="8" height="8" stroke="currentColor" stroke-width="1.2" fill="none"/></svg></button><button type="button" id="win-close" class="close" aria-label="Kapat" title="Kapat"><svg width="12" height="12" viewBox="0 0 12 12"><path d="M2 2l8 8M10 2l-8 8" stroke="currentColor" stroke-width="1.2" fill="none"/></svg></button></div></header>
+    <aside class="sidebar" id="main-sidebar" aria-label="Ana menü">
+      <div class="brand-row"><a class="brand" href="/" aria-label="AI Agent Workspace"><span class="brand-symbol"><img src="/icons/aiws.svg" alt="" width="28" height="28"></span><span class="brand-name">AI Agent Workspace</span></a></div>
+      <nav class="workspace-navigation" aria-label="Çalışma görünümleri"><button id="dashboard-nav" class="nav-item"><span class="nav-icon" aria-hidden="true"><svg class="ui-icon" width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M2.75 13.25h10.5M4.5 10.5V7.75M8 10.5V3.25M11.5 10.5V5.75"/></svg></span><span class="nav-label">Dashboard</span></button><button id="overview-nav" class="nav-item"><span class="nav-icon" aria-hidden="true"><svg class="ui-icon" width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2.25" y="2.25" width="4.5" height="4.5" rx="1.25"/><rect x="9.25" y="2.25" width="4.5" height="4.5" rx="1.25"/><rect x="2.25" y="9.25" width="4.5" height="4.5" rx="1.25"/><rect x="9.25" y="9.25" width="4.5" height="4.5" rx="1.25"/></svg></span><span class="nav-label">Tüm projeler</span></button><span id="plugin-nav-workspace" class="plugin-slot"></span></nav>
+      <div class="sidebar-label">Çalışma alanı <button class="icon-button" id="create-project" type="button" aria-label="Yeni proje" title="Yeni proje"><svg class="ui-icon" width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" aria-hidden="true"><path d="M8 3.25v9.5M3.25 8h9.5"/></svg></button></div>
+      <nav id="project-list" aria-label="Projeler"></nav>
+      <div class="sidebar-label" data-library hidden>Kütüphane</div>
+      <nav class="library-nav" aria-label="Agent kütüphanesi" data-library hidden>
+        <button class="nav-item" id="agents-nav"><span class="nav-icon" aria-hidden="true"><svg class="ui-icon" width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="5" width="11" height="8.5" rx="2.5"/><path d="M8 5V2.5M6 9h.01M10 9h.01"/></svg></span><span class="nav-label">Agentlar</span><span id="agents-count" class="nav-count">0</span></button>
+        <button class="nav-item" id="skills-nav"><span class="nav-icon" aria-hidden="true"><svg class="ui-icon" width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M8 2.25l5.5 2.9L8 8.05 2.5 5.15z"/><path d="M2.5 8.1L8 11l5.5-2.9M2.5 10.85L8 13.75l5.5-2.9"/></svg></span><span class="nav-label">Skiller</span><span id="skills-count" class="nav-count">0</span></button>
+        <button class="nav-item" id="workflows-nav"><span class="nav-icon" aria-hidden="true"><svg class="ui-icon" width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="1.75" y="2.25" width="4.5" height="4.5" rx="1.25"/><rect x="9.75" y="9.25" width="4.5" height="4.5" rx="1.25"/><path d="M6.25 4.5h2.5A1.75 1.75 0 0 1 10.5 6.25v3"/></svg></span><span class="nav-label">İş akışları</span><span id="workflows-count" class="nav-count">0</span></button>
+      </nav>
+      <div class="sidebar-label" id="plugin-nav-label" hidden>Eklentiler</div>
+      <nav id="plugin-nav" class="library-nav plugin-nav" aria-label="Eklenti menüleri" hidden></nav>
+      <div class="sidebar-bottom">
+        <label class="nav-item system-control" id="system-control" title="Sistemi aç veya mevcut görevler bitince durdur">
+          <input type="checkbox" class="ui-switch" id="system-enabled" aria-label="Sistem çalışsın" aria-describedby="system-status" disabled>
+          <span id="system-status" class="nav-label" role="status" aria-live="polite">Sistem durumu bekleniyor…</span>
+          <span class="ui-spinner" aria-hidden="true" hidden></span>
+        </label>
+        <span id="plugin-nav-bottom" class="plugin-slot"></span>
+        <div class="sidebar-status">
+          <div class="connection run-summary"><span class="ui-dot" id="running-dot" data-tone="idle"></span><span class="live-indicator" id="running-label"></span></div>
+          <div class="connection"><span class="ui-dot" id="connection-dot" data-tone="needs"></span><span id="connection-label">Bağlanıyor…</span></div>
+        </div>
+      </div>
+    </aside>
+    <main id="main">
+      <div class="workspace"><div id="error-banner" class="error-banner" role="alert" data-tone="failed" hidden></div>
+      <section id="board-toolbar" class="board-toolbar" hidden><div class="view-tabs"><button class="view-tab active" id="board-view" aria-pressed="true">▦ <span>Pano</span></button><button class="view-tab" id="list-view" aria-pressed="false">☰ <span>Liste</span></button><button class="view-tab" id="timeline-view" aria-pressed="false">▤ <span>Zaman çizelgesi</span></button></div><div class="board-filters"><button type="button" id="archive-view" class="button small" aria-pressed="false">Arşiv</button><label class="search-box"><span aria-hidden="true">⌕</span><input id="search" type="search" placeholder="Görevlerde ara…" aria-label="Görevlerde ara"><kbd>/</kbd></label><select id="provider-filter" aria-label="Agent filtresi"><option value="">Tüm agentlar</option></select><select id="milestone-filter" aria-label="Milestone filtresi" hidden></select><span id="sync-status" class="sync-status" hidden></span><button id="sync-button" class="button small" hidden>↻ GitHub eşitle</button></div></section>
+      <section id="task-selection-controls" class="task-selection-controls" aria-label="Toplu görev işlemleri" hidden><span id="task-selection-count" role="status" aria-live="polite">0 görev seçili</span><label for="bulk-task-status" class="sr-only">Seçili görevlerin hedef durumu</label><select id="bulk-task-status" disabled><option value="backlog">Bekleyen</option><option value="ready">Hazır</option><option value="running">Çalışma · agent başlat</option><option value="review">İnceleme</option><option value="done">Tamamlandı</option></select><button type="button" id="move-selected-tasks" class="button small" disabled>Seçilileri taşı</button><label for="bulk-task-milestone" class="sr-only">Seçili görevlerin milestone’u</label><select id="bulk-task-milestone" hidden disabled></select><button type="button" id="archive-selected-tasks" class="button small" disabled>Seçilileri arşivle</button><button type="button" id="clear-task-selection" class="button small ghost" disabled>Seçimi temizle</button></section>
+      <div id="workspace-scroll" class="workspace-scroll"><div id="board" class="board"></div></div><aside id="task-panel" class="task-panel" aria-label="Görev ve agent oturumu" hidden></aside></div>
+      <footer class="board-footer"><div class="footer-start"><button type="button" id="git-status" class="git-status" aria-haspopup="dialog" aria-expanded="false" aria-controls="git-panel" title="Git: branch'ler, worktreeler ve uzak depo" hidden><span class="git-icon" aria-hidden="true"><svg class="ui-icon" width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" aria-hidden="true"><circle cx="4.5" cy="3.75" r="1.75"/><circle cx="4.5" cy="12.25" r="1.75"/><circle cx="11.5" cy="5.25" r="1.75"/><path d="M4.5 5.5v5M11.5 7c0 2.75-7 1.75-7 3.5"/></svg></span><span id="git-status-label">Git</span></button><span id="task-count">Hazır olduğunda başlayalım.</span></div><button type="button" id="token-countdown" class="token-countdown" aria-label="Token ve kota kullanım detaylarını aç" aria-haspopup="dialog"><span class="skeleton token-countdown-skeleton" aria-hidden="true"></span></button></footer>
+    </main>
+    <aside id="files-panel" class="files-panel" aria-label="Proje dosyaları" hidden><div class="files-panel-resize" role="separator" aria-orientation="vertical" aria-label="Dosyalar panelinin genişliği" tabindex="0"></div><div class="files-panel-body"></div></aside>
+  </div>
+  <section id="git-panel" class="git-panel" role="dialog" aria-labelledby="git-panel-title" hidden></section>
+  <dialog id="modal"><div id="modal-content"></div></dialog>
+  <aside id="input-request-toasts" class="input-request-toasts" aria-label="AI istek bildirimleri" aria-live="polite"></aside>
+  <div id="toast" class="toast" role="status" hidden></div>
+</body>
+</html>

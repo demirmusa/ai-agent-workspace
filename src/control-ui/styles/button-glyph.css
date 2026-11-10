@@ -1,0 +1,2 @@
+/* A button's leading glyph spins while the button is busy. */
+.button.is-busy>.button-glyph{display:none}

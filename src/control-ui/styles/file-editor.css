@@ -1,0 +1,18 @@
+/* The project Editor tab: a strip of open files over one Monaco editor that fills the board edge to edge. Monaco's own colours
+   come from the theme tokens through files/editor.js. */
+.board.project-editor-board,#board-toolbar[hidden]~.workspace-scroll>.board.project-editor-board{padding:0}
+.file-editor{display:flex;flex:1 1 auto;flex-direction:column;width:100%;height:max(340px,100cqh);min-width:0;background:var(--ground)}
+.file-editor-bar{display:flex;flex:none;align-items:center;gap:8px;min-height:36px;padding:0 10px 0 0;border-bottom:1px solid var(--line);background:var(--sidebar)}
+.file-editor-tabs{display:flex;flex:1 1 auto;min-width:0;align-self:stretch;overflow-x:auto;scrollbar-width:none}
+.file-editor-tab{display:flex;flex:none;align-items:center;max-width:240px;padding-right:4px;border-right:1px solid var(--line);color:var(--muted);transition:background-color var(--dur-fast) var(--ease-out),color var(--dur-fast) var(--ease-out)}
+.file-editor-tab:hover{background:var(--surface-hover);color:var(--ink)}
+.file-editor-tab.active{background:var(--ground);color:var(--ink-strong);box-shadow:inset 0 2px 0 var(--accent)}
+.file-editor-tab-name{display:flex;align-items:center;gap:7px;min-width:0;height:100%;padding:0 6px 0 12px;border:0;background:none;color:inherit;font:inherit;font-size:12.5px;cursor:pointer}
+.file-editor-tab-name>span:first-child{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.file-editor-tab .icon-button{flex:none;width:22px;height:22px;font-size:12px;opacity:0;transition:opacity var(--dur-fast) var(--ease-out)}
+.file-editor-tab:is(:hover,.active,:focus-within) .icon-button{opacity:1}
+.file-editor-body{position:relative;flex:1 1 auto;min-height:0}
+.file-editor-host{position:absolute;inset:0}
+.file-editor-message{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;height:100%;padding:24px;text-align:center;font-size:13px;color:var(--muted)}
+.file-editor-message p{max-width:520px;margin:0}
+.file-editor-message[hidden],.file-editor-host[hidden]{display:none}

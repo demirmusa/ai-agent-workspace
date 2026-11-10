@@ -1,0 +1,3 @@
+/* The Terminal tabs and Live sessions fill the board edge to edge. */
+.board.project-terminal-board,#board-toolbar[hidden]~.workspace-scroll>.board.project-terminal-board{padding:0}
+.board.project-terminal-board .project-terminal{height:max(340px,100cqh);border-width:0;border-radius:0}

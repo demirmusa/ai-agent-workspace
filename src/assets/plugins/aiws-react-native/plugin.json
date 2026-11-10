@@ -1,0 +1,19 @@
+{
+  "id": "aiws.react-native",
+  "name": {
+    "tr": "React Native",
+    "en": "React Native"
+  },
+  "version": "1.0.1",
+  "apiVersion": 1,
+  "description": {
+    "tr": "Sohbette Expo, EAS, Metro, Gradle, CocoaPods, Xcode, adb, Detox ve Maestro komutları için özel kartlar; native değişikliklerde yeni derleme uyarısı ve durum paneli.",
+    "en": "Dedicated chat cards for Expo, EAS, Metro, Gradle, CocoaPods, Xcode, adb, Detox and Maestro; a rebuild warning on native edits and a status panel."
+  },
+  "author": "AIWS",
+  "homepage": "https://github.com/demirmusa/ai-agent-workspace",
+  "main": "plugin.js",
+  "styles": [
+    "style.css"
+  ]
+}

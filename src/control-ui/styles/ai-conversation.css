@@ -1,0 +1,36 @@
+/* Conversation column: your messages as bubbles on the right, AI replies on the left behind a sparkle avatar. */
+.ai-chat{display:flex;flex-direction:column;flex:none;width:300px;min-height:0;border-left:1px solid var(--line);background:var(--surface)}
+.ai-workspace.is-chat-hidden .ai-chat{display:none}
+.ai-model-field{display:inline-flex;min-width:0}
+.ai-sheet.is-fullscreen{width:100vw;height:100dvh;border:0;border-radius:0}
+.ai-chat-log{display:flex;flex-direction:column;gap:16px;flex:1;min-height:0;overflow:auto;padding:18px 16px 20px}
+.ai-chat-placeholder{margin:auto 8px;color:var(--faint);font-size:12.5px;line-height:1.55;text-align:center}
+.ai-message{font-size:13px;line-height:1.55}
+.ai-message p{margin:0;white-space:pre-wrap;overflow-wrap:anywhere}
+.ai-message.user{align-self:flex-end;max-width:88%;padding:8px 12px;border-radius:var(--radius-lg) var(--radius-lg) var(--radius-sm) var(--radius-lg);background:var(--raised);color:var(--ink-strong)}
+.ai-message.user.failed{opacity:.6;outline:1px dashed var(--line-strong);outline-offset:-1px}
+.ai-message.assistant{display:flex;align-items:flex-start;gap:10px}
+.ai-avatar{width:24px;height:24px;font-size:13px}
+.ai-message-body{flex:1;min-width:0}
+.ai-message-name{display:block;margin-bottom:2px;color:var(--muted);font-size:11.5px;font-weight:600}
+.ai-message.assistant .cv-markdown{font-size:13px;line-height:1.6}
+.ai-message.assistant .cv-markdown p{white-space:normal}
+.ai-message-drafts{display:inline-flex;align-items:center;height:20px;margin-top:6px;padding:0 7px;border-radius:var(--radius-sm);background:var(--tone-bg);color:var(--tone);font-size:11.5px;font-weight:500}
+.ai-message.error{display:flex;align-items:flex-start;gap:8px;padding:9px 12px;border:1px solid var(--tone-line);border-radius:var(--radius-md);background:var(--tone-bg);color:var(--ink-strong)}
+.ai-message.error>.ui-icon{flex:none;margin-top:3px;color:var(--tone)}
+#ai-create-task.active{border-color:var(--accent);color:var(--accent)}
+.app-modal .task-ai-link{font-size:12px;color:var(--link)}
+@media(hover:none){
+.ai-card-tools{opacity:1}
+}
+@media(max-width:900px){
+.ai-chat{position:absolute;top:0;right:0;bottom:0;z-index:4;width:min(340px,90%);box-shadow:var(--shadow-float)}
+}
+@media(max-width:700px){
+.ai-sheet{width:100vw;height:calc(100dvh - 24px)}
+.ai-sheet-note{display:none}
+.ai-sheet-header{flex-wrap:wrap}
+.ai-canvas{padding-left:16px;padding-right:16px}
+}
+:root[data-motion=reduced] .ai-tab-count.busy,:root[data-motion=reduced] .flow-port.is-new,:root[data-motion=reduced] .voice-panel[data-state=connecting] .voice-wave i{animation:none}
+:root[data-motion=reduced] .flow-link.is-drawing{animation:none;stroke-dashoffset:0}

@@ -1,0 +1,36 @@
+'use strict';
+// Discovered skills and sharing them with projects.
+const skillDiscovery={data:null,loading:false,error:'',controller:null,version:0,projectsKey:''};
+const skillProviderLabels={claude:'Claude',codex:'Codex',agents:'.agents'};
+const skillColumnId=item=>item.scope==='project'?`project:${item.projectId}`:item.scope;
+const skillProjectsKey=()=>state.projects.map(item=>`${item.id}:${item.repositoryPath}`).join('|');
+function discoveredSkillIndex(){return derived('skill-discovery',skillDiscovery.version,()=>{
+  const data=skillDiscovery.data;if(!data)return null;const columns=new Map();
+  for(const location of data.locations){const id=skillColumnId(location);if(location.scope==='plugin'&&!data.skills.some(skill=>skill.locationId===location.id))continue;if(!columns.has(id))columns.set(id,{id,scope:location.scope,label:location.scope==='global'?globalThis.AIWSI18n.text('Global'):location.scope==='plugin'?globalThis.AIWSI18n.text('Eklentiler'):location.label,locations:[]});columns.get(id).locations.push(location);}
+  const groups=new Map();for(const skill of data.skills){const group=groups.get(skill.key)||{key:skill.key,name:skill.name,description:'',copies:[]};if(!group.description&&skill.description)group.description=skill.description;group.copies.push(skill);groups.set(skill.key,group);}
+  const rows=[...groups.values()].map(group=>({...group,diverged:new Set(group.copies.map(copy=>copy.fingerprint).filter(Boolean)).size>1,scopes:new Set(group.copies.map(copy=>copy.scope)),providers:new Set(group.copies.map(copy=>copy.provider))})).sort((a,b)=>a.name.localeCompare(b.name,globalThis.AIWSI18n.locale));
+  return {columns:[...columns.values()],rows,locations:new Map(data.locations.map(location=>[location.id,location]))};
+});}
+function skillDiscoveryHtml(){
+  const index=discoveredSkillIndex(),data=skillDiscovery.data;
+  const status=skillDiscovery.loading?globalThis.AIWSI18n.template`<span class="skill-discovery-status" role="status"><span class="ui-spinner" aria-hidden="true"></span> Skill klasörleri taranıyor…</span><button class="button small" data-skill-discovery="cancel">İptal</button>`:`${data?globalThis.AIWSI18n.template`<span class="skill-discovery-status">Son tarama ${relative(data.scannedAt)} önce</span>`:''}${globalThis.AIWSI18n.text('<button class="button small" data-skill-discovery="refresh"><span class="button-glyph" aria-hidden="true">↻</span> Yeniden tara</button>')}`;
+  const head=globalThis.AIWSI18n.template`<div class="skill-discovery-head"><div><h2>Bilgisayardaki skiller</h2><p>Claude Code ve Codex global klasörleri, kurulu Claude eklentileri ve her projenin .claude, .codex, .agents klasörleri taranır.</p></div><div class="skill-discovery-actions">${status}</div></div>`;
+  const notice=skillDiscovery.error?`<p class="template-error" role="alert">${esc(skillDiscovery.error)}</p>`:'';
+  const label=esc(globalThis.AIWSI18n.text('Bilgisayardaki skiller'));
+  if(!index)return `<section class="skill-discovery" aria-label="${label}">${head}${notice}${skillDiscovery.loading||notice?'':globalThis.AIWSI18n.text('<p class="form-hint">Henüz tarama yapılmadı.</p>')}</section>`;
+  const cell=(row,column)=>{const copies=row.copies.filter(copy=>skillColumnId(copy)===column.id),reference=row.copies.find(item=>item.fingerprint)?.fingerprint;return copies.length?copies.map(copy=>`<span class="skill-chip ui-chip${copy.error?' broken':''}${row.diverged&&copy.fingerprint&&copy.fingerprint!==reference?' different':''}" title="${esc(copy.error||copy.linkedTo||copy.path)}">${esc(skillProviderLabels[copy.provider])}${copy.linkedTo?' ↗':''}${copy.error?' !':''}</span>`).join(''):'<span class="skill-cell-empty" aria-hidden="true">—</span>';};
+  const inCatalog=row=>state.skills.some(skill=>skill.name===row.name||skill.name===row.key);
+  const body=index.rows.map(row=>{const importable=row.copies.find(copy=>!copy.error);return globalThis.AIWSI18n.template`<tr data-skill-key="${esc(row.key)}"><th scope="row"><strong>${esc(row.name)}</strong>${row.name!==row.key?`<code>${esc(row.key)}</code>`:''}<small>${esc(row.description||globalThis.AIWSI18n.text('Açıklama yok'))}</small><span class="library-tags">${row.scopes.has('global')?globalThis.AIWSI18n.text('<span class="ui-chip">Global</span>'):''}${row.scopes.has('project')?globalThis.AIWSI18n.text('<span class="ui-chip">Proje</span>'):''}${row.scopes.has('plugin')?globalThis.AIWSI18n.text('<span class="ui-chip">Eklenti</span>'):''}${[...row.providers].map(provider=>`<span class="ui-chip">${esc(skillProviderLabels[provider])}</span>`).join('')}${row.diverged?window.AIWSUI.statusPill('needs',globalThis.AIWSI18n.text('Farklı sürümler')):''}${inCatalog(row)?window.AIWSUI.statusPill('done',globalThis.AIWSI18n.text('Katalogda')):''}</span></th>${index.columns.map(column=>`<td>${cell(row,column)}</td>`).join('')}<td class="skill-row-actions"><button class="button small" data-share-skill="${esc(row.key)}" ${importable?'':'disabled'}>Paylaş</button><button class="button small ghost" data-import-discovered="${esc(importable?.id||'')}" ${importable?'':'disabled'}>Kataloğa ekle</button></td></tr>`;}).join('');
+  const warnings=data.warnings.length?`<p class="form-hint">${data.warnings.map(value=>esc(value)).join('<br>')}</p>`:'';
+  return `<section class="skill-discovery" aria-label="${label}">${head}${notice}${index.rows.length?`<div class="skill-matrix-scroll"><table class="skill-matrix"><thead><tr><th scope="col">Skill</th>${index.columns.map(column=>`<th scope="col" title="${esc(column.locations.map(location=>location.path).join('\n'))}">${esc(column.label)}</th>`).join('')}<th scope="col"><span class="sr-only">${globalThis.AIWSI18n.text('İşlemler')}</span></th></tr></thead><tbody>${body}</tbody></table></div>`:globalThis.AIWSI18n.text('<p class="form-hint">Bilinen klasörlerde SKILL.md içeren skill bulunamadı.</p>')}${warnings}</section>`;
+}
+async function loadSkillDiscovery(refresh=false){
+  skillDiscovery.controller?.abort();const controller=new AbortController();skillDiscovery.controller=controller;skillDiscovery.loading=true;skillDiscovery.error='';skillDiscovery.projectsKey=skillProjectsKey();if(activeScreen==='skills')renderLibrary();
+  try{const data=await api(`/skill-discovery${refresh?'?refresh=1':''}`,'GET',undefined,{signal:controller.signal});if(skillDiscovery.controller===controller){skillDiscovery.data=data;skillDiscovery.version++;}}
+  catch(cause){if(skillDiscovery.controller===controller)skillDiscovery.error=controller.signal.aborted?globalThis.AIWSI18n.text('Tarama iptal edildi.'):cause.message;}
+  finally{if(skillDiscovery.controller===controller){skillDiscovery.controller=null;skillDiscovery.loading=false;if(activeScreen==='skills')renderLibrary();}}
+}
+document.addEventListener('click',event=>{const target=event.target.closest('button');if(!target)return;
+  if(target.dataset.skillDiscovery==='refresh')void loadSkillDiscovery(true);if(target.dataset.skillDiscovery==='cancel')skillDiscovery.controller?.abort();
+  if(target.dataset.shareSkill)skillShareModal(target.dataset.shareSkill);if(target.dataset.removeDiscovered)removeDiscoveredSkill(target.dataset.removeDiscovered);
+  if(target.dataset.importDiscovered)void mutate('/skill-discovery/import','POST',{id:target.dataset.importDiscovered},globalThis.AIWSI18n.text('Skill kataloğa eklendi'));});

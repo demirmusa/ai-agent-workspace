@@ -1,0 +1,19 @@
+/* Project labels settings: the label list, its rows and the label form. */
+.github-label-options{margin:12px 0;border:1px solid var(--line);border-radius:4px;padding:8px 12px}
+.github-label-options legend{font-size:12px;font-weight:600;padding:0 4px}
+.project-labels{display:flex;flex-direction:column;gap:12px}
+.project-labels-toolbar{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.project-labels-github{display:flex;gap:8px;flex-wrap:wrap}
+.project-labels-list{display:flex;flex-direction:column;border:1px solid var(--line);border-radius:4px;background:var(--surface)}
+.project-labels-list>.form-hint{padding:12px;margin:0}
+.project-label-row{display:grid;grid-template-columns:minmax(120px,max-content) minmax(0,1fr) auto auto auto;align-items:center;gap:10px;padding:9px 12px;border-top:1px solid var(--line)}
+.project-label-row:first-child{border-top:0}
+.project-label-description{color:var(--muted);font-size:12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.project-label-usage{color:var(--muted);font-size:11px;white-space:nowrap}
+.project-label-form{display:grid;grid-template-columns:40px minmax(120px,1fr) minmax(140px,2fr) auto;gap:8px;align-items:center}
+.project-label-row.project-label-form{grid-template-columns:40px minmax(120px,1fr) minmax(140px,2fr) auto auto}
+.project-label-form input[type=color]{width:40px;height:32px;padding:2px;border:1px solid var(--line);border-radius:4px;background:var(--input);cursor:pointer}
+@media (max-width:640px){
+.project-label-row,.project-label-form,.project-label-row.project-label-form{grid-template-columns:1fr 1fr}
+.project-label-description{grid-column:1/-1}
+}

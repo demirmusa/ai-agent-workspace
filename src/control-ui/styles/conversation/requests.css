@@ -1,0 +1,41 @@
+/* Requests: answered ones stay in the timeline as an exchange; pending ones dock above the composer with their reply form and,
+   while one waits, replace the composer. The needs tone marks them; approvals end on Reject, then the primary Approve. */
+.cv-exchange-body{padding:10px 14px;border:1px solid var(--line);border-radius:var(--radius-lg);background:var(--surface)}
+.cv-exchange-heading{display:flex;align-items:center;gap:8px;margin-bottom:6px;color:var(--muted);font-size:12.5px}
+.cv-exchange-kind{font-weight:600;color:var(--ink-strong)}
+.cv-exchange-heading time{margin-left:auto;font-size:12px}
+.cv-exchange-body[data-status=pending]{padding:8px 14px;border-color:var(--tone-needs-line)}
+.cv-exchange-body[data-status=pending] .cv-exchange-heading{margin:0}
+.cv-exchange-body[data-status=pending]>.cv-question-text{display:none}
+.cv-answer{width:fit-content;max-width:min(80%,600px);margin:10px 0 0 auto;padding:8px 13px;border-radius:var(--radius-xl) var(--radius-xl) var(--radius-sm) var(--radius-xl);background:color-mix(in srgb,var(--accent) 12%,var(--surface));font-size:13px}
+.cv-answer>strong{display:block;margin-bottom:2px;color:var(--muted);font:600 11px var(--font-ui)}
+.cv-question-dock{display:flex;flex-direction:column;gap:10px;flex:none;max-height:min(62%,500px);padding:10px 14px 12px;overflow:auto;overscroll-behavior:contain;border-top:1px solid var(--line);background:var(--ground)}
+.cv-question{margin:20px 0 0;padding:12px 14px;border:1px solid var(--line);border-radius:var(--radius-lg);background:var(--surface);transition:opacity var(--dur) var(--ease-out)}
+.cv-question-dock .cv-question{margin:0;border-color:var(--tone-needs-line);box-shadow:var(--shadow-2)}
+.cv-question.cv-question-sent{opacity:.5;pointer-events:none}
+.cv-question>header{display:flex;align-items:center;gap:8px;margin-bottom:8px;color:var(--ink-strong);font-size:13px}
+.cv-question>header strong{font-weight:600}
+.cv-question>header time{margin-left:auto;color:var(--muted);font-size:12px}
+.cv-question-text{max-height:220px;padding-right:4px;overflow:auto;color:var(--ink);font-size:13.5px;line-height:1.65}
+.cv-question form{margin-top:12px}
+.cv-question-note{display:block;color:var(--muted);font-size:12px}
+.cv-question-note small{margin-left:6px;color:var(--faint);font-size:11.5px}
+.cv-question-note textarea{display:block;width:100%;min-height:0;max-height:150px;margin-top:5px;resize:vertical;font-size:13px;line-height:1.6}
+.cv-question-actions{display:flex;align-items:center;justify-content:flex-end;gap:8px;margin-top:10px}
+.cv-question-help{margin:0 auto 0 0;color:var(--muted);font-size:12px}
+.cv-deny:hover{color:var(--danger)}
+.cv-question [role=alert]{margin:8px 0 0;color:var(--danger);font-size:12px}
+.cv-paused-note{margin:0 0 8px;color:var(--muted);font-size:12px;line-height:1.7}
+.cv-native-prompt{display:flex;flex-direction:column;gap:6px;min-width:0;max-height:360px;overflow:auto;color:var(--ink);font-size:13px}
+.cv-native-prompt p{margin:0;overflow-wrap:anywhere}
+.cv-native-title{color:var(--muted);font:600 11.5px var(--font-ui);letter-spacing:.02em}
+.cv-native-context{color:var(--ink)}
+.cv-native-prompt .cv-native-command{max-height:160px;margin:2px 0;overflow:auto;white-space:pre-wrap;word-break:break-all}
+.cv-native-warning{display:flex;align-items:flex-start;gap:7px;padding:6px 10px;border:1px solid var(--tone-needs-line);border-radius:var(--radius-md);background:var(--tone-needs-bg);color:var(--ink);font-size:12.5px}
+.cv-native-warning>.ui-icon{flex:none;margin-top:3px;color:var(--tone-needs)}
+.cv-native-question{margin-top:6px;font-weight:600;color:var(--ink-strong)}
+.cv-native-options{display:flex;flex-direction:column;gap:4px;margin:0;padding:0;list-style:none}
+.cv-native-options li{display:flex;align-items:flex-start;gap:9px;padding:6px 10px;border:1px solid var(--line);border-radius:var(--radius-md);color:var(--ink);overflow-wrap:anywhere}
+.cv-native-options li[data-selected]{border-color:var(--accent);background:color-mix(in srgb,var(--accent) 8%,var(--surface));color:var(--ink-strong)}
+.cv-native-key{flex:none;min-width:20px;padding:0 5px;border:1px solid var(--line-strong);border-radius:var(--radius-sm);color:var(--muted);font:600 11px/18px var(--font-mono);text-align:center}
+.cv-native-options li[data-selected] .cv-native-key{border-color:var(--accent);background:var(--accent);color:var(--accent-ink)}

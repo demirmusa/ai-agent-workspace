@@ -1,0 +1,12 @@
+/* Both task and provider history use the same offcanvas and console viewport: the agent console fills it and the information view
+   scrolls on its own. */
+.task-panel>.detail-workspace{display:flex;flex-direction:column;flex:1;min-height:0;overflow:hidden}
+.detail-information{flex:1;min-height:0;overflow-y:auto;overscroll-behavior:contain;padding:18px 22px 28px;overflow-wrap:anywhere;container-type:inline-size}
+.session-fullscreen .detail-information{width:100%;max-width:1100px;margin:0 auto}
+.agent-console-host{display:flex;flex-direction:column;flex:1;min-width:0;min-height:0;overflow:hidden}
+.history-context-note{display:flex;flex:none;align-items:center;gap:10px;padding:8px 14px;border-bottom:1px solid var(--line);background:var(--sidebar);font-size:12.5px;line-height:1.6;color:var(--muted)}
+.history-context-note>span{flex:1;min-width:0;overflow-wrap:anywhere}
+.history-context-note .button{flex:none}
+@media(max-width:760px){
+.detail-information{padding:14px 14px 22px}
+}

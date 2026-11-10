@@ -1,0 +1,76 @@
+/* Subscription usage (reference v3). The board footer shows a pill per provider: its icon, a five-step meter of the first quota
+   window's remaining share tinted by tone, the remaining percents and the reset countdown. The usage dialog gives each provider a
+   sunken shell around a surface card: the remaining share of the shown window, a 100-cell waffle (one cell per percent used, filled
+   column by column) and a legend row per window, then a footer strip with the data source and the refresh action. Hovering or
+   focusing a row shows its window: the other rows dim and the cells recolour in a left-to-right sweep (--d per cell, from app/token-usage-dialog.js). */
+.token-countdown{display:flex;flex-wrap:wrap;align-items:center;justify-content:flex-end;gap:2px 14px;flex:0 1 auto;min-width:0;min-height:24px;padding:2px 8px;border:0;border-radius:var(--radius);background:transparent;color:var(--ink);font-size:12px;font-variant-numeric:tabular-nums;white-space:nowrap}
+.token-countdown:hover{background:var(--surface-hover)}
+.token-countdown-skeleton{display:block;width:180px;height:12px}
+.token-pill{display:inline-flex;align-items:center;gap:6px}
+.token-pill .provider-icon,.token-pill .provider-icon img{width:16px;height:16px}
+.token-pill-account{max-width:96px;overflow:hidden;color:var(--muted);text-overflow:ellipsis;white-space:nowrap}
+.token-meter{display:inline-flex;align-items:center;gap:2px}
+.token-meter>i{width:3px;height:10px;border-radius:1px;background:var(--viz-empty)}
+.token-meter>i.is-on{background:var(--tone)}
+.token-pill-values{display:inline-flex;align-items:baseline;gap:8px}
+.token-pill-window{display:inline-flex;align-items:baseline;gap:4px}
+.token-pill-window>b{color:var(--ink-strong);font-weight:500}
+.token-pill-window>b[data-tone]{color:var(--tone)}
+.token-time{color:var(--muted)}
+.token-usage{display:grid;gap:12px}
+.token-usage-error{padding:8px 12px;border-radius:var(--radius-md);background:var(--tone-bg);color:var(--tone);font-size:12.5px;overflow-wrap:anywhere}
+.token-usage-list{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,300px),1fr));gap:12px;align-items:start}
+.token-shell{display:flex;flex-direction:column;min-width:0;padding:4px;border-radius:calc(var(--radius-xl) + 4px);background:var(--surface-sunken)}
+.token-card{container-type:inline-size;display:flex;flex-direction:column;gap:12px;padding:14px 16px 10px;border:1px solid var(--line);border-radius:var(--radius-xl);background:var(--surface);box-shadow:var(--shadow-1)}
+.token-card-head{display:flex;align-items:center;gap:10px;min-width:0}
+.token-card-title{flex:1;min-width:0;overflow:hidden;font-size:14px;font-weight:600;text-overflow:ellipsis;white-space:nowrap}
+.token-account{min-width:0;max-width:60%}
+.token-account .provider-icon,.token-account .provider-icon img{width:12px;height:12px;border-radius:3px}
+.token-account-name{overflow:hidden;text-overflow:ellipsis}
+.token-figure{display:flex;align-items:baseline;gap:8px;min-width:0}
+.token-big{flex:none;color:var(--ink-strong);font-size:28px;font-weight:650;line-height:1;letter-spacing:-.02em;font-variant-numeric:tabular-nums}
+.token-big-label{flex:1;min-width:0;overflow:hidden;color:var(--muted);font-size:13px;text-overflow:ellipsis;white-space:nowrap}
+.token-used{flex:none;color:var(--muted);font-size:12.5px;font-variant-numeric:tabular-nums;white-space:nowrap}
+.token-used[data-tone],.token-row-value[data-tone]{color:var(--tone)}
+.token-waffle{--cell:var(--viz-4);display:grid;grid-template-rows:repeat(4,auto);grid-auto-columns:minmax(0,1fr);grid-auto-flow:column;gap:4px}
+.token-waffle>i{aspect-ratio:1;border-radius:2px;background:var(--viz-empty);transition:background-color var(--dur) var(--ease-out) var(--d)}
+.token-waffle>i.is-used{background:var(--cell)}
+.token-legend{display:flex;flex-direction:column;margin:0 -8px}
+.token-line{display:flex;align-items:center;gap:2px}
+.token-pin{display:inline-flex;align-items:center;justify-content:center;flex:none;width:26px;height:26px;border:0;border-radius:var(--radius);background:transparent;color:var(--muted);opacity:.55;transition:background-color var(--dur-fast) var(--ease-out),color var(--dur-fast) var(--ease-out),opacity var(--dur-fast) var(--ease-out)}
+.token-pin:hover,.token-pin:focus-visible,.token-pin[aria-pressed=true]{opacity:1}
+.token-pin:hover{background:var(--surface-hover);color:var(--ink-strong)}
+.token-pin[aria-pressed=true]{color:var(--ink-strong)}
+.token-pin[aria-pressed=true] svg{fill:currentColor}
+.token-visibility[aria-pressed=true] svg{fill:none}
+.token-visibility[aria-pressed=false]{opacity:1;color:var(--ink-strong)}
+.token-row{display:flex;flex:1;align-items:center;gap:8px;min-width:0;min-height:30px;padding:0 8px;border:0;border-radius:var(--radius);background:transparent;color:var(--ink);font-size:13px;text-align:left;transition:background-color var(--dur) var(--ease-out),opacity var(--dur) var(--ease-out)}
+.token-swatch{flex:none;width:8px;height:8px;border-radius:2px;background:var(--viz)}
+.token-row-label{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.token-row-reset{flex:none;color:var(--muted);font-size:12px;font-variant-numeric:tabular-nums;white-space:nowrap}
+.token-row-value{flex:none;min-width:38px;color:var(--ink-strong);font-variant-numeric:tabular-nums;text-align:right}
+.token-card.is-focusing .token-row[aria-pressed=true]{background:var(--surface-hover)}
+.token-card.is-focusing .token-row[aria-pressed=false]{opacity:.45}
+.token-retry{display:flex;align-items:center;gap:6px;color:var(--tone);font-size:12px}
+.token-shell-foot{display:flex;align-items:center;gap:10px;min-height:40px;padding:4px 4px 2px 12px;color:var(--muted);font-size:12.5px}
+.token-foot{display:flex;align-items:baseline;flex:1;min-width:0;white-space:nowrap}
+.token-foot>span{min-width:0;overflow:hidden;text-overflow:ellipsis}
+.token-foot-key{flex:none;margin-right:5px;color:var(--ink-strong);font-weight:500}
+.token-foot-key:empty{display:none}
+.token-refresh{--spinner-size:11px;display:inline-flex;align-items:center;gap:6px;flex:none;height:28px;padding:0 10px;border:0;border-radius:var(--radius-md);background:transparent;color:var(--ink-strong);font-size:12.5px;font-weight:500;transition:background-color var(--dur-fast) var(--ease-out),color var(--dur-fast) var(--ease-out)}
+.token-refresh:not([data-state=busy]):hover{background:var(--surface)}
+.token-refresh>.ui-icon{transition:transform var(--dur) var(--ease-out)}
+.token-refresh:not([data-state]):hover>.ui-icon{transform:rotate(45deg)}
+.token-refresh[data-state=busy]{cursor:progress;color:var(--muted)}
+.token-refresh[data-state=done]{color:var(--tone-done)}
+@container (max-width:360px){
+.token-row-tail{display:none}
+}
+@media(max-width:760px){
+.board-footer{flex-wrap:wrap;gap:6px}
+.token-countdown{column-gap:10px;margin-left:auto;font-size:11px}
+}
+/* A hidden provider collapses to its dimmed title and the eye button. */
+.token-shell.is-collapsed .token-card{gap:0}
+.token-shell.is-collapsed .token-card>:not(.token-card-head),.token-shell.is-collapsed .token-shell-foot,.token-shell.is-collapsed .token-account{display:none}
+.token-shell.is-collapsed .token-card-title{color:var(--muted);opacity:.6;font-weight:500}

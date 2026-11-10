@@ -1,0 +1,6 @@
+*
+!Dockerfile.runner
+!Dockerfile.agent
+!VERSION
+!bin/
+!bin/**

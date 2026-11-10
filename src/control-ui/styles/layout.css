@@ -1,0 +1,20 @@
+/* The sidebar runs the full window height on the left; the header sits above the content column only, and the workspace scrolls below it. */
+.workspace-scroll{flex:1;min-height:0;overflow:auto;display:flex;flex-direction:column;scroll-behavior:smooth;container-type:size}
+.app-shell{display:grid;grid-template-columns:232px minmax(0,1fr);grid-template-rows:auto minmax(0,1fr);height:100dvh;min-height:100dvh;overflow:hidden}
+.app-shell.sidebar-collapsed{grid-template-columns:64px minmax(0,1fr)}
+.app-shell>.sidebar{grid-column:1;grid-row:1/-1}
+.app-shell>.topbar{grid-column:2;grid-row:1}
+.app-shell>main{grid-column:2;grid-row:2}
+main{display:flex;flex-direction:column;min-width:0;min-height:0;overflow:hidden}
+@media(max-width:1100px){
+.app-shell{grid-template-columns:200px minmax(0,1fr)}
+.topbar{padding:0 20px}
+}
+/* Stacked layout: below 760 px the sidebar becomes a strip above the header (brand, views and quick actions, then projects and the
+   library as scrolling rows); collapsed, it keeps its first row only. */
+@media(max-width:760px){
+.app-shell{display:flex;flex-direction:column;height:100dvh}
+.app-shell>.sidebar{order:-1;flex:none;display:grid;grid-template-columns:auto minmax(0,1fr) auto;align-items:center;gap:6px 10px;padding:8px 12px;border-right:0;border-bottom:1px solid var(--line)}
+.app-shell>.topbar{flex:none;padding:0 14px}
+.app-shell>main{flex:1}
+}

@@ -1,0 +1,8 @@
+/* The toast message at the bottom of the window. It rises in and sinks back out: hidden stays painted through a discrete display
+   transition, and @starting-style gives the entrance. */
+.toast{position:fixed;z-index:40;bottom:28px;left:50%;transform:translateX(-50%);max-width:calc(100vw - 40px);padding:9px 14px;border:1px solid color-mix(in srgb,var(--tooltip-ink) 8%,var(--tooltip-bg));border-radius:var(--radius-lg);background:var(--tooltip-bg);color:var(--tooltip-ink);font-size:13px;line-height:1.45;box-shadow:var(--shadow-pop);transition:opacity var(--dur-slow) var(--ease-out),transform var(--dur-slow) var(--ease-out),display var(--dur-slow) allow-discrete}
+.toast[hidden]{opacity:0;transform:translate(-50%,8px);pointer-events:none;transition-duration:var(--dur)}
+@starting-style{.toast:not([hidden]){opacity:0;transform:translate(-50%,8px)}}
+/* The toast's one action (Geri al): a text button in the toast's own colour. */
+.toast-action{margin-left:10px;padding:0;border:0;background:none;color:inherit;font:inherit;font-weight:600;text-decoration:underline;text-underline-offset:2px;cursor:pointer}
+.toast-action:focus-visible{outline:2px solid var(--focus);outline-offset:2px;border-radius:var(--radius-sm)}

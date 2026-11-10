@@ -1,0 +1,8 @@
+/* Labels: GitHub-style pills colored by the project label. */
+.label-chips{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px}
+.label-chip{display:inline-flex;align-items:center;gap:4px;max-width:100%;border-radius:999px;padding:2px 9px;background:var(--label-color);color:var(--label-text);font-size:11px;font-weight:500;line-height:1.6;border:1px solid color-mix(in srgb,var(--label-color) 70%,var(--ink) 30%)}
+.label-chip>span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:220px}
+.label-chip button{background:transparent;border:0;color:inherit;font-size:14px;line-height:1;padding:0 0 0 2px;cursor:pointer;opacity:.75}
+.label-chip button:hover{opacity:1}
+.card-labels{display:flex;flex-wrap:wrap;gap:4px;margin:6px 0 2px}
+.card-labels .label-chip{font-size:10px;padding:0 7px}

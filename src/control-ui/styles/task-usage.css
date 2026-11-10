@@ -1,0 +1,15 @@
+/* Token breakdown of a task or run: each kind with a bar of its share of the total. */
+.usage-breakdown{display:flex;flex-direction:column;margin:0 0 6px;font-size:12.5px}
+.usage-breakdown-row{display:flex;align-items:baseline;justify-content:space-between;flex-wrap:wrap;gap:0 12px;min-height:26px;border-top:1px solid var(--line)}
+.usage-breakdown-row:first-child{border-top:0}
+.usage-breakdown-row dt{color:var(--muted)}
+.usage-breakdown-row dd{display:flex;align-items:baseline;gap:10px;margin:0;font-variant-numeric:tabular-nums;color:var(--ink)}
+.usage-breakdown-row dd small{min-width:38px;font-size:11.5px;color:var(--muted);text-align:right}
+.usage-breakdown-row.is-total dt,.usage-breakdown-row.is-total dd>span{font-weight:600;color:var(--ink)}
+.usage-breakdown-runs{font-size:11.5px;color:var(--muted)}
+.usage-breakdown-row[data-kind=input]{--usage-bar:var(--ctx-chat)}
+.usage-breakdown-row[data-kind=cache-read]{--usage-bar:var(--ctx-memory)}
+.usage-breakdown-row[data-kind=cache-write]{--usage-bar:var(--ctx-file)}
+.usage-breakdown-row[data-kind=output]{--usage-bar:var(--ctx-agent)}
+.usage-breakdown-row dd.usage-breakdown-bar{display:block;flex-basis:100%;height:6px;margin:0 0 7px;border-radius:var(--radius-sm);background:var(--surface-sunken);overflow:hidden}
+.usage-breakdown-bar i{display:block;height:100%;min-width:2px;border-radius:inherit;background:var(--usage-bar)}

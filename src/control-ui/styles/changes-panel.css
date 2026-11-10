@@ -1,0 +1,21 @@
+/* Git changes list: a summary bar, then files whose rows expand into their diff. */
+.changes-view{display:flex;flex-direction:column;flex:1;min-height:0}
+.changes-summary{display:flex;flex:none;align-items:center;gap:10px;padding:8px 14px 8px 20px;border-bottom:1px solid var(--line);background:var(--sidebar);font-size:12.5px;color:var(--muted)}
+.changes-summary>span:first-child{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.changes-body{flex:1;min-height:0;overflow:auto;overscroll-behavior:contain;padding:6px 8px 16px}
+.changes-list{margin:0;padding:0;list-style:none;font-size:13px}
+.change-row{display:flex;align-items:center;gap:6px;height:26px;padding:0 8px;border-radius:var(--radius-sm);white-space:nowrap;cursor:pointer}
+.change-row[aria-expanded=true]{background:var(--surface-hover)}
+.change-row .icon-button{flex:none;width:22px;height:22px;font-size:14px}
+.change-diff{margin:2px 0 8px;border:1px solid var(--line);border-radius:var(--radius-sm);background:var(--surface);overflow:auto;max-height:420px}
+.change-diff-body{margin:0;padding:6px 0;font:11px/1.6 var(--font-mono);min-width:max-content}
+.diff-line{display:block;padding:0 10px;white-space:pre}
+.diff-line.add{color:var(--tone-done);background:color-mix(in srgb,var(--tone-done) 10%,transparent)}
+.diff-line.del{color:var(--tone-failed);background:color-mix(in srgb,var(--tone-failed) 10%,transparent)}
+.diff-line.hunk{color:var(--muted)}
+.change-row:hover{background:var(--surface-hover)}
+.change-row>.file-icon{color:var(--faint)}
+.change-name{flex:none;max-width:60%;overflow:hidden;text-overflow:ellipsis}
+.change-row[data-change=deleted] .change-name{text-decoration:line-through}
+.change-folder{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;font-size:12px;color:var(--faint)}
+.changes-empty{margin:0;padding:14px 8px;color:var(--muted)}

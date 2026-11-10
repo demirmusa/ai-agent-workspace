@@ -1,0 +1,36 @@
+/* Messages: agent replies read as documents under an "AGENT · name" heading, the user's own words as bubbles, prompts AIWS wrote
+   for the agent as quiet system cards. Long text starts folded. */
+.cv-message-heading{display:flex;align-items:center;gap:8px;margin:0 0 6px;font-size:12.5px}
+.cv-message-heading strong{font-weight:600;color:var(--ink-strong)}
+.cv-message-heading time{margin-left:auto;font-size:12px;color:var(--muted)}
+.cv-message-heading>.ui-icon-box{width:20px;height:20px;border-radius:var(--radius-sm)}
+.cv-message-heading>.ui-icon-box>img{width:12px;height:12px}
+.cv-message-role{color:var(--muted);font:600 11px var(--font-ui);letter-spacing:.06em;text-transform:uppercase}
+.cv-assistant .cv-message-role::after{content:"·";margin-left:8px;letter-spacing:0}
+.cv-node.cv-assistant{margin:22px 0 14px}
+.cv-assistant>:is(.cv-markdown,.cv-message-tools,.cv-expand,.cv-full-message){margin-left:28px}
+.cv-node.cv-user{display:flex;flex-direction:column;align-items:flex-end;margin:22px 0}
+.cv-bubble{min-width:0;max-width:min(80%,660px);padding:9px 14px;border:1px solid color-mix(in srgb,var(--accent) 24%,var(--line));border-radius:var(--radius-xl) var(--radius-xl) var(--radius-sm) var(--radius-xl);background:color-mix(in srgb,var(--accent) 12%,var(--surface));color:var(--ink-strong)}
+.cv-message-meta{display:flex;align-items:center;gap:8px;margin-top:5px;padding-right:4px;font-size:12px;color:var(--muted)}
+.cv-message-meta .cv-text-button{opacity:0;transition:opacity var(--dur-fast) var(--ease-out)}
+.cv-user:is(:hover,:focus-within) .cv-message-meta .cv-text-button{opacity:1}
+.cv-node.cv-prompt{margin:16px 0}
+.cv-system-card{min-width:0;padding:10px 14px 11px;border:1px solid var(--line);border-radius:var(--radius-lg);background:var(--surface)}
+.cv-system-card .cv-message-role{display:inline-flex;align-items:center;height:20px;padding:0 7px;border-radius:var(--radius-pill);background:var(--raised);letter-spacing:.04em}
+.cv-message-tools{display:flex;align-items:flex-start;gap:12px;min-height:18px;margin-top:4px;opacity:0;transition:opacity var(--dur-fast) var(--ease-out)}
+.cv-node:is(:hover,:focus-within)>.cv-message-tools,.cv-system-card:is(:hover,:focus-within)>.cv-message-tools{opacity:1}
+.cv-message-tools .cv-raw{flex:1}
+.cv-text-button{display:inline-flex;align-items:center;padding:2px 0;border:0;background:none;color:var(--muted);font-size:12px;text-align:left}
+.cv-text-button:hover{color:var(--accent)}
+.cv-raw{min-width:0;font-size:12px;color:var(--muted)}
+.cv-raw summary{cursor:pointer;line-height:1.8}
+.cv-raw pre{max-width:100%;max-height:240px;margin:7px 0;padding:10px;overflow:auto;border:1px solid var(--line);border-radius:var(--radius-sm);background:var(--surface-sunken);white-space:pre-wrap;overflow-wrap:anywhere;font:11.5px/1.6 var(--font-mono)}
+.aiws-agent-console:not(.cv-show-technical) .cv-raw{display:none}
+.cv-full-message>summary{cursor:pointer;color:var(--muted);font-size:12px}
+.cv-collapsible[data-collapsed=true]{max-height:9em;overflow:hidden;cursor:pointer;-webkit-mask-image:linear-gradient(#000 50%,transparent);mask-image:linear-gradient(#000 50%,transparent)}
+.cv-assistant>.cv-collapsible[data-collapsed=true]{max-height:24em}
+.cv-expand{display:inline-flex;align-items:center;gap:5px;margin-top:4px;padding:2px 0;border:0;background:none;color:var(--link);font:500 12px var(--font-ui);cursor:pointer}
+.cv-expand:hover{text-decoration:underline;text-underline-offset:3px}
+.cv-expand::after{content:"⌄";font-size:13px;line-height:1;transform:translateY(-2px);transition:transform var(--dur) var(--ease-out)}
+.cv-expand[aria-expanded=true]::after{transform:rotate(180deg) translateY(-1px)}
+.cv-bubble>.cv-expand{color:inherit;opacity:.8}

@@ -1,0 +1,91 @@
+/* Bilgiler: an issue view whose fields edit in place. Details sit in hairline cards beside the description, and fields stay quiet
+   until hovered or focused. The activity history is a step timeline whose dots take each entry's tone; new entries rise in. Blocked
+   by chips show the blocker's status pill; the task dialog uses the same chips and search. */
+.issue-view{display:grid;grid-template-columns:minmax(0,1fr);gap:22px;align-items:start}
+@container (min-width:780px){
+.issue-view{grid-template-columns:minmax(0,1fr) minmax(300px,360px);gap:28px}
+.issue-sidebar{position:sticky;top:0}
+}
+.issue-main{display:flex;flex-direction:column;gap:20px;min-width:0}
+.issue-model-bar{min-width:0}
+.issue-model-bar[title] :disabled,.issue-field[title] :disabled{cursor:not-allowed}
+.issue-title-input{width:calc(100% + 16px);margin:0 -8px;padding:4px 8px;border:1px solid transparent;border-radius:var(--radius);background:transparent;box-shadow:none;color:var(--ink-strong);font-size:20px;font-weight:600;line-height:1.35;letter-spacing:-.25px}
+.issue-title-input:hover{background:var(--surface-hover)}
+.issue-title-input:focus{border-color:var(--focus);background:var(--input);box-shadow:var(--ring)}
+.issue-section-header{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:6px}
+.issue-section-header h3,.task-activity-history h3{margin:0;font-size:13px;font-weight:600;color:var(--ink-strong)}
+.task-description-markdown{margin:0;font-size:13.5px;line-height:1.65;white-space:normal;color:var(--ink)}
+.task-description-markdown>p{margin:0}
+.task-description-markdown h4{margin:15px 0 8px;font-size:13px;line-height:1.6}
+.task-description-markdown .cv-list-item{margin:4px 0}
+.task-description-markdown pre{max-width:100%;overflow-x:auto}
+.issue-description-view{min-height:44px;margin:0 -8px;padding:6px 8px;border:1px solid transparent;border-radius:var(--radius);cursor:text;transition:background-color var(--dur-fast) var(--ease-out)}
+.issue-description-view:hover{background:var(--surface-hover)}
+.issue-description-view:focus-visible{outline:2px solid var(--focus);outline-offset:0}
+.issue-description-view .description-empty{margin:0;font-size:13px;line-height:1.7;color:var(--muted)}
+.issue-description-editor textarea{width:100%;min-height:160px;resize:vertical}
+.issue-editor-actions{display:flex;align-items:center;gap:8px;margin-top:8px}
+.issue-editor-actions small{margin-left:auto;font-size:12px;color:var(--muted)}
+.issue-note{margin:0}
+.issue-sidebar{display:flex;flex-direction:column;gap:12px;min-width:0}
+.issue-sidebar-fields{display:flex;flex-direction:column;gap:12px;min-width:0;margin:0;padding:0;border:0}
+.issue-panel{padding:10px 14px 6px;border:1px solid var(--line);border-radius:var(--radius-lg);background:var(--surface);box-shadow:var(--shadow-1)}
+.issue-panel>header{display:flex;align-items:center;justify-content:space-between;gap:10px;min-height:22px;margin-bottom:4px}
+.issue-panel>header h3{margin:0;font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--faint)}
+.issue-save-status{margin:0;font-size:12px;text-align:right;color:var(--muted)}
+.issue-save-status.saved{color:var(--tone-done)}
+.issue-save-status.error{color:var(--tone-failed)}
+.issue-fields{display:flex;flex-direction:column;margin:0}
+.issue-field{display:grid;grid-template-columns:104px minmax(0,1fr);gap:10px;align-items:start;padding:6px 0;border-top:1px solid var(--line)}
+.issue-field:first-child{border-top:0}
+.issue-field dt{padding-top:5px;font-size:12.5px;color:var(--muted)}
+.issue-field dt :is(label,span){font-weight:400;color:inherit}
+.issue-field dd{position:relative;display:flex;flex-direction:column;gap:6px;min-width:0;margin:0}
+.issue-field dd>select,.issue-field dd>input:not([type=checkbox]),.issue-field .dependency-search-box input{width:100%;min-height:var(--control-h);padding:3px 7px;border:1px solid transparent;border-radius:var(--radius-sm);background:transparent;color:var(--ink);font-size:13px}
+.issue-field dd>select:hover:not(:disabled),.issue-field dd>input:hover:not([readonly],:disabled),.issue-field .dependency-search-box input:hover{border-color:var(--line);background:var(--surface-hover)}
+.issue-field dd>select:focus,.issue-field dd>input:focus,.issue-field .dependency-search-box input:focus{border-color:var(--focus);background:var(--input);box-shadow:var(--ring)}
+.issue-field dd>select:disabled,.issue-field dd>input[readonly]{cursor:not-allowed;opacity:.75}
+.issue-field .checkbox-field{margin:0;font-size:12.5px}
+.issue-field-hint,.issue-sublabel{font-size:12px;color:var(--muted)}
+.issue-skill-choices{min-width:0;margin:0;padding:0;border:0}
+.issue-skill-choices .skill-choices{display:flex;flex-direction:column;gap:4px;padding:0;border:0;background:none}
+.issue-skill-choices .skill-choice{font-size:12.5px}
+.issue-skill-choices .skill-choice small{display:none}
+.issue-skill-choices:disabled{opacity:.7}
+.issue-chips{display:flex;flex-wrap:wrap;gap:6px}
+.issue-empty,.issue-hint{font-size:12px;color:var(--muted)}
+.issue-meta{margin:0 0 8px;font-size:12.5px}
+.issue-timestamps{display:flex;flex-direction:column;gap:3px;padding:2px 2px 0;font-size:12px;color:var(--muted)}
+.issue-timestamps code{font-size:11.5px;overflow-wrap:anywhere}
+.help-link{font-size:12px}
+.task-meta{display:grid;grid-template-columns:90px minmax(0,1fr);align-items:baseline;gap:8px 14px;margin:0;font-size:12.5px}
+.task-meta dt{color:var(--muted)}
+.task-meta dd{min-width:0;margin:0;overflow-wrap:anywhere}
+.task-meta dd small{display:block;margin-top:3px;font-size:11.5px;color:var(--muted)}
+.run-history{font-size:12.5px}
+.run-history summary{cursor:pointer;color:var(--muted)}
+.task-activity-history h3{display:flex;align-items:center;gap:8px;margin-bottom:12px}
+.task-activity-count{min-width:20px;height:18px;padding:0 6px;border-radius:var(--radius-pill);background:var(--raised);color:var(--muted);font-size:11px;font-weight:500;line-height:18px;text-align:center;font-variant-numeric:tabular-nums}
+.task-activity-history ol{margin:0;padding:0;list-style:none}
+.task-activity-history li{position:relative;min-width:0;padding:0 0 16px 22px}
+.task-activity-history li::before{content:"";position:absolute;left:3px;top:5px;width:9px;height:9px;border-radius:50%;background:var(--tone);box-shadow:0 0 0 3px var(--ground)}
+.task-activity-history li::after{content:"";position:absolute;left:7px;top:17px;bottom:1px;width:1px;background:var(--line)}
+.task-activity-history li:last-child{padding-bottom:0}
+.task-activity-history li:last-child::after{display:none}
+.task-activity-meta{display:flex;flex-wrap:wrap;align-items:center;gap:4px 8px;font-size:12px;color:var(--muted)}
+.task-activity-meta strong{font-size:12.5px;font-weight:600;color:var(--ink-strong)}
+.task-activity-meta time{margin-left:auto;white-space:nowrap;font-variant-numeric:tabular-nums}
+.task-activity-markdown{margin-top:5px;font-size:13px;overflow-wrap:anywhere}
+.task-activity-fold{cursor:pointer}
+.task-activity-fold:not(.is-open){max-height:4.8em;overflow:hidden;mask-image:linear-gradient(to bottom,#000 55%,transparent)}
+.task-activity-question{display:flex;flex-direction:column;align-items:flex-start;gap:6px;margin-top:5px;font-size:13px;line-height:1.6;color:var(--ink)}
+.task-activity-question p{margin:0;overflow-wrap:anywhere}
+.task-activity-question pre{max-width:100%;margin:0;overflow:auto;font-size:12px}
+.task-activity-question ol{margin:0;padding-left:20px;list-style:decimal;color:var(--muted)}
+.issue-more{margin-top:8px;border-top:1px solid var(--line);padding-top:8px}
+.issue-more>summary{cursor:pointer;font-size:12.5px;color:var(--muted)}
+.issue-more>.issue-fields{margin-top:8px}
+.task-activity-history li p{margin:5px 0 0;font-size:13px;line-height:1.6;white-space:pre-wrap;overflow-wrap:anywhere;color:var(--ink)}
+/* The hint under a task detail field. */
+.issue-field-hint{display:block;margin-top:3px;font-size:11px;color:var(--muted)}
+/* The agent and skill configuration a run was started with. */

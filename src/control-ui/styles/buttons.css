@@ -1,0 +1,14 @@
+/* Buttons: one height, radius and hairline. Secondary actions sit on the surface, the primary action is ink-inverted, presses settle slightly. */
+.button{display:inline-flex;align-items:center;justify-content:center;gap:6px;min-height:var(--control-h);padding:4px 12px;border:1px solid var(--line-strong);border-radius:var(--radius);background:var(--surface);color:var(--ink-strong);font-size:12.5px;font-weight:500;white-space:nowrap;box-shadow:var(--shadow-1);transition:background-color var(--dur-fast) var(--ease-out),border-color var(--dur-fast) var(--ease-out),color var(--dur-fast) var(--ease-out),box-shadow var(--dur-fast) var(--ease-out),transform var(--dur-fast) var(--ease-out)}
+.button:hover{background:var(--surface-hover)}
+.button:active{transform:scale(.98)}
+.button.small{min-height:26px;padding:3px 10px;gap:5px;font-size:12px}
+.button.primary{border-color:var(--primary);background:var(--primary);color:var(--primary-ink)}
+.button.primary:hover{border-color:var(--primary-hover);background:var(--primary-hover)}
+.button.danger{color:var(--danger)}
+.button.danger:hover{background:color-mix(in srgb,var(--danger) 8%,var(--surface))}
+.button.ghost{border-color:transparent;background:transparent;box-shadow:none}
+.button.ghost:hover{background:var(--surface-hover)}
+.icon-button{display:inline-grid;place-items:center;width:30px;height:30px;padding:0;border:0;border-radius:var(--radius);background:transparent;color:var(--muted);font-size:21px;line-height:1;transition:background-color var(--dur-fast) var(--ease-out),color var(--dur-fast) var(--ease-out),transform var(--dur-fast) var(--ease-out)}
+.icon-button:hover{background:var(--surface-hover);color:var(--ink-strong)}
+.icon-button:active{transform:scale(.94)}

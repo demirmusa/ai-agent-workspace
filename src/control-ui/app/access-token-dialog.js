@@ -1,0 +1,3 @@
+'use strict';
+// Asks for the control server's access token when it requires one.
+function showTokenDialog() {if($('#field-token')) return; showModal(globalThis.AIWSI18n.text('Kontrol merkezine bağlan'),globalThis.AIWSI18n.template`<form><p class="form-hint">Bu sunucu erişim anahtarı istiyor. Anahtar yalnız bu sekmenin oturumunda saklanır.</p>${field(globalThis.AIWSI18n.text('Erişim anahtarı'),'token','','password','required autofocus autocomplete="off"')}${formFooter(globalThis.AIWSI18n.text('Bağlan'))}</form>`,async data=>{const previous=token;token=String(data.get('token')).trim();try{await api('/state');}catch(cause){token=previous;throw cause;} sessionStorage.setItem('aiws.token',token); stream();}); }

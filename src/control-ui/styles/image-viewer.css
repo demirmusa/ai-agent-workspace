@@ -1,0 +1,9 @@
+/* The image viewer dialog and zoomable images. */
+.image-viewer-modal .modal-body{display:flex;padding:0;overflow:hidden}
+.image-viewer{display:flex;flex-direction:column;flex:1;min-height:0}
+.image-viewer-stage{flex:1;min-height:0;display:flex;align-items:center;justify-content:center;overflow:hidden;background:var(--ground);cursor:zoom-in;touch-action:none;user-select:none}
+.image-viewer-stage.zoomed{cursor:grab}
+.image-viewer-stage.is-panning{cursor:grabbing}
+.image-viewer-stage img{max-width:100%;max-height:100%;object-fit:contain;transform-origin:center;will-change:transform}
+.image-viewer-tools{display:flex;gap:6px;margin-left:auto}
+.cv-markdown .cv-image,.description-images img{cursor:zoom-in}

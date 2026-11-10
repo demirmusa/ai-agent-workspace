@@ -1,0 +1,15 @@
+/* List view: the task table with sortable headers and a separate select-all control. */
+.task-list{width:100%;border-collapse:collapse;font-size:13px;min-width:650px}
+.task-list th{text-align:left;color:var(--muted);font-weight:600;font-size:12px;text-transform:none;letter-spacing:0;padding:8px 13px}
+.task-list td{border-top:1px solid var(--line);padding:10px 12px}
+.task-list tbody tr{cursor:pointer}
+.task-list tbody tr:hover{background:var(--surface-hover)}
+.task-list td:nth-child(3){width:45%}
+.task-list th[aria-sort]{padding:0}
+.list-sort{display:inline-flex;align-items:center;gap:6px;width:100%;border:0;background:transparent;color:inherit;font:inherit;font-weight:inherit;text-align:left;padding:8px 12px;cursor:pointer}
+.list-sort:hover,.list-sort.active{color:var(--ink-strong)}
+.list-sort:focus-visible{outline:2px solid var(--focus);outline-offset:-2px}
+.sort-indicator{font-size:9px;opacity:.45}
+.list-sort.active .sort-indicator{opacity:1;color:var(--accent)}
+.task-list .list-select{width:34px;padding:0 4px 0 12px}
+.task-list th.list-select .column-select{flex:none;padding:8px 0}

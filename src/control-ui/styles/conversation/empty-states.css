@@ -1,0 +1,27 @@
+/* Empty and loading states: the agent's sparkle before the first run, shimmering lines while a sub-agent's history loads. */
+.cv-empty{display:flex;flex-direction:column;align-items:center;gap:8px;padding:48px 18px;color:var(--muted);text-align:center}
+.cv-empty-mark{width:36px;height:36px;border-radius:var(--radius-lg);font-size:18px}
+.cv-empty strong{color:var(--ink-strong);font-size:14px;font-weight:600}
+.cv-empty p{max-width:320px;font-size:13px;line-height:1.7}
+.cv-empty-lines{display:flex;flex-direction:column;gap:8px;width:min(360px,100%);margin-bottom:6px}
+.cv-empty-lines>.skeleton{height:10px}
+.cv-empty-lines>.skeleton:nth-child(2){width:82%}
+.cv-empty-lines>.skeleton:nth-child(3){width:58%}
+
+@media(max-width:650px){
+.cv-markdown{font-size:11px}
+.aiws-agent-console .cv-scroll{padding:12px 12px 18px}
+.cv-console-toolbar{gap:6px;padding:6px 8px 6px 10px}
+.cv-toolbar-session{display:none}
+.cv-agent-panel{--agent-step:28px}
+.cv-agent-header,.cv-agent-scroll{padding-left:10px;padding-right:10px}
+.cv-agent-total{display:none}
+.cv-tool-heading{display:block}
+.cv-tool-metrics{display:none}
+.cv-bubble{max-width:90%}
+.cv-assistant>:is(.cv-markdown,.cv-message-tools,.cv-expand,.cv-full-message){margin-left:0}
+.cv-message-tools{opacity:1}
+.cv-prompt-input .cv-composer-footer>span{display:none}
+.cv-command,.cv-output:not(.cv-node){font-size:12px}
+.aiws-agent-console .cv-markdown{font-size:13px}
+}
