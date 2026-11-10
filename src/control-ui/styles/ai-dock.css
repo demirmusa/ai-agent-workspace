@@ -1,0 +1,39 @@
+/* First open: a centred hint over the empty canvas; example prompts fill the composer. */
+.ai-empty{position:absolute;inset:0 0 var(--ai-dock-space);display:grid;place-items:center;padding:24px;pointer-events:none}
+.ai-empty-inner{display:flex;flex-direction:column;align-items:center;gap:8px;max-width:440px;text-align:center;pointer-events:auto}
+.ai-empty-mark{width:44px;height:44px;margin-bottom:6px;border-radius:var(--radius-lg);font-size:22px;box-shadow:var(--shadow-1)}
+.ai-empty h3{margin:0;color:var(--ink-strong);font-size:16px;font-weight:600}
+.ai-empty p{margin:0;color:var(--muted);font-size:13px;line-height:1.55}
+.ai-examples{display:flex;flex-wrap:wrap;justify-content:center;gap:6px;margin-top:10px}
+.ai-example{height:28px;padding:0 12px;border:1px solid var(--line);border-radius:var(--radius-pill);background:var(--surface);color:var(--ink);font-size:12.5px;box-shadow:var(--shadow-1)}
+.ai-example:hover{border-color:var(--line-strong);color:var(--ink-strong)}
+/* The dock: activity, status or retry pill above the composer card, all floating at the bottom centre of the canvas. */
+.ai-dock{position:absolute;left:0;right:0;bottom:18px;z-index:3;display:flex;flex-direction:column;align-items:center;gap:8px;width:min(640px,calc(100% - 32px));margin-inline:auto;pointer-events:none}
+.ai-dock>*{pointer-events:auto}
+.ai-progress{display:flex;flex-direction:column;align-items:center;gap:6px;max-width:100%}
+.ai-progress-pill,.ai-retry-row{display:flex;align-items:center;gap:8px;max-width:100%;min-height:36px;padding:0 4px 0 12px;border:1px solid var(--line);border-radius:var(--radius-pill);background:var(--popover);box-shadow:var(--shadow-pop);font-size:12.5px}
+.ai-progress-pill>.ui-spinner{--spinner-size:13px;color:var(--tone)}
+.ai-progress-pill strong{flex:none;color:var(--ink-strong);font-weight:600}
+.ai-elapsed{flex:none;color:var(--muted);font-variant-numeric:tabular-nums}
+.ai-activity-latest{display:block;flex:1;min-width:0;max-width:240px;overflow:hidden;color:var(--muted);text-overflow:ellipsis;white-space:nowrap}
+.ai-activity-toggle{width:26px;height:26px;font-size:13px}
+.ai-activity-toggle>.ui-icon{transform:rotate(180deg);transition:transform var(--dur) var(--ease-out)}
+.ai-activity-toggle[aria-expanded=true]>.ui-icon{transform:none}
+.ai-activity{width:min(560px,100%);margin:0;list-style:none;color:var(--muted);font-size:12px}
+.ai-activity li{padding:4px 8px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ai-activity li:last-child{color:var(--ink)}
+.ai-retry-row>.ui-icon{color:var(--tone);font-size:14px}
+.ai-retry-row>span{color:var(--ink-strong)}
+.ai-composer{width:100%;padding:14px 12px 10px 16px;border:1px solid var(--line);border-radius:var(--radius-xl);background:var(--surface);box-shadow:var(--shadow-pop);transition:border-color var(--dur-fast) var(--ease-out)}
+.ai-composer:focus-within{border-color:var(--line-strong)}
+.ai-composer textarea,.ai-composer textarea:focus{display:block;width:100%;min-height:48px;max-height:30vh;padding:0 4px 0 0;border:0;border-radius:0;background:transparent;box-shadow:none;color:var(--ink-strong);font-size:15px;line-height:1.55;resize:none;field-sizing:content;transition:opacity var(--dur) var(--ease-out),transform var(--dur) var(--ease-out)}
+/* The sent text lifts away before the field clears; the placeholder then fades back in. */
+.ai-composer textarea.is-sent{opacity:0;transform:translateY(-4px)}
+.ai-images{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.ai-image-chip{display:inline-flex;align-items:center;gap:4px;max-width:200px;height:24px;padding:0 4px 0 8px;border-radius:var(--radius-sm);background:var(--raised);color:var(--ink);font-size:12px}
+.ai-image-chip>span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ai-image-chip button{display:inline-grid;place-items:center;width:18px;height:18px;padding:0;border:0;background:transparent;color:var(--muted);cursor:pointer}
+.ai-composer-actions{display:flex;align-items:center;gap:6px;margin-top:10px}
+#ai-attach{margin-right:auto}
+.ai-send{padding-right:10px}
+.ai-send.is-busy>.ui-icon{display:none}

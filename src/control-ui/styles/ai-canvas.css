@@ -1,0 +1,14 @@
+/* The canvas is a board under the floating dock: AIWSUI.panZoom moves the draft list (zoom from its top left corner) and the dots
+   with it; the AI sheet code keeps --ai-dock-space at the dock's height so a fitted canvas stays above it. */
+.ai-stage{--ai-dock-space:160px;position:relative;flex:1;min-width:0}
+.ai-canvas{position:absolute;inset:0;overflow:hidden;padding:28px 28px var(--ai-dock-space);background-color:var(--ground);cursor:grab;touch-action:none;user-select:none}
+.ai-canvas.is-panning{cursor:grabbing}
+.ai-draft-list{transform-origin:0 0}
+.ai-draft-list.is-easing{transition:transform 440ms var(--ease-out)}
+.ai-draft-list.is-easing>.ai-node{transition:translate 440ms var(--ease-out),opacity var(--dur) var(--ease-out)}
+/* Canvas view controls float at the stage's top right. */
+.ai-zoom{position:absolute;top:12px;right:12px;z-index:3;display:flex;align-items:center;gap:2px;padding:3px;border:1px solid var(--line);border-radius:var(--radius-md);background:var(--popover);box-shadow:var(--shadow-2)}
+.ai-zoom #ai-layout-reset{margin-right:4px}
+.ai-zoom-button{width:26px;height:26px;font-size:15px}
+.ai-zoom-level{min-width:48px;height:26px;padding:0 6px;border:0;border-radius:var(--radius-sm);background:transparent;color:var(--muted);font-size:12px;font-variant-numeric:tabular-nums}
+.ai-zoom-level:hover{background:var(--surface-hover);color:var(--ink-strong)}

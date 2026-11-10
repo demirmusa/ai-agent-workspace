@@ -1,0 +1,65 @@
+/* Sidebar: brand, workspace views, projects with their collapsible archive and the agent library, with the system switch and live status at the bottom. The active entry rests on a raised pill with an accent mark at the sidebar edge that render() glides between entries of one list. Collapsed, the sidebar keeps the icons and project tiles; below 760 px it becomes a strip above the header. */
+.sidebar{display:flex;flex-direction:column;min-width:0;min-height:0;padding:12px 0 10px;background:var(--sidebar);border-right:1px solid var(--line)}
+.brand-row{display:flex;align-items:center;height:36px;margin:0 0 14px;padding:0 14px}
+.brand{display:flex;align-items:center;gap:10px;min-width:0;color:var(--ink-strong);font-size:14.5px;font-weight:650;letter-spacing:-.2px;line-height:1.15}
+.brand-symbol{display:grid;place-items:center;flex:none;width:28px;height:28px;overflow:hidden;border-radius:var(--radius)}
+.brand-symbol img{display:block;width:100%;height:100%}
+.workspace-navigation,#project-list,.library-nav,.sidebar-bottom{display:flex;flex-direction:column;gap:1px;padding:0 8px}
+#project-list{flex:0 1 auto;min-height:0;overflow:auto}
+.sidebar-label{display:flex;align-items:center;justify-content:space-between;height:28px;margin-top:16px;padding:0 10px 0 18px;font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--faint)}
+.sidebar-label .icon-button{width:22px;height:22px;border-radius:var(--radius-sm);font-size:14px}
+.nav-item{position:relative;display:flex;align-items:center;gap:9px;width:100%;min-width:0;height:30px;padding:0 8px 0 10px;border:0;border-radius:var(--radius);background:transparent;color:var(--ink);font-size:13px;text-align:left;transition:background-color var(--dur-fast) var(--ease-out),color var(--dur-fast) var(--ease-out)}
+.nav-item:hover{background:var(--surface-hover);color:var(--ink-strong)}
+.nav-item:focus-visible{outline-offset:-2px}
+.nav-item.dragging{opacity:.4}
+.nav-item.drop-before::after,.nav-item.drop-after::after{content:"";position:absolute;left:8px;right:8px;height:2px;border-radius:1px;background:var(--accent)}
+.nav-item.drop-before::after{top:-1px}
+.nav-item.drop-after::after{bottom:-1px}
+.nav-item.drop-into{box-shadow:inset 0 0 0 1px var(--accent)}
+.project-archive,.project-archive-list{display:flex;flex-direction:column;gap:1px}
+.project-archive{margin-top:6px}
+.project-archive-toggle{color:var(--muted)}
+.project-archive-chevron{display:grid;place-items:center;flex:none;color:var(--faint);transform:rotate(-90deg);transition:transform var(--dur-fast) var(--ease-out)}
+.project-archive-toggle[aria-expanded=true] .project-archive-chevron{transform:none}
+.nav-item.active{background:var(--raised);color:var(--ink-strong);font-weight:500}
+.nav-item.active::before{content:"";position:absolute;left:-8px;top:50%;width:3px;height:16px;margin-top:-8px;border-radius:0 3px 3px 0;background:var(--accent)}
+.nav-icon{display:grid;place-items:center;flex:none;width:18px;height:18px;color:var(--muted);transition:color var(--dur-fast) var(--ease-out)}
+.nav-item:hover .nav-icon{color:var(--ink)}
+.nav-item.active .nav-icon{color:var(--accent)}
+.nav-label,.project-name{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.nav-count{flex:none;min-width:16px;margin-left:auto;font-size:11.5px;font-variant-numeric:tabular-nums;text-align:right;color:var(--faint)}
+.nav-item.active .nav-count{color:var(--muted)}
+.project-icon{display:grid;place-items:center;flex:none;width:20px;height:20px;border-radius:var(--radius-sm);background:var(--raised);color:var(--muted);font-size:10px;font-weight:600;letter-spacing:.02em;line-height:1}
+.project-icon>.ui-icon{font-size:12px}
+.nav-item.active .project-icon{background:var(--accent);color:var(--accent-ink)}
+.sidebar-bottom{margin-top:auto;padding-top:8px;border-top:1px solid var(--line)}
+.system-control{cursor:pointer}
+.system-control .ui-switch{margin:0 1px}
+.system-control .ui-switch:indeterminate::before{transform:translateX(6px)}
+.system-control .ui-spinner{--spinner-size:12px;color:var(--muted)}
+.sidebar-status{display:flex;flex-direction:column;gap:3px;padding:8px 10px 2px}
+.connection{display:flex;align-items:center;gap:8px;min-width:0;font-size:12px;color:var(--muted)}
+.connection>span:last-child{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.connection>.ui-dot{--dot-size:6px;margin:0 1px}
+.live-indicator.running{color:var(--tone-running)}
+.sidebar-collapsed .sidebar-label,.sidebar-collapsed .project-archive-chevron,.sidebar-collapsed .brand-name,.sidebar-collapsed .nav-label,.sidebar-collapsed .project-name,.sidebar-collapsed .nav-count,.sidebar-collapsed .sidebar-status,.sidebar-collapsed .system-control .ui-spinner{display:none}
+.sidebar-collapsed .brand-row{justify-content:center;padding:0}
+.sidebar-collapsed .nav-item{justify-content:center;padding:0}
+.sidebar-collapsed #project-list{margin-top:12px}
+.sidebar-collapsed .library-nav{margin-top:12px;padding-top:12px;border-top:1px solid var(--line)}
+.project-dots{display:inline-flex;align-items:center;gap:4px}
+.sidebar-collapsed #project-list .project-dots{position:absolute;top:4px;right:8px}
+@media(max-width:760px){
+.brand-row{height:auto;margin:0;padding:0}
+.brand-name,.sidebar-label,.sidebar-status,.nav-count,.nav-item.active::before,.nav-item .project-icon{display:none}
+.workspace-navigation,#project-list,.project-archive,.project-archive-list,.library-nav,.sidebar-bottom{flex-direction:row;gap:2px;padding:0}
+.project-archive{margin:0}
+#project-list,.library-nav{grid-column:1/-1;overflow-x:auto;scrollbar-width:none}
+.sidebar-bottom{grid-column:3;grid-row:1;margin:0;padding:0;border:0}
+.sidebar-bottom .nav-label{display:none}
+.nav-item{flex:none;width:auto;height:28px;padding:0 8px;font-size:12.5px}
+.project-name{max-width:140px}
+.sidebar-collapsed #project-list,.sidebar-collapsed .library-nav,.sidebar-collapsed .sidebar-bottom{display:none}
+.sidebar-collapsed .workspace-navigation .nav-item{padding:0 8px}
+.sidebar-collapsed .workspace-navigation .nav-label{display:block}
+}

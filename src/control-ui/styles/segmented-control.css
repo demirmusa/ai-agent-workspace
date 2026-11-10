@@ -1,0 +1,8 @@
+/* Tabs: a .view-tab is a quiet tab; inside .view-tabs (a sunken track) the active tab rises onto the surface (Board | List). */
+.view-tab{display:flex;align-items:center;gap:7px;min-height:24px;padding:3px 10px;border:0;border-radius:var(--radius-sm);background:none;color:var(--muted);font-size:12.5px}
+.view-tab:hover{color:var(--ink-strong)}
+.view-tab.active{background:var(--raised);color:var(--ink-strong)}
+.view-tab:disabled{opacity:.4;cursor:not-allowed}
+.view-tabs{display:flex;align-items:center;gap:2px;padding:3px;border-radius:calc(var(--radius-sm) + 3px);background:var(--track)}
+.view-tabs>.view-tab{min-height:26px;padding:3px 11px;transition:background-color var(--dur-fast) var(--ease-out),color var(--dur-fast) var(--ease-out),box-shadow var(--dur-fast) var(--ease-out)}
+.view-tabs>.view-tab.active{background:var(--surface);box-shadow:var(--shadow-1)}

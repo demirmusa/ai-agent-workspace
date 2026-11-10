@@ -1,0 +1,28 @@
+/* Composer, unread pill, read-only footer and the real terminal. */
+.cv-composer{flex:none;margin:0;padding:10px 14px 12px;border-top:1px solid var(--line);background:var(--ground)}
+.cv-prompt-input{display:flex;flex-direction:column;align-items:stretch;gap:6px;padding:10px 12px 8px;border:1px solid var(--line-strong);border-radius:var(--radius-lg);background:var(--input);transition:border-color var(--dur-fast) var(--ease-out),box-shadow var(--dur-fast) var(--ease-out)}
+.cv-prompt-input:focus-within{border-color:var(--focus);box-shadow:var(--ring)}
+.cv-prompt-input textarea,.cv-prompt-input textarea:focus{display:block;width:100%;min-height:24px;max-height:220px;margin:0;padding:0;overflow-y:auto;resize:none;border:0;border-radius:0;outline:none;box-shadow:none;background:transparent;color:var(--ink);font:13.5px/1.6 var(--font-ui)}
+.cv-composer-footer{display:flex;align-items:center;gap:10px}
+.cv-composer-footer>span{flex:1;min-width:0;color:var(--muted);font-size:12px;line-height:1.5}
+.cv-composer-footer kbd{margin-left:5px}
+.cv-composer-footer>.button{flex:none}
+.cv-send-error{margin-top:8px;color:var(--danger);font-size:12px}
+.cv-unread{position:absolute;z-index:2;bottom:12px;left:50%;max-width:calc(100% - 24px);padding:6px 13px;border:0;border-radius:var(--radius-pill);background:var(--primary);color:var(--primary-ink);box-shadow:var(--shadow-2);font:500 12.5px var(--font-ui);transform:translateX(-50%);transition:opacity var(--dur-slow) var(--ease-out),transform var(--dur-slow) var(--ease-out),display var(--dur-slow) allow-discrete}
+/* The jump-to-latest pill rises in and sinks back out like the toast. */
+.cv-unread[hidden]{opacity:0;transform:translate(-50%,8px);pointer-events:none;transition-duration:var(--dur)}
+@starting-style{.cv-unread:not([hidden]){opacity:0;transform:translate(-50%,8px)}}
+.cv-native-mode .cv-unread{bottom:96px}
+.cv-history-footer{display:flex;flex-wrap:wrap;align-items:center;gap:12px;flex:none;padding:10px 14px;border-top:1px solid var(--line);background:var(--ground)}
+.cv-history-footer>div{display:flex;flex-direction:column;gap:2px;flex:1;min-width:150px}
+.cv-history-footer strong{color:var(--ink-strong);font-size:13px;font-weight:600}
+.cv-history-footer span{color:var(--muted);font-size:12.5px}
+.cv-history-footer [role=alert]{flex-basis:100%;margin:0;color:var(--danger);font-size:12px}
+.cv-native-terminal{display:flex;flex-direction:column;flex:1;min-height:120px;background:var(--terminal)}
+.cv-terminal-notice{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:8px;flex:none;padding:6px 14px;border-bottom:1px solid var(--line);background:var(--ground);color:var(--muted);font-size:12.5px;line-height:1.6}
+.cv-terminal-notice button{padding:0;border:0;background:none;color:var(--warning);font:500 12.5px var(--font-ui);text-align:left}
+.cv-terminal-host{flex:1;width:100%;height:auto;min-height:0;padding:5px 4px;overflow:hidden}
+.cv-terminal-host>.terminal-instance{width:100%;height:100%;min-height:120px}
+.cv-native-mode .cv-console-toolbar{min-height:40px}
+.cv-native-mode .cv-terminal-notice{padding:4px 9px;font-size:12px}
+.cv-native-mode .cv-terminal-host{padding:0}

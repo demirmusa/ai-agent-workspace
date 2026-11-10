@@ -1,0 +1,16 @@
+/* Vertical settings tabs with the gliding pill behind the active tab. */
+.settings-tab-pill{position:absolute;top:0;left:0;right:0;border-radius:var(--radius);background:var(--surface);box-shadow:var(--shadow-1);pointer-events:none}
+.settings-tabs:has(>.settings-tab-pill:not([hidden]))>.settings-tab[aria-selected=true]{background:transparent;box-shadow:none}
+.settings-tab-icon{display:grid;place-items:center;flex:none;width:22px;height:22px;border:1px solid var(--line);border-radius:var(--radius-sm);background:var(--surface);font-size:13px}
+.settings-tabs{position:sticky;top:0;display:flex;flex-direction:column;gap:2px}
+.settings-tab{position:relative;display:flex;align-items:center;gap:10px;width:100%;padding:7px 10px;border:0;border-radius:4px;background:none;color:var(--muted);font-size:13px;text-align:left}
+.settings-tab>span:first-child{width:16px;text-align:center;opacity:.8}
+.settings-tab:hover{background:var(--surface-hover);color:var(--ink-strong)}
+.settings-tab[aria-selected=true]{background:var(--raised);color:var(--ink-strong);box-shadow:inset 2px 0 0 var(--accent)}
+.settings-tab.danger[aria-selected=true]{box-shadow:inset 2px 0 0 var(--danger)}
+.settings-tab.danger:hover,.settings-tab.danger[aria-selected=true]{color:var(--danger)}
+@media(max-width:760px){
+.settings-tabs{position:static;flex-direction:row;overflow-x:auto;border-bottom:1px solid var(--line);scrollbar-width:none}
+.settings-tab{width:auto;flex-shrink:0;border-radius:0;white-space:nowrap}
+.settings-tab[aria-selected=true],.settings-tab.danger[aria-selected=true]{background:none;box-shadow:inset 0 -2px 0 currentColor}
+}

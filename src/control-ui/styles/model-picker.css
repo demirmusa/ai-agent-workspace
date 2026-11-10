@@ -1,0 +1,75 @@
+/* Model picker: one chip opens one panel for the model and its reasoning level, while the native select and inputs stay the form's
+   source of truth. Rows rate speed, quality and cost on five-segment meters that sweep to the accent for the active row (or the
+   chosen one while none is active); the panel is fixed to the viewport so a scrolling dialog never clips it. The board card's
+   agent chip shares the chip look. */
+.model-trigger{display:inline-flex;align-items:center;gap:7px;min-width:0;max-width:100%;padding:0 8px 0 4px;border:1px solid transparent;border-radius:var(--radius);background:transparent;text-align:left;line-height:1.2}
+.model-trigger.is-field{width:100%;min-height:32px;padding:3px 9px 3px 5px;border-color:var(--line-strong);background:var(--input);color:var(--ink);font-size:13px}
+.model-trigger.is-field:is(:focus-visible,[aria-expanded=true]){outline:0;border-color:var(--focus);box-shadow:var(--ring)}
+.model-trigger.composer-chip{min-height:26px;padding:0 6px 0 4px}
+.model-trigger.ai-select-chip{gap:5px;padding:0 6px 0 3px}
+.model-trigger-icon{display:contents}
+.model-trigger-icon>:is(.ui-icon-box,.provider-icon){width:20px;height:20px;border-radius:6px;font-size:11px}
+.model-trigger-icon>.provider-icon img{width:15px;height:15px}
+:is(.composer-chip,.ai-select-chip) .model-trigger-icon>:is(.ui-icon-box,.provider-icon){width:18px;height:18px;border-radius:5px;font-size:10px}
+.model-trigger-label{flex:0 1 auto;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.model-trigger-level{display:inline-flex;align-items:center;gap:3px;flex:none;color:var(--accent);font-size:12px;font-weight:500}
+.model-chevron{display:inline-flex;flex:none;margin-left:auto;color:var(--muted);transition:transform var(--dur) var(--ease-out)}
+.model-trigger[aria-expanded=true] .model-chevron{transform:rotate(180deg)}
+.model-menu.popup-menu{position:fixed;z-index:6;display:flex;flex-direction:column;width:max-content;max-width:calc(100vw - 16px);padding:0;overflow:hidden}
+.model-menu-body{display:grid;grid-template-columns:auto minmax(0,1fr);flex:1 1 auto;min-height:0}
+.model-menu-main{display:flex;flex-direction:column;min-width:0;min-height:0}
+.model-providers{display:flex;flex-direction:column;min-height:0;overflow-y:auto;overscroll-behavior:contain;padding:0 5px 5px;border-right:1px solid var(--line)}
+.model-provider{display:flex;align-items:center;gap:8px;width:100%;min-height:34px;padding:4px 8px;border:0;border-radius:var(--radius);background:transparent;color:var(--ink);text-align:left;white-space:nowrap}
+.model-provider:disabled{opacity:.5;cursor:not-allowed}
+.model-provider>:is(.ui-icon-box,.provider-icon){flex:none;width:20px;height:20px;border-radius:6px;font-size:11px}
+.model-provider>.provider-icon img{width:15px;height:15px}
+.model-provider-text{display:flex;flex-direction:column;flex:1;min-width:0;color:var(--ink-strong);font-size:13px}
+.model-provider-text small{color:var(--muted);font-size:11.5px}
+.model-provider[aria-checked=true] .model-check{display:inline-flex}
+.model-menu-empty{margin:0;padding:10px 14px;color:var(--muted);font-size:12.5px}
+.model-menu.is-above{transform-origin:bottom}
+.model-menu-head{display:flex;align-items:center;gap:8px;flex:none;padding:10px 14px 4px;color:var(--muted);font-size:10.5px;font-weight:600;letter-spacing:.06em;text-transform:uppercase}
+.model-menu-head>span:first-child{flex:1}
+.model-meter-heads,.model-meters{display:grid;grid-template-columns:repeat(3,44px);gap:8px;justify-items:center;flex:none;white-space:nowrap}
+.model-menu-list{position:relative;flex:1 1 auto;min-height:0;overflow-y:auto;overscroll-behavior:contain;padding:0 5px 5px}
+.model-option{display:flex;align-items:center;gap:10px;width:100%;min-height:40px;padding:4px 9px;border:0;border-radius:var(--radius);background:transparent;color:var(--ink);text-align:left}
+.model-option-text{display:flex;flex-direction:column;gap:1px;flex:1;min-width:0}
+.model-option-name{display:flex;align-items:center;gap:5px;min-width:0;color:var(--ink-strong);font-size:13px;font-weight:500;transition:opacity var(--dur-fast) var(--ease-out)}
+.model-option-name>span:first-child{min-width:0;overflow-wrap:anywhere}
+.model-menu-list:has(.model-option:focus) .model-option:not(:focus) .model-option-name{opacity:.6}
+.model-check{display:none;flex:none;color:var(--accent);font-size:12px}
+.model-option[aria-checked=true] .model-check{display:inline-flex}
+.model-option-note{min-width:0;overflow-wrap:anywhere;color:var(--muted);font-size:12px}
+.model-option-note.is-mono{color:var(--faint);font:11.5px var(--font-mono)}
+.model-option-varies{flex:none;width:148px;color:var(--faint);font-size:12px;text-align:center}
+/* A meter is one element: the background paints neutral and empty segments, the mask cuts the gaps, and an accent layer scales in from
+   the left (speed, then quality, then cost) when its row is active, then fades out when it is not. */
+.model-meter{--i:0;position:relative;width:38px;height:4px;border-radius:1px;background:linear-gradient(90deg,var(--viz-3) calc(var(--n)*8px),var(--track) 0);-webkit-mask:repeating-linear-gradient(90deg,currentColor 0 6px,transparent 0 8px);mask:repeating-linear-gradient(90deg,currentColor 0 6px,transparent 0 8px)}
+.model-meter+.model-meter{--i:1}
+.model-meter+.model-meter+.model-meter{--i:2}
+.model-meter::after{content:"";position:absolute;inset:0 auto 0 0;width:calc(var(--n)*8px);background:var(--accent);opacity:0;transform:scaleX(0);transform-origin:left;transition:opacity var(--dur-fast) var(--ease-out),transform 0s linear var(--dur-fast)}
+.model-option:focus .model-meter::after,.model-menu-list:not(:has(.model-option:focus)) .model-option[aria-checked=true] .model-meter::after{opacity:1;transform:none;transition:opacity 0s linear calc(var(--i)*60ms),transform var(--dur-slow) var(--ease-out) calc(var(--i)*60ms)}
+.model-custom{flex:none;padding:0 14px 8px 48px}
+.model-custom>input{width:100%;padding:6px 9px;font:12.5px var(--font-mono)}
+.model-reasoning{flex:none;padding:4px 5px;border-top:1px solid var(--line)}
+.model-toggle{display:flex;align-items:center;gap:10px;min-height:36px;padding:5px 9px;border-radius:var(--radius);color:var(--ink);font-size:13px;cursor:pointer}
+.model-toggle-icon{display:inline-grid;place-items:center;flex:none;width:24px;color:var(--muted);font-size:16px}
+.model-toggle:has(:checked) .model-toggle-icon{color:var(--ink-strong)}
+.model-toggle-text{flex:1;min-width:0}
+.model-reasoning.is-model-level .ui-switch{display:none}
+.model-levels{display:grid;grid-template-rows:0fr;opacity:0;transition:grid-template-rows var(--dur) var(--ease-out),opacity var(--dur) var(--ease-out)}
+.model-levels.is-open{grid-template-rows:1fr;opacity:1}
+.model-levels>div{min-height:0;overflow:hidden}
+.model-levels-row{display:flex;align-items:center;gap:10px;padding:2px 9px 6px 43px;color:var(--muted);font-size:12.5px}
+.model-levels-row>span{flex:1}
+.model-levels-row>.view-tabs>.view-tab{min-height:24px;padding:2px 9px;font-size:12px}
+.model-menu-foot{display:flex;align-items:center;gap:10px;flex:none;min-height:36px;padding:6px 10px 6px 14px;border-top:1px solid var(--line);color:var(--muted);font-size:12px}
+.model-menu-hint{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.model-menu-hint.is-mono{font:11.5px var(--font-mono)}
+.model-menu-keys{display:inline-flex;gap:4px;flex:none}
+@media(max-width:560px){
+.model-menu-body{grid-template-columns:minmax(0,1fr);grid-template-rows:auto minmax(0,1fr)}
+.model-providers{flex-direction:row;overflow:auto hidden;padding:5px;border-right:0;border-bottom:1px solid var(--line)}
+.model-providers>.model-menu-head{display:none}
+.model-provider{width:auto}
+}

@@ -1,0 +1,17 @@
+/* Compact, local Markdown editor. */
+:is(.task-editor-modal,.issue-description-editor) .EasyMDEContainer{min-width:0}
+:is(.task-editor-modal,.issue-description-editor) .editor-toolbar{border-color:var(--line);background:var(--surface);opacity:1;border-radius:4px 4px 0 0;padding:5px}
+:is(.task-editor-modal,.issue-description-editor) .editor-toolbar button{color:var(--ink)!important;min-width:30px;width:auto;padding:0 8px;font-family:inherit}
+:is(.task-editor-modal,.issue-description-editor) .editor-toolbar button:hover,:is(.task-editor-modal,.issue-description-editor) .editor-toolbar button.active{background:var(--surface-hover);border-color:var(--line)}
+:is(.task-editor-modal,.issue-description-editor) .CodeMirror,:is(.task-editor-modal,.issue-description-editor) .editor-preview{background:var(--ground);color:var(--ink);border-color:var(--line);font-family:inherit;font-size:14px;line-height:1.6}
+:is(.task-editor-modal,.issue-description-editor) .CodeMirror-cursor{border-left-color:var(--ink)}
+:is(.task-editor-modal,.issue-description-editor) .CodeMirror-selected{background:var(--line)}
+:is(.task-editor-modal,.issue-description-editor) .editor-preview img{max-width:100%;max-height:300px;object-fit:contain}
+:is(.task-editor-modal,.issue-description-editor) .description-images:not(:empty){display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
+:is(.task-editor-modal,.issue-description-editor) .description-images img{max-width:220px;max-height:160px;object-fit:contain;border:1px solid var(--line);border-radius:6px;background:var(--ground)}
+:is(.task-editor-modal,.issue-description-editor) .editor-toolbar i.separator{border-color:var(--line)}
+:is(.task-editor-modal,.issue-description-editor) .EasyMDEContainer .CodeMirror-focused .CodeMirror-selected,:is(.task-editor-modal,.issue-description-editor) .CodeMirror-line::selection,:is(.task-editor-modal,.issue-description-editor) .CodeMirror-line>span::selection{background:var(--selection)}
+:is(.task-editor-modal,.issue-description-editor) .CodeMirror-gutters,:is(.task-editor-modal,.issue-description-editor) .CodeMirror-scrollbar-filler,:is(.task-editor-modal,.issue-description-editor) .CodeMirror-gutter-filler{background:var(--ground);border-color:var(--line)}
+:is(.task-editor-modal,.issue-description-editor) .editor-toolbar.fullscreen,:is(.task-editor-modal,.issue-description-editor) .EasyMDEContainer .CodeMirror-fullscreen{background:var(--ground)}
+.issue-description-editor,.issue-description-editor .EasyMDEContainer{width:100%;box-sizing:border-box}
+.detail-information .issue-description-view{max-width:none}

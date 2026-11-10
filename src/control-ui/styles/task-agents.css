@@ -1,0 +1,33 @@
+/* Agents that worked on one task, and the prompt to continue with another agent. */
+.task-agent-sessions{flex:none;max-height:190px;overflow:auto;padding:6px 11px 7px;border-bottom:1px solid var(--line);background:var(--sidebar)}
+.task-agent-sessions>header{display:flex;align-items:baseline;gap:10px;padding:3px 4px 6px;font-size:12px;color:var(--muted)}
+.task-agent-sessions>header strong{font-weight:600;color:var(--ink)}
+.task-agent-sessions>header span{margin-left:auto;font-size:11px}
+.task-agent-row{display:flex;align-items:center;gap:8px;width:100%;min-width:0;border:0;border-radius:4px;background:transparent;color:var(--muted);text-align:left;padding:5px 6px;cursor:pointer;font:inherit}
+.task-agent-row:hover{background:var(--surface-hover);color:var(--ink)}
+.task-agent-row[aria-pressed=true]{background:var(--selection);color:var(--ink-strong)}
+.task-agent-row:focus-visible{outline:2px solid var(--focus);outline-offset:-2px}
+.task-agent-index{flex:none;width:18px;height:18px;border-radius:50%;display:grid;place-items:center;font-size:10px;background:var(--raised);color:var(--muted)}
+.task-agent-icon{flex:none;width:16px;height:16px}
+.task-agent-name{flex:1;min-width:0;display:flex;gap:8px;align-items:baseline}
+.task-agent-name strong{font-size:12.5px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.task-agent-name small{font-size:11px;opacity:.8;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.task-agent-status,.task-agent-row time{flex:none;font-size:11px;white-space:nowrap;font-variant-numeric:tabular-nums}
+.task-agent-row[data-status=running] .task-agent-status,.task-agent-row[data-status=completed] .task-agent-status{color:var(--success)}
+.task-agent-row[data-status=waiting] .task-agent-status{color:var(--warning)}
+.task-agent-row[data-status=failed] .task-agent-status{color:var(--danger)}
+.handoff-notice{flex:none;display:flex;flex-direction:column;gap:9px;padding:11px 14px;border-bottom:1px solid var(--line);border-left:3px solid var(--warning);background:var(--surface);font-size:12.5px}
+.handoff-notice-text{display:flex;flex-direction:column;gap:3px}
+.handoff-notice-text strong{font-weight:600;color:var(--ink-strong)}
+.handoff-notice-text small{color:var(--muted);overflow-wrap:anywhere}
+.handoff-notice-controls{display:flex;flex-wrap:wrap;align-items:center;gap:8px}
+.handoff-notice-controls>select{min-width:0;flex:0 1 170px}
+.handoff-notice-controls>.model-trigger{flex:1 1 200px;width:auto}
+.handoff-notice-actions{display:flex;gap:8px;flex:none}
+.handoff-notice-error{color:var(--danger);margin:0}
+@media(max-width:650px){
+.task-agent-name{display:block}
+.task-agent-name small{display:none}
+.task-agent-row time{display:none}
+.handoff-notice-actions{width:100%}
+}

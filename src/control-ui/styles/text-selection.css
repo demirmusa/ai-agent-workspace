@@ -1,0 +1,3 @@
+/* Native text selection also applies to labels inside buttons. xterm owns its selection layer, so leave its canvas and helper textarea to the terminal. */
+body, body :not(.terminal-instance):not(.terminal-instance *){-webkit-user-select:text;user-select:text}
+body .task-card, body .task-card :not(.terminal-instance), body .file-row, body .file-row *{-webkit-user-select:none;user-select:none}

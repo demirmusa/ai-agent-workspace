@@ -1,0 +1,25 @@
+/* Same height as the other header buttons; the picker draws its own chevron so it keeps room on its right. */
+.run-control{position:relative;display:inline-flex;align-items:stretch;height:28px}
+.run-control select{max-width:180px;height:28px;min-height:0;padding:0 24px 0 9px;border-right-width:0;border-radius:var(--radius) 0 0 var(--radius);font-size:12.5px;text-overflow:ellipsis;appearance:none;-webkit-appearance:none;background-image:linear-gradient(45deg,transparent 50%,var(--muted) 50%),linear-gradient(135deg,var(--muted) 50%,transparent 50%);background-position:calc(100% - 13px) 50%,calc(100% - 9px) 50%;background-size:4px 4px;background-repeat:no-repeat}
+.run-control .button{height:28px;min-height:0;padding:0 11px 0 9px;border-radius:0 var(--radius) var(--radius) 0;font-size:12.5px}
+.run-control.single .button{max-width:260px;border-radius:var(--radius)}
+.run-script-icon{width:12px;height:12px;color:var(--tone-done)}
+#run-script-label{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.run-args-popover{position:absolute;z-index:6;top:calc(100% + 8px);right:0;width:min(480px,calc(100vw - 24px));max-height:calc(100vh - 76px);overflow-y:auto;overscroll-behavior:contain;padding:12px}
+.run-args-popover form{display:grid;gap:7px}
+.run-args-label{font-size:12px;font-weight:600;color:var(--ink-strong)}
+.run-args-label span{font-weight:400;color:var(--muted)}
+.run-args-popover textarea{width:100%;min-height:52px;resize:vertical;padding:7px 8px;font-family:var(--font-mono);font-size:12px}
+.run-args-fields{display:grid;gap:6px}
+.run-args-param{display:grid;grid-template-columns:130px minmax(0,1fr);gap:10px;align-items:center;font-size:12px;color:var(--ink-strong)}
+.run-args-param>span{min-width:0;overflow-wrap:anywhere}
+.run-args-param small{display:block;margin-top:1px}
+.run-args-param input:not([type=checkbox]){width:100%;min-height:28px;padding:4px 7px;font-size:12px}
+.run-args-param input[type=checkbox]{justify-self:start}
+.run-args-popover small{font-size:11px;line-height:1.4;color:var(--muted)}
+.run-args-actions{display:flex;justify-content:flex-end;margin-top:2px}
+.run-args-history{display:grid;gap:2px;max-height:160px;overflow:auto}
+.run-args-history-row{display:flex;align-items:center;min-width:0}
+.run-args-history-remove{flex:none;width:28px;height:28px}
+.run-args-history-item{flex:1;min-width:0;width:100%;padding:6px 8px;border:0;border-radius:var(--radius-sm);background:transparent;color:var(--ink);font-size:12px;text-align:left;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;cursor:pointer}
+.run-args-history-item:hover,.run-args-history-item:focus-visible{background:var(--raised);color:var(--ink-strong);outline:0}

@@ -1,0 +1,144 @@
+name: "{{COMPOSE_PROJECT_NAME}}"
+
+services:
+  runner:
+    image: "{{RUNNER_IMAGE}}"
+    build:
+      context: "{{RUNTIME_DIR}}"
+      dockerfile: Dockerfile.runner
+      args:
+        RUNNER_VERSION: "{{GITHUB_RUNNER_VERSION}}"
+        RUNNER_UID: "{{RUNTIME_UID}}"
+        RUNNER_GID: "{{RUNTIME_GID}}"
+        DOCKER_GID: "{{DOCKER_GID}}"
+    container_name: "{{RUNNER_CONTAINER_NAME}}"
+    restart: unless-stopped
+    stop_grace_period: 30s
+    read_only: true
+    environment:
+      AIWS_REPOSITORY: "{{REPOSITORY}}"
+      AIWS_RUNNER_NAME: "{{RUNNER_NAME}}"
+      AIWS_RUNNER_LABELS: "{{RUNNER_LABELS}}"
+      AIWS_RUNNER_PAT_FILE: /run/secrets/runner_pat
+      AIWS_RUNNER_STATE_DIR: /var/lib/aiws/runner
+      AIWS_RUNNER_WORK_ROOT: /var/lib/aiws/work
+      AIWS_RUNTIME_IO_ROOT: /var/lib/aiws/io
+      AIWS_WORKSPACE_VOLUME: "{{WORKSPACE_VOLUME}}"
+      AIWS_RUNTIME_IO_VOLUME: "{{RUNTIME_IO_VOLUME}}"
+      AIWS_CLAUDE_AUTH_VOLUME: "{{CLAUDE_AUTH_VOLUME}}"
+      AIWS_CODEX_AUTH_VOLUME: "{{CODEX_AUTH_VOLUME}}"
+      AIWS_OPENCODE_AUTH_VOLUME: "{{OPENCODE_AUTH_VOLUME}}"
+      AIWS_AGENT_IMAGE: "{{AGENT_IMAGE}}"
+    secrets:
+      - source: runner_pat
+        target: runner_pat
+        uid: "0"
+        gid: "0"
+        mode: 0400
+    volumes:
+      - runner_state:/var/lib/aiws/runner
+      - workspace:/var/lib/aiws/work
+      - runtime_io:/var/lib/aiws/io
+      - /var/run/docker.sock:/var/run/docker.sock
+    tmpfs:
+      - /tmp:rw,noexec,nosuid,size=256m
+      - /run:rw,nosuid,size=16m
+      - /home/runner/.docker:rw,nosuid,size=128m
+      - /home/runner/.config:rw,nosuid,size=16m
+    cap_drop:
+      - ALL
+    cap_add:
+      - CHOWN
+      - DAC_OVERRIDE
+      - FOWNER
+      - KILL
+      - SETGID
+      - SETUID
+    security_opt:
+      - no-new-privileges:true
+    mem_limit: "{{RUNNER_MEMORY}}"
+    cpus: "{{RUNNER_CPUS}}"
+    pids_limit: {{RUNNER_PIDS}}
+
+  # Build target only; no long-running agent service exists. Jobs use a fresh container.
+  agent-image:
+    image: "{{AGENT_IMAGE}}"
+    build:
+      context: "{{RUNTIME_DIR}}"
+      dockerfile: Dockerfile.agent
+      args:
+        AGENT_UID: "{{RUNTIME_UID}}"
+        AGENT_GID: "{{RUNTIME_GID}}"
+        CLAUDE_CODE_VERSION: "{{CLAUDE_CODE_VERSION}}"
+        CODEX_CLI_VERSION: "{{CODEX_CLI_VERSION}}"
+        OPENCODE_VERSION: "{{OPENCODE_VERSION}}"
+    profiles: ["build"]
+    entrypoint: ["/bin/true"]
+
+  queue-poller:
+    image: "{{RUNNER_IMAGE}}"
+    container_name: "{{POLLER_CONTAINER_NAME}}"
+    restart: unless-stopped
+    stop_grace_period: 15s
+    read_only: true
+    depends_on:
+      runner:
+        condition: service_started
+    entrypoint: ["/usr/bin/dumb-init", "--", "/opt/aiws/bin/queue-poller.sh"]
+    environment:
+      AIWS_REPOSITORY: "{{REPOSITORY}}"
+      AIWS_DEFAULT_BRANCH: "{{DEFAULT_BRANCH}}"
+      AIWS_PROJECT_TOKEN_FILE: /run/secrets/project_token
+      AIWS_AUTOMATION_TOKEN_FILE: /run/secrets/automation_token
+      AIWS_SCHEDULER_STATE_DIR: /var/lib/aiws/scheduler
+      AIWS_QUEUE_WORKFLOW: "{{QUEUE_WORKFLOW}}"
+      AIWS_RUN_WORKFLOW: "{{RUN_WORKFLOW}}"
+      AIWS_ORGANIZE_WORKFLOW: aiws-agent-organize.yml
+      AIWS_POLL_SECONDS: "{{POLL_SECONDS}}"
+    secrets:
+      - source: automation_token
+        target: automation_token
+        uid: "0"
+        gid: "0"
+        mode: 0400
+      - source: project_token
+        target: project_token
+        uid: "0"
+        gid: "0"
+        mode: 0400
+    volumes:
+      - scheduler_state:/var/lib/aiws/scheduler
+    tmpfs:
+      - /tmp:rw,noexec,nosuid,size=32m
+      - /run:rw,nosuid,size=8m
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+    mem_limit: "{{POLLER_MEMORY}}"
+    cpus: "{{POLLER_CPUS}}"
+    pids_limit: {{POLLER_PIDS}}
+
+secrets:
+  runner_pat:
+    file: "{{RUNNER_TOKEN_FILE}}"
+  project_token:
+    file: "{{PROJECT_TOKEN_FILE}}"
+  automation_token:
+    file: "{{AUTOMATION_TOKEN_FILE}}"
+
+volumes:
+  runner_state:
+    name: "{{RUNNER_STATE_VOLUME}}"
+  workspace:
+    name: "{{WORKSPACE_VOLUME}}"
+  runtime_io:
+    name: "{{RUNTIME_IO_VOLUME}}"
+  claude_auth:
+    name: "{{CLAUDE_AUTH_VOLUME}}"
+  codex_auth:
+    name: "{{CODEX_AUTH_VOLUME}}"
+  opencode_auth:
+    name: "{{OPENCODE_AUTH_VOLUME}}"
+  scheduler_state:
+    name: "{{SCHEDULER_STATE_VOLUME}}"

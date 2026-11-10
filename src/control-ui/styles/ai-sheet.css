@@ -1,0 +1,27 @@
+/* AI preparation workspace: a bottom sheet whose dotted canvas builds the planner's task drafts as a flow. Skeleton nodes stand in while
+   the planner works, then the cards enter one by one (each label chip settles after its card) and dependency connectors draw from
+   blocker to dependent. The composer and a status pill float over the canvas; the conversation is a side column, an overlay drawer on
+   narrow screens. Only new nodes, connectors and messages animate, so the frequent re-renders never replay an entrance. */
+.ai-tab-count{margin-left:6px;min-width:18px;padding:0 5px;border-radius:var(--radius-pill);background:var(--raised);color:var(--ink-strong);font-size:11px;line-height:18px;text-align:center;font-variant-numeric:tabular-nums}
+.ai-tab-count.busy{color:var(--accent);background:transparent;animation:ui-pulse 1.2s var(--ease-in-out) infinite}
+.ai-sheet-backdrop{position:fixed;inset:0;z-index:34;background:var(--overlay);transition:opacity var(--dur-slow) var(--ease-out),display var(--dur-slow) allow-discrete}
+.ai-sheet{position:fixed;z-index:35;left:0;right:0;bottom:0;display:flex;flex-direction:column;width:min(1320px,calc(100vw - 32px));height:min(820px,calc(100dvh - 64px));margin-inline:auto;overflow:hidden;border:1px solid var(--line);border-bottom:0;border-radius:var(--radius-xl) var(--radius-xl) 0 0;background:var(--surface);color:var(--ink);box-shadow:var(--shadow-float);transition:opacity var(--dur-slow) var(--ease-out),transform var(--dur-slow) var(--ease-out),display var(--dur-slow) allow-discrete}
+/* Hidden keeps the sheet and its backdrop rendered until the exit transition ends; @starting-style gives the entrance. */
+:is(.ai-sheet,.ai-sheet-backdrop)[hidden]{opacity:0;pointer-events:none}
+.ai-sheet[hidden]{transform:translateY(20px)}
+@starting-style{
+:is(.ai-sheet,.ai-sheet-backdrop):not([hidden]){opacity:0}
+.ai-sheet:not([hidden]){transform:translateY(20px)}
+}
+.ai-workspace{display:flex;flex-direction:column;flex:1;min-height:0}
+.ai-sheet-header{display:flex;align-items:center;gap:12px;flex:none;min-height:54px;padding:10px 12px 10px 16px;border-bottom:1px solid var(--line)}
+.ai-sheet-header h2{display:flex;align-items:center;gap:9px;margin:0;color:var(--ink-strong);font-size:14px;font-weight:600;white-space:nowrap}
+/* The sparkle tiles of the header, the empty canvas and AI replies share one tinted look in three sizes. */
+.ai-mark,.ai-empty-mark,.ai-avatar{display:inline-grid;place-items:center;flex:none;border:1px solid var(--tone-line);border-radius:var(--radius);background:var(--tone-bg);color:var(--tone)}
+.ai-mark{width:28px;height:28px;font-size:15px}
+.ai-count{display:inline-grid;place-items:center;min-width:20px;height:20px;padding:0 6px;border-radius:var(--radius-pill);background:var(--raised);color:var(--ink-strong);font-size:11.5px;font-weight:600;font-variant-numeric:tabular-nums}
+.ai-sheet-note{min-width:0;overflow:hidden;color:var(--muted);font-size:12px;text-overflow:ellipsis;white-space:nowrap}
+.ai-sheet-actions{display:flex;align-items:center;gap:4px;flex:none;margin-left:auto}
+.ai-sheet-icon{width:30px;height:30px;font-size:16px}
+.ai-sheet-icon[aria-expanded=true]{background:var(--raised);color:var(--ink-strong)}
+.ai-body{position:relative;display:flex;flex:1;min-height:0}

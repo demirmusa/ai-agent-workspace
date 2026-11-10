@@ -1,0 +1,6 @@
+/* In-flight work: an accent sweep along the top edge for slow requests, and a spinner on the pressed button. */
+.request-progress{position:fixed;inset:0 0 auto;z-index:1000;height:2px;overflow:hidden;pointer-events:none}
+.request-progress::before{content:"";position:absolute;inset:0 auto 0 0;width:40%;background:linear-gradient(90deg,transparent,var(--accent) 40% 60%,transparent);animation:request-progress 1.1s var(--ease-in-out) infinite}
+@keyframes request-progress{from{transform:translateX(-100%)}to{transform:translateX(250%)}}
+.button.is-busy,.icon-button.is-busy{cursor:progress}
+.button.is-busy::before{content:"";--spinner-size:11px}

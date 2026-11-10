@@ -1,0 +1,19 @@
+/* The run scripts list of the project settings. */
+.run-scripts-list{display:flex;flex-direction:column;gap:8px;margin-top:16px}
+.run-scripts-actions{display:flex;gap:8px;align-items:center;margin-top:12px}
+.run-script-card{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:12px;align-items:center;padding:10px 12px;border:1px solid var(--line);border-radius:var(--radius);background:var(--surface);transition:border-color var(--dur-fast) var(--ease-out),background-color var(--dur-fast) var(--ease-out)}
+.run-script-card:hover{border-color:color-mix(in srgb,var(--accent) 35%,var(--line));background:var(--surface-hover)}
+.run-script-kind{--tone:var(--tone-running);--tone-bg:var(--tone-running-bg);min-width:58px;padding:2px 8px;border-radius:var(--radius-sm);background:var(--tone-bg);color:var(--tone);font-size:11.5px;font-weight:600;text-align:center}
+.run-script-kind[data-kind=npm]{--tone:var(--tone-done);--tone-bg:var(--tone-done-bg)}
+.run-script-kind[data-kind=command]{--tone:var(--tone-idle);--tone-bg:var(--tone-idle-bg)}
+.run-script-summary{display:flex;flex-direction:column;gap:2px;min-width:0}
+.run-script-summary strong{font-size:13px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.run-script-summary code{font-family:var(--font-mono);font-size:12px;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.run-script-card-actions{display:flex;gap:4px}
+.run-script-card-actions [data-remove-run-script]:hover{color:var(--danger)}
+.run-scripts-empty{display:flex;flex-direction:column;gap:4px;padding:22px;border:1px dashed var(--line);border-radius:var(--radius);text-align:center;color:var(--muted)}
+.run-scripts-empty strong{color:var(--ink)}
+@media(max-width:650px){
+.run-script-card{grid-template-columns:minmax(0,1fr) auto}
+.run-script-kind{display:none}
+}

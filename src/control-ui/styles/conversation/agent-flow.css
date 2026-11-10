@@ -1,0 +1,30 @@
+/* Agent hierarchy canvas: the Agents header over a pannable tree (styles/flow-canvas.css), one card per agent: provider, name and
+   model, status, latest step, elapsed time and the fold toggle of its subagents. Stopped agents fade their content. */
+.cv-agent-flow{position:relative;display:flex;flex-direction:column;flex:1;min-height:0;background:var(--ground)}
+.cv-agent-flow>.cv-agent-header{flex:none;border-bottom:1px solid var(--line)}
+.cv-agent-flow-stage{position:relative;flex:1;min-height:0;overflow:hidden;background-color:var(--ground);cursor:grab;touch-action:none;user-select:none}
+.cv-agent-flow-stage.is-panning{cursor:grabbing}
+.cv-agent-flow-list{width:max-content;margin:0;transform-origin:0 0}
+.cv-agent-flow-list.is-easing{transition:transform 440ms var(--ease-out)}
+.cv-flow-node{position:relative;z-index:1;display:flex;min-width:0}
+.cv-flow-node.ui-enter{animation:ui-rise var(--dur-layout) var(--ease-spring) var(--enter-delay,0ms) both}
+.cv-flow-node.ui-enter .cv-flow-card>*{animation:ui-fade var(--dur-slow) var(--ease-out) calc(var(--enter-delay,0ms) + 160ms) both}
+.cv-flow-node.is-leaving{z-index:0;pointer-events:none}
+.cv-flow-card{display:flex;flex-direction:column;gap:8px;width:100%;min-width:0;padding:12px 14px 10px;color:var(--ink);text-align:left;cursor:default;user-select:text}
+.cv-flow-card.is-interactive{cursor:pointer}
+.cv-flow-card:is([data-status=cancelled],[data-status=stopped],[data-status=closed],[data-status=unavailable]){box-shadow:none}
+.cv-flow-card:is([data-status=cancelled],[data-status=stopped],[data-status=closed],[data-status=unavailable])>*{opacity:.55}
+.cv-flow-head{display:flex;align-items:flex-start;gap:10px;min-width:0}
+.cv-flow-head>.ui-icon-box{width:28px;height:28px;border-radius:8px}
+.cv-flow-head>.cv-agent-name{flex:1}
+/* Flow cards have room for two lines of name instead of one ellipsis; the model line stays one line. */
+.cv-flow-head>.cv-agent-name>strong{display:-webkit-box;white-space:normal;overflow-wrap:anywhere;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+.cv-flow-state{display:inline-flex;flex:none}
+.cv-flow-state.cv-swap{animation:ui-pop var(--dur) var(--ease-out)}
+.cv-flow-info{min-width:0;min-height:20px}
+.cv-flow-idle{color:var(--faint);font-size:12px}
+.cv-flow-foot{display:flex;align-items:center;gap:8px;min-height:22px;color:var(--muted);font:500 11.5px/16px var(--font-mono);font-variant-numeric:tabular-nums}
+.cv-flow-toggle{position:absolute;right:10px;bottom:9px;z-index:2;display:inline-flex;align-items:center;gap:2px;height:22px;padding:0 4px 0 7px;border:0;border-radius:var(--radius-sm);background:transparent;color:var(--muted);font:500 12px/1 var(--font-mono);font-variant-numeric:tabular-nums}
+.cv-flow-toggle:hover{background:var(--surface-hover);color:var(--ink-strong)}
+.cv-flow-toggle>.ui-icon{transition:transform var(--dur) var(--ease-out)}
+.cv-flow-toggle[aria-expanded=false]>.ui-icon{transform:rotate(-90deg)}

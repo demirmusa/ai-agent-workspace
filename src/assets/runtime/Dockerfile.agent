@@ -1,0 +1,46 @@
+# syntax=docker/dockerfile:1.7
+FROM node:22-bookworm-slim
+
+ARG DEBIAN_FRONTEND=noninteractive
+ARG AGENT_UID=10001
+ARG AGENT_GID=10001
+# Deliberately exact. Override only as part of a reviewed runtime upgrade.
+ARG CLAUDE_CODE_VERSION=2.1.227
+ARG CODEX_CLI_VERSION=0.147.0
+ARG OPENCODE_VERSION=1.18.31
+ARG COPILOT_CLI_VERSION=1.0.100
+
+SHELL ["/bin/bash", "-o", "pipefail", "-c"]
+
+RUN apt-get update \
+ && apt-get install -y --no-install-recommends \
+      build-essential ca-certificates curl git jq openssh-client python3 python3-pip \
+      python3-venv ripgrep \
+ && npm install --global --ignore-scripts=false \
+      "@anthropic-ai/claude-code@${CLAUDE_CODE_VERSION}" \
+      "@openai/codex@${CODEX_CLI_VERSION}" \
+      "opencode-ai@${OPENCODE_VERSION}" \
+      "@github/copilot@${COPILOT_CLI_VERSION}" \
+ && npm cache clean --force \
+ && rm -rf /var/lib/apt/lists/* \
+ && { userdel --remove node 2>/dev/null || true; } \
+ && { groupdel node 2>/dev/null || true; } \
+ && groupadd --gid "$AGENT_GID" agent \
+ && useradd --uid "$AGENT_UID" --gid "$AGENT_GID" --create-home --shell /bin/bash agent \
+ && install -d -o "$AGENT_UID" -g "$AGENT_GID" -m 0700 /home/agent/.claude /home/agent/.codex /home/agent/.copilot /home/agent/.local/share/opencode /home/agent/.local/state /home/agent/.cache /home/agent/.config \
+ && chown -R "$AGENT_UID:$AGENT_GID" /home/agent \
+ && install -d -o "$AGENT_UID" -g "$AGENT_GID" -m 0750 /runner-work
+
+ENV HOME=/home/agent \
+    CLAUDE_CONFIG_DIR=/home/agent/.claude \
+    CODEX_HOME=/home/agent/.codex \
+    COPILOT_HOME=/home/agent/.copilot \
+    COPILOT_AUTO_UPDATE=false \
+    XDG_DATA_HOME=/home/agent/.local/share \
+    OPENCODE_DISABLE_AUTOUPDATE=true \
+    DISABLE_AUTOUPDATER=1 \
+    CI=1
+
+USER agent:agent
+WORKDIR /runner-work
+CMD ["bash"]

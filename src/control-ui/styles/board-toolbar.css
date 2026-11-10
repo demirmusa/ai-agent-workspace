@@ -1,0 +1,25 @@
+/* The board toolbar: view tabs row, archive toggle, search box, agent filter and GitHub sync status, with their narrow layouts. */
+.board-toolbar{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:14px 24px 0;flex-wrap:wrap}
+.board-filters{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+@media(max-width:1050px){
+.board-toolbar{gap:15px}
+.search-box input{width:130px}
+}
+@media(max-width:650px){
+.board-filters{gap:7px;width:100%}
+.search-box{flex:1}
+.search-box input{width:100%}
+.search-box kbd{display:none}
+}
+.sync-status{font-size:10px;color:var(--muted)}
+#archive-view[aria-pressed="true"]{border-color:var(--accent);color:var(--accent)}
+.search-box{display:flex;align-items:center;gap:7px;min-height:var(--control-h);padding:0 9px;border:1px solid var(--line-strong);border-radius:var(--radius);background:var(--input);color:var(--muted);transition:border-color var(--dur-fast) var(--ease-out),box-shadow var(--dur-fast) var(--ease-out)}
+.search-box input,.search-box input:focus{width:200px;padding:4px 0;border:0;background:transparent;color:var(--ink);outline:0;box-shadow:none;font-size:12.5px}
+.search-box:focus-within{border-color:var(--focus);box-shadow:var(--ring)}
+@media(max-width:1100px){
+.board-toolbar{padding-left:20px;padding-right:20px}
+}
+@media(max-width:760px){
+.board-toolbar{padding-left:14px;padding-right:14px}
+.search-box input,.search-box input:focus{width:100%}
+}

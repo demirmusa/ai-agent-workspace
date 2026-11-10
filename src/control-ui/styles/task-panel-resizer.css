@@ -1,0 +1,10 @@
+/* One resizable shell serves both task and provider-history details. */
+.task-panel-resizer{position:absolute;inset:0 auto 0 0;z-index:5;width:8px;cursor:ew-resize;touch-action:none;outline:none}
+.task-panel-resizer::after{content:"";position:absolute;inset:0 auto 0 0;width:2px;background:var(--accent);opacity:0;transition:opacity var(--dur) var(--ease-out)}
+.task-panel-resizer:is(:hover,:focus-visible)::after,.resizing-task-panel .task-panel-resizer::after{opacity:1}
+.task-panel-resizer:focus-visible{outline:2px solid var(--focus);outline-offset:-2px}
+.resizing-task-panel,.resizing-task-panel *{cursor:ew-resize!important;user-select:none!important}
+.resizing-task-panel .terminal-instance{pointer-events:none}
+@media(max-width:760px){
+.task-panel-resizer{display:none}
+}

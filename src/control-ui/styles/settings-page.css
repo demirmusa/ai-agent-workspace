@@ -1,0 +1,19 @@
+/* Work settings page: shares the project settings layout (vertical tabs, sticky save bar). */
+.settings-board{display:block;overflow:visible;min-height:0}
+.work-settings{width:100%;max-width:none}
+.settings-page-head{display:flex;align-items:center;margin-bottom:16px}
+.settings-tab-dot{display:none;width:6px;height:6px;margin-left:auto;border-radius:50%;background:var(--warning)}
+.settings-tab.has-changes .settings-tab-dot{display:inline-block}
+.settings-section+.settings-section{margin-top:28px}
+.settings-section-header{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;margin-bottom:12px}
+.settings-section-header h2{margin:0;font-size:15px;font-weight:600;color:var(--ink-strong)}
+.settings-section-header p{margin:4px 0 0;font-size:12.5px;color:var(--muted);line-height:1.6;max-width:720px}
+.settings-section-header .button{flex:none}
+.settings-section-actions{display:flex;flex-wrap:wrap;justify-content:flex-end;align-items:center;gap:8px;flex-shrink:0;max-width:45%}
+.settings-card{border:1px solid var(--line);border-radius:6px;background:var(--surface);padding:16px 18px}
+.settings-card+.settings-card{margin-top:12px}
+.settings-card>.form-field:first-child,.settings-card>.form-grid:first-child .form-field{margin-top:0}
+.settings-card .field-info{margin-top:16px}
+.zoom-setting{display:flex;flex-wrap:wrap;align-items:center;gap:6px}
+.zoom-setting-step{min-width:32px;font-size:15px}
+.zoom-setting-level{min-width:48px;color:var(--ink-strong);font-size:13px;font-variant-numeric:tabular-nums;text-align:center}

@@ -1,0 +1,25 @@
+/* Board multi-selection: the bulk selection controls, selectable column headers, select boxes and selected cards. Card checkboxes select without a modifier key; they stay out of the way until a card is hovered or a selection exists. */
+.task-selection-controls{display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin:0 24px 10px;padding:5px 6px 5px 12px;border:1px solid color-mix(in srgb,var(--accent) 35%,var(--line-strong));border-radius:var(--radius-md);background:color-mix(in srgb,var(--accent) 8%,var(--surface));box-shadow:var(--shadow-1);font-size:12.5px;color:var(--ink);flex-shrink:0}
+#task-selection-count{display:inline-flex;align-items:center;gap:8px;margin-right:auto;font-weight:600;color:var(--ink-strong);font-variant-numeric:tabular-nums}
+#task-selection-count::before{content:"";width:8px;height:8px;border-radius:var(--radius-pill);background:var(--accent)}
+.task-selection-controls select{min-height:26px;max-width:200px;padding:2px 8px;font-size:12px}
+.task-selection-controls #clear-task-selection{margin-left:4px;padding-left:10px;border-left:1px solid var(--line-strong);border-radius:0 var(--radius) var(--radius) 0;color:var(--muted)}
+.task-selection-controls #clear-task-selection:hover{color:var(--ink-strong)}
+.task-card.bulk-selected,.task-list tr.bulk-selected{outline:1px solid var(--focus);outline-offset:-1px;background:color-mix(in srgb,var(--accent) 12%,var(--surface))}
+.column-select{display:flex;align-items:center;gap:8px;flex:1;border:0;background:transparent;color:inherit;padding:4px 0;text-align:left;font:inherit;font-weight:inherit}
+.column-select[aria-pressed="true"]{color:var(--accent)}
+@media(max-width:1100px){
+.task-selection-controls{margin-left:20px;margin-right:20px}
+}
+@media(max-width:760px){
+.task-selection-controls{margin-left:14px;margin-right:14px}
+}
+.select-box{display:inline-grid;place-items:center;width:14px;height:14px;border:1px solid var(--line-strong);border-radius:3px;font-size:10px;line-height:1;color:var(--ground)}
+.column-select[aria-pressed="true"] .select-box,.task-list tr.bulk-selected .select-box{background:var(--accent);border-color:var(--accent)}
+.column-select[aria-pressed="true"] .select-box::after,.task-list tr.bulk-selected .select-box::after,.task-card.bulk-selected .card-select::after{content:"✓"}
+body .task-card .card-select{flex:none;margin-right:6px;cursor:pointer;opacity:0;-webkit-user-select:none;user-select:none}
+.task-card:is(:hover,:focus-within,:focus-visible) .card-select,.has-task-selection .task-card .card-select{opacity:1}
+.task-card.bulk-selected .card-select{background:var(--accent);border-color:var(--accent);opacity:1}
+@media(hover:none){
+body .task-card .card-select{opacity:1}
+}

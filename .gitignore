@@ -1,0 +1,15 @@
+node_modules/
+dist/
+coverage/
+*.log
+.DS_Store
+.env
+.env.*
+!.env.example
+**/.tmp-control-review/
+**/tests/.runtime-config.json
+/src/examples/
+/src/README.md
+/src/LICENSE
+*.tgz
+

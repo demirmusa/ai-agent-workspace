@@ -1,0 +1,19 @@
+{
+  "id": "aiws.dotnet",
+  "name": {
+    "tr": ".NET",
+    "en": ".NET"
+  },
+  "version": "1.0.1",
+  "apiVersion": 1,
+  "description": {
+    "tr": "Sohbette dotnet test, build, publish, run, restore ve EF Core komutları için özel kartlar: test projeleri, stack trace'li başarısızlıklar, derleme hataları, çıktılar ve son durumu gösteren panel.",
+    "en": "Dedicated chat cards for dotnet test, build, publish, run, restore and EF Core: test projects, failures with stack traces, compiler errors, outputs and a status panel."
+  },
+  "author": "AIWS",
+  "homepage": "https://github.com/demirmusa/ai-agent-workspace",
+  "main": "plugin.js",
+  "styles": [
+    "style.css"
+  ]
+}

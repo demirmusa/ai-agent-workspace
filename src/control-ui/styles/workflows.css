@@ -1,0 +1,30 @@
+/* Workflows page: the explanation, workflow cards with their step chains, and the step editor. */
+.workflow-board{display:block}
+.workflow-explanation{margin:5px 0 25px;max-width:700px}
+.workflow-explanation h2{font-size:17px;font-weight:500;letter-spacing:-.4px}
+.workflow-explanation p{font-size:13px;color:var(--muted);line-height:1.8;margin-top:9px}
+.workflow-list{display:flex;flex-direction:column;gap:16px;max-width:1000px}
+.workflow-card{border:1px solid var(--line);border-radius:6px;background:var(--surface);padding:20px;box-shadow:none}
+.workflow-card:hover{background:var(--surface-hover);border-color:var(--line-strong);box-shadow:none}
+.workflow-card>header{display:flex;align-items:flex-start;justify-content:space-between;gap:11px;min-width:0}
+.workflow-card h2{font-size:15px;font-weight:600}
+.workflow-card p{font-size:13px;color:var(--muted);margin-top:5px}
+.workflow-card ol{list-style:none;padding:10px 0;margin:15px 0;display:flex;gap:12px;flex-wrap:wrap}
+.workflow-card li{display:flex;flex-direction:column;gap:4px;position:relative;padding:10px 17px 10px 14px;background:var(--raised);border:0;border-radius:4px;min-width:150px}
+.workflow-card li strong{font-size:13px;font-weight:500}
+.workflow-card li>span:not(.workflow-step-mark){font-size:12px;color:var(--muted)}
+.workflow-card li:after{content:'→';position:absolute;right:-11px;top:50%;color:var(--muted);font-size:12px;transform:translateY(-50%)}
+.workflow-card li:last-child:after{display:none}
+.workflow-card footer{display:flex;justify-content:space-between;font-size:12px;color:var(--muted)}
+.workflow-step-editor{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:12px;margin:12px 0}
+.workflow-step-editor>header{display:flex;gap:5px;align-items:center}
+.workflow-step-editor>header input{flex:1;min-width:0;font-size:12px}
+.workflow-step-index{display:grid;place-items:center;width:24px;height:24px;flex-shrink:0;border-radius:5px;background:var(--raised);font-size:11px;color:var(--muted)}
+.workflow-step-editor textarea{font-size:11px;min-height:55px}
+.workflow-step-editor .form-field{font-size:11px}
+@media(max-width:760px){
+.workflow-card{padding:16px}
+.workflow-card ol{gap:10px}
+.workflow-card li{min-width:140px}
+.workflow-card footer{gap:12px;font-size:9px}
+}

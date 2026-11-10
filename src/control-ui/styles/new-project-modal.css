@@ -1,0 +1,22 @@
+/* The new project wizard dialog. */
+.new-project-modal .modal-body{padding-top:20px}
+.new-project-layout{grid-template-columns:176px minmax(0,1fr);gap:24px}
+.new-project-steps{top:0}
+.new-project-step-index{display:inline-grid;place-items:center;width:20px;height:20px;border:1px solid var(--line-strong);border-radius:50%;font-size:11px;font-variant-numeric:tabular-nums;opacity:1!important}
+.new-project-step[aria-selected=true] .new-project-step-index{border-color:var(--accent);background:var(--accent);color:var(--accent-ink)}
+.new-project-step-check{display:none;margin-left:auto;color:var(--success);font-size:12px}
+.new-project-step.is-complete .new-project-step-check{display:inline}
+.new-project-modal .settings-panel{max-width:none}
+.new-project-modal .settings-panel-header h2 span{opacity:.7}
+.new-project-modal .modal-footer>.new-project-progress{flex:1;min-width:80px}
+.new-project-label-presets{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.new-project-label-presets .form-hint{margin:0}
+.new-project-labels .project-label-row{grid-template-columns:minmax(120px,max-content) minmax(0,1fr) auto}
+.new-project-summary{display:grid;gap:12px}
+.new-project-summary-labels{grid-column:1/-1}
+.new-project-summary-labels dd{display:flex;flex-wrap:wrap;gap:6px;font-weight:400}
+@media(max-width:760px){
+.new-project-layout{grid-template-columns:minmax(0,1fr);gap:16px}
+.new-project-steps{position:static}
+.new-project-modal .modal-footer>.new-project-progress{flex-basis:100%}
+}

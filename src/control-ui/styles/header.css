@@ -1,0 +1,54 @@
+/* Header: the sidebar toggle, the page title with its summary, the project tabs and the page actions (notifications, theme and settings icons) share one bar. One indicator underlines the active project tab; render() places it and a transition glides it to the next tab. The AI button carries the AI sparkle and an orbiting gradient ring while it is hovered or focused, or while AI drafts are being written. */
+.topbar{display:flex;align-items:center;gap:14px;height:52px;padding:0 24px;background:var(--ground);border-bottom:1px solid var(--line)}
+.sidebar-toggle,.files-toggle,.notifications-button,.header-icon-button{flex:none;width:32px;height:32px;color:var(--muted)}
+.sidebar-toggle{margin-left:-8px}
+.theme-icon,.theme-icon>span{display:grid;place-items:center}
+.theme-icon>span:not([hidden]){animation:theme-icon-in var(--dur-slow) var(--ease-out)}
+@keyframes theme-icon-in{from{opacity:0;transform:rotate(-70deg) scale(.6)}}
+.sidebar-toggle:hover,.files-toggle:hover,.files-toggle.active,.notifications-button:hover,.notifications-button[aria-expanded=true],.header-icon-button:hover,.header-icon-button.active{background:var(--surface-hover);color:var(--ink-strong)}
+.sidebar-toggle-pane,.files-toggle-pane{transition:opacity var(--dur) var(--ease-out)}
+.sidebar-collapsed .sidebar-toggle-pane,.files-toggle:not(.active) .files-toggle-pane{opacity:0}
+.topbar-title{display:flex;align-items:center;gap:10px;flex:0 1 auto;min-width:0}
+.breadcrumb{min-width:0;overflow:hidden;white-space:nowrap;font-size:14px}
+.breadcrumb strong{display:inline-block;max-width:100%;overflow:hidden;text-overflow:ellipsis;vertical-align:top;font-weight:600;color:var(--ink-strong)}
+.page-summary{display:block;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:13px;color:var(--muted)}
+.breadcrumb:not([hidden])+.page-summary{padding-left:10px;border-left:1px solid var(--line-strong)}
+.project-view-tabs{position:relative;display:flex;align-self:stretch;align-items:stretch;flex:none;gap:2px}
+.project-view-tabs .view-tab{position:relative;isolation:isolate;display:inline-flex;align-items:center;gap:6px;min-height:0;padding:0 10px;border-radius:0;background:none;font-size:13px;font-weight:500;white-space:nowrap}
+.project-view-tabs .view-tab::before{content:"";position:absolute;inset:11px 1px;z-index:-1;border-radius:var(--radius);background:var(--surface-hover);opacity:0;transition:opacity var(--dur-fast) var(--ease-out)}
+.project-view-tabs .view-tab:hover::before{opacity:1}
+.project-view-tabs .view-tab.active{background:none}
+.project-view-tabs .ui-dot{--dot-size:6px}
+.project-view-tabs .nav-count{margin:0}
+.project-tabs-indicator{position:absolute;left:0;bottom:-1px;width:1px;height:2px;background:var(--accent);transform-origin:0 0;opacity:0;pointer-events:none}
+.project-tabs-indicator.is-placed{opacity:1;transition:transform var(--dur-slow) var(--ease-out),opacity var(--dur) var(--ease-out)}
+.topbar-right{display:flex;align-items:center;gap:8px;flex:none;margin-left:auto}
+.topbar-right .button{height:28px;min-height:28px;padding:0 11px;box-sizing:border-box;font-size:12px;line-height:16px}
+.topbar-right .button>span[aria-hidden]:first-child{margin-top:-1px;font-weight:400;line-height:1}
+.ai-button{position:relative;isolation:isolate;overflow:hidden;padding:4px 11px;border:0;background:var(--line-strong);color:var(--ink-strong)}
+.ai-button::before{content:"";position:absolute;z-index:-2;top:50%;left:50%;width:150%;aspect-ratio:1;margin:-75% 0 0 -75%;background:conic-gradient(transparent 0 55%,var(--accent) 75%,var(--purple) 88%,transparent);opacity:0;transition:opacity var(--dur) var(--ease-out);animation:ai-orbit 2.6s linear infinite paused}
+.ai-button::after{content:"";position:absolute;z-index:-1;inset:1px;border-radius:calc(var(--radius) - 1px);background:var(--surface);transition:background-color var(--dur-fast) var(--ease-out)}
+.ai-button .ui-sparkle{font-size:14px;transition:transform var(--dur) var(--ease-spring)}
+.ai-button:is(:hover,:focus-visible,[aria-pressed=true]){background:color-mix(in srgb,var(--accent) 35%,var(--line-strong))}
+.ai-button:is(:hover,:focus-visible)::before,.ai-button:has(.ai-tab-count.busy)::before{opacity:1;animation-play-state:running}
+.ai-button:is(:hover,:focus-visible,[aria-pressed=true])::after{background:color-mix(in srgb,var(--accent) 7%,var(--surface))}
+.ai-button:hover .ui-sparkle{transform:rotate(20deg) scale(1.12)}
+@keyframes ai-orbit{to{transform:rotate(1turn)}}
+body.desktop-frameless .topbar{-webkit-app-region:drag;padding-right:0}
+body.desktop-frameless .topbar :is(button,select,a,input){-webkit-app-region:no-drag}
+body.desktop-frameless .topbar-right{margin-right:12px}
+.window-controls{display:flex;align-self:stretch;flex:none}
+.window-controls button{display:grid;place-items:center;width:46px;border:0;border-radius:0;background:transparent;color:var(--muted)}
+.window-controls button:hover{background:var(--surface-hover);color:var(--ink-strong)}
+.window-controls button.close:hover{background:var(--tone-failed);color:var(--primary-ink)}
+@media(max-width:900px){
+.topbar{flex-wrap:wrap;row-gap:0;height:auto;min-height:52px;padding-top:6px}
+body.desktop-frameless .topbar{padding-top:0}
+.topbar-title{flex:1 1 0;padding:8px 0}
+.page-summary{display:none}
+.topbar .project-view-tabs{order:3;flex:1 0 100%;height:40px;margin:0 -4px;overflow-x:auto;scrollbar-width:none}
+body.desktop-frameless .topbar .project-view-tabs{padding-right:20px}
+}
+@media(max-width:1100px){
+.topbar{padding:0 20px}
+}

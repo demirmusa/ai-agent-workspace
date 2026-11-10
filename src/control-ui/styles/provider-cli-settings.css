@@ -1,0 +1,13 @@
+/* Provider CLI argument sections in the work settings. */
+.provider-cli-settings{margin:22px 0 18px;padding-top:19px;border-top:1px solid var(--line)}
+.provider-cli-settings>h3{font-size:13px;font-weight:600}
+.provider-cli-settings>.form-hint{margin:8px 0 14px;line-height:1.8}
+.provider-cli-section{margin:9px 0;border:1px solid var(--line);border-radius:var(--radius);background:var(--surface);overflow:hidden}
+.provider-cli-section>summary{display:flex;align-items:center;gap:9px;padding:11px 12px;cursor:pointer;font-size:12px;list-style:none}
+.provider-cli-section>summary::-webkit-details-marker{display:none}
+.provider-cli-section>summary::after{content:'⌄';color:var(--muted);transform:rotate(-90deg)}
+.provider-cli-section[open]>summary::after{transform:none}
+.provider-cli-section>summary>small{margin-left:auto;font-size:10px;color:var(--muted)}
+.provider-cli-section>.form-field{margin:0;padding:0 13px 13px}
+.provider-cli-section textarea{font-family:var(--font-mono);font-size:11px;line-height:1.7;min-height:108px;max-height:280px;resize:vertical;tab-size:2}
+.provider-cli-section>.form-field>small{line-height:1.7}

@@ -1,0 +1,24 @@
+/* Flow canvas (AI drafts, agent hierarchy): a top-down tree like an orchestrator view. AIWSUI.placeFlow places every 272px node from its
+   measured size and sizes the list: roots lead, their children stand in a row on one bus and deeper nodes stack, indented, on their
+   parent's rail. Connectors run under the cards, their ports above them; while the list is gliding, moved nodes, connectors and ports
+   ease to their new places together. Without any edge the list is a centred wrapping grid. */
+.flow-list{--flow-link:color-mix(in srgb,var(--accent) 50%,var(--line-strong));position:relative;margin:0 auto}
+.flow-list[data-layout=flow]>:not(svg){position:absolute;width:272px}
+.flow-list[data-layout=grid]{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,240px),272px));justify-content:center;align-items:start;gap:24px 20px}
+.flow-list.is-gliding>:not(svg){transition:left var(--dur-slow) var(--ease-out),top var(--dur-slow) var(--ease-out)}
+.flow-list.is-gliding .flow-link{transition:d var(--dur-slow) var(--ease-out),opacity var(--dur) var(--ease-out),stroke var(--dur) var(--ease-out)}
+.flow-list.is-gliding .flow-port{transition:transform var(--dur-slow) var(--ease-out)}
+.flow-links,.flow-ports{position:absolute;inset:0;width:100%;height:100%;overflow:visible;pointer-events:none}
+.flow-ports{z-index:2}
+.flow-link{fill:none;stroke:var(--flow-link);stroke-width:1.25;stroke-linecap:round;stroke-linejoin:round;transition:opacity var(--dur) var(--ease-out),stroke var(--dur) var(--ease-out)}
+/* A new connector grows slowly from its parent's port; its child card rises as it arrives (AIWSUI.drawFlowLinks times --link-delay).
+   An extra blocker's connector is dashed once drawn. */
+.flow-link.is-drawing{stroke-dasharray:1;stroke-dashoffset:1;animation:flow-link-draw 720ms var(--ease-in-out) var(--link-delay,0ms) forwards}
+.flow-link.is-extra:not(.is-drawing){stroke-dasharray:.012 .01}
+/* Hovering a node lights its connectors; the others fade back. */
+.flow-list.has-focus .flow-link:not(.is-active){opacity:.25}
+.flow-link.is-active{stroke:var(--accent);stroke-width:2}
+@keyframes flow-link-draw{to{stroke-dashoffset:0}}
+.flow-port{fill:var(--surface);stroke:var(--flow-link);stroke-width:1.5}
+.flow-port.is-new{animation:flow-port-pop var(--dur-slow) var(--ease-spring) var(--link-delay,0ms) both}
+@keyframes flow-port-pop{from{opacity:0;r:0}to{opacity:1;r:3.5px}}

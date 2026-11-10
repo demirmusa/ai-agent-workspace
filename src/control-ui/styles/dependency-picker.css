@@ -1,0 +1,24 @@
+/* Blocked by chips and the dependency search shared by the task information tab and the task dialog. */
+.dependency-chips{display:flex;flex-wrap:wrap;gap:6px}
+.dependency-chip{display:inline-flex;align-items:center;gap:6px;max-width:100%;min-height:26px;padding:2px 3px 2px 9px;border:1px solid var(--line);border-radius:var(--radius);background:var(--surface);font-size:12.5px}
+.issue-field .dependency-chip{width:100%}
+.dependency-chip-text{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.dependency-chip strong{margin-right:4px;font:500 12px var(--font-mono);color:var(--muted)}
+.dependency-chip button{display:grid;place-items:center;flex:none;width:20px;height:20px;padding:0;border:0;border-radius:var(--radius-sm);background:transparent;color:var(--faint);font-size:12px}
+.dependency-chip button:hover{background:var(--tone-failed-bg);color:var(--tone-failed)}
+.dependency-search-box{position:relative;display:flex;align-items:center}
+.dependency-search-box input{width:100%;padding-right:120px}
+.dependency-search-box>span{position:absolute;right:10px;max-width:115px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:11px;color:var(--muted);pointer-events:none}
+.issue-field .dependency-search-box input{padding-right:78px}
+.issue-field .dependency-search-box>span{right:8px;max-width:66px}
+.dependency-search-results{max-height:230px;margin-top:4px;padding:4px;overflow:auto;border:1px solid var(--line);border-radius:var(--radius-md);background:var(--surface);box-shadow:var(--shadow-1)}
+.dependency-search-results:not([hidden]){animation:ui-fade var(--dur) var(--ease-out)}
+.dependency-search-results>button{display:flex;align-items:center;gap:12px;width:100%;padding:7px 8px;border:0;border-radius:var(--radius-sm);background:transparent;color:var(--ink);text-align:left;line-height:1.35}
+.dependency-search-results>button:is(:hover,:focus-visible){background:var(--surface-hover)}
+.dependency-result-text{flex:1;min-width:0}
+.dependency-search-results strong{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:13px;font-weight:500}
+.dependency-result-text small{display:flex;align-items:baseline;justify-content:space-between;gap:10px;margin-top:1px;font-size:11.5px;color:var(--muted)}
+.dependency-result-text small>span:last-child{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;text-align:right}
+.dependency-reference{flex:none;min-width:0;max-width:60%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-family:var(--font-mono);color:var(--link)}
+.dependency-search-results>button>span:last-child{flex:none;font-size:16px;color:var(--muted)}
+.dependency-search-results>p{margin:0;padding:12px;font-size:12.5px;color:var(--muted)}

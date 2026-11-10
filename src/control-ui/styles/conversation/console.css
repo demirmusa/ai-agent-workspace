@@ -1,0 +1,25 @@
+/* Agent console: one surface for task, history and live sessions. Toolbar, agent tree, timeline, request dock and composer stack
+   in a column and only the timeline scrolls. Monospace is kept for real commands, output, paths, code and clocks. */
+/* The scrolling conversation history of the agent console. */
+.conversation-history{padding:20px;overflow:auto;flex:1;display:flex;flex-direction:column;gap:15px;min-height:0}
+@media(max-width:760px){
+.conversation-history{padding:13px}
+}
+.aiws-agent-console{position:relative;display:flex;flex-direction:column;flex:1;width:100%;height:100%;min-width:0;min-height:0;overflow:hidden;background:var(--ground);color:var(--ink);font-size:13px}
+.cv-console-toolbar{display:flex;align-items:center;gap:10px;flex:none;min-height:44px;padding:6px 10px 6px 14px;border-bottom:1px solid var(--line);background:var(--ground)}
+.cv-console-context{display:flex;align-items:center;gap:10px;flex:1;min-width:0}
+.cv-console-heading{display:flex;flex-direction:column;gap:1px;min-width:0;max-width:100%;overflow:hidden}
+.cv-console-heading strong{overflow:hidden;font-size:13px;font-weight:600;color:var(--ink-strong);white-space:nowrap;text-overflow:ellipsis}
+.cv-console-heading>span{overflow:hidden;font-size:12px;color:var(--muted);white-space:nowrap;text-overflow:ellipsis}
+.cv-toolbar-session{max-width:12ch;overflow:hidden;text-overflow:ellipsis}
+.cv-console-actions{display:flex;align-items:center;gap:2px;flex:none}
+.cv-console-modes{margin-right:6px}
+.cv-follow-button{font-size:16px}
+.cv-follow-button>.ui-icon{transform:rotate(90deg)}
+.cv-technical-toggle{font:500 12px var(--font-mono)}
+.cv-technical-toggle[aria-pressed=true]{background:var(--raised);color:var(--ink-strong)}
+.cv-console-body{position:relative;display:flex;flex-direction:column;flex:1;min-width:0;min-height:0}
+.aiws-agent-console .cv-scroll{flex:1;min-width:0;min-height:100px;padding:18px 22px 26px;overflow-x:hidden;overflow-y:auto;overscroll-behavior:contain;overflow-anchor:none;scrollbar-gutter:stable;background:var(--ground)}
+.cv-timeline,.cv-questions{width:100%;min-width:0}
+/* Brand exception: the Codex logo is drawn in near-black, so its box keeps a white plate in the dark theme too. */
+.cv-provider-box[data-provider=codex]{background:#fff}

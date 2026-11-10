@@ -1,0 +1,47 @@
+/* Markdown: shared by the console, the AI sheet and task descriptions; contexts set their own size and colour. */
+.cv-markdown{min-width:0;max-width:100%;overflow-wrap:anywhere;font-size:12px;line-height:1.8}
+.cv-markdown>:first-child{margin-top:0}
+.cv-markdown>:last-child{margin-bottom:0}
+.cv-markdown p{margin:0 0 .65em}
+.cv-markdown p:last-child{margin-bottom:0}
+.cv-markdown :is(p+p,p+pre,pre+p){margin-top:10px}
+.cv-markdown :is(h3,h4,h5,h6){margin:1.15em 0 .45em;font-weight:650;line-height:1.35;color:var(--ink-strong)}
+.cv-markdown .cv-h1{font-size:1.28em}
+.cv-markdown .cv-h2{font-size:1.16em}
+.cv-markdown .cv-h3{font-size:1.06em}
+.cv-markdown :is(.cv-h4,.cv-h5,.cv-h6){font-size:1em}
+.cv-markdown .cv-list{margin:.25em 0 .75em;padding-left:1.45em}
+.cv-markdown ul.cv-list{list-style:disc}
+.cv-markdown ul.cv-list ul.cv-list{list-style:circle}
+.cv-markdown ol.cv-list{list-style:decimal}
+.cv-markdown .cv-list .cv-list{margin:.15em 0 .3em}
+.cv-markdown li{margin:.22em 0;padding-left:.2em}
+.cv-markdown li::marker{color:var(--muted)}
+.cv-markdown li>p{margin:0}
+.cv-markdown li>.cv-code{margin:.4em 0}
+.cv-markdown li.cv-task{position:relative;list-style:none}
+.cv-check{position:absolute;top:.32em;left:-1.3em;display:grid;place-items:center;width:.95em;height:.95em;border:1px solid var(--line-strong);border-radius:calc(var(--radius-sm) / 2);color:var(--accent-ink);font-size:.72em;line-height:1}
+.cv-task[data-checked=true]>.cv-check{border-color:var(--accent);background:var(--accent)}
+.cv-task[data-checked=true]>p{color:var(--muted)}
+.cv-markdown blockquote{margin:.5em 0 .8em;padding:1px 0 1px 12px;border-left:3px solid var(--line-strong);color:var(--muted)}
+.cv-markdown hr{height:0;margin:1.1em 0;border:0;border-top:1px solid var(--line)}
+.cv-markdown del{opacity:.65}
+.cv-markdown code{padding:.1em .38em;border-radius:var(--radius-sm);background:var(--raised);color:var(--ink-strong);font:.88em/1.5 var(--font-mono)}
+.cv-markdown .cv-code{max-width:100%;margin:.55em 0 .85em;padding:10px 12px;overflow:auto;border:1px solid var(--line);border-radius:var(--radius);background:var(--sidebar);white-space:pre;font:12.5px/1.6 var(--font-mono)}
+.cv-markdown .cv-code code{padding:0;border-radius:0;background:none;color:var(--ink);font:inherit}
+.cv-markdown .cv-code[data-language]::before{content:attr(data-language);display:block;margin:-3px 0 6px;color:var(--muted);font:11px var(--font-ui)}
+.cv-markdown .cv-image{display:block;max-width:100%;max-height:480px;height:auto;margin:8px 0;border:1px solid var(--line);border-radius:var(--radius-sm);background:var(--raised)}
+.cv-markdown a{color:var(--link);text-decoration:underline;text-decoration-color:color-mix(in srgb,currentColor 40%,transparent);text-underline-offset:3px}
+.cv-markdown a:hover{text-decoration-color:currentColor}
+.cv-file-reference{padding:1px 4px;border-radius:var(--radius-sm);background:var(--raised);color:var(--link);font-family:var(--font-mono);font-size:12.5px;cursor:help}
+button.cv-prompt-link{border:0;font:inherit;font-family:var(--font-mono);text-align:left;text-decoration:underline;text-underline-offset:3px;overflow-wrap:anywhere;cursor:pointer}
+button.cv-prompt-link:hover{text-decoration-thickness:2px}
+button.cv-prompt-link:focus-visible{outline:2px solid var(--link);outline-offset:1px}
+.cv-table-wrap{max-width:100%;margin:10px 0;overflow-x:auto}
+.cv-table{min-width:0;border-collapse:collapse;font-size:12.5px;line-height:1.5}
+.cv-table :is(th,td){padding:6px 10px;border:1px solid var(--line);text-align:left;vertical-align:top}
+.cv-table th{background:var(--raised);font-weight:600;white-space:nowrap}
+.cv-table td code{white-space:pre-wrap;overflow-wrap:anywhere}
+.aiws-agent-console .cv-markdown{color:var(--ink);font-size:13.5px;line-height:1.65}
+.aiws-agent-console .cv-bubble .cv-markdown{color:inherit}
+.aiws-agent-console .cv-system-card .cv-markdown{color:var(--muted);font-size:12.5px;line-height:1.6}

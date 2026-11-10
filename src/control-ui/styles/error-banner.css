@@ -1,0 +1,12 @@
+/* Error banner: a failed-tone card under the header that rises in when it appears. */
+.error-banner{display:flex;align-items:center;gap:10px;margin:12px 24px 0;padding:6px 6px 6px 12px;border:1px solid var(--tone-line);border-radius:var(--radius-lg);background:var(--tone-bg);color:var(--tone);font-size:13px}
+.error-banner:not([hidden]){animation:ui-enter var(--dur-enter) var(--ease-out)}
+.error-banner>.ui-icon{font-size:15px}
+.error-banner-text{flex:1;min-width:0;overflow-wrap:anywhere;color:var(--ink-strong)}
+.error-banner .button{color:var(--tone)}
+@media(max-width:1100px){
+.error-banner{margin:12px 20px 0}
+}
+@media(max-width:760px){
+.error-banner{margin:10px 14px 0}
+}

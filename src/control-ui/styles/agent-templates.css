@@ -1,0 +1,3 @@
+/* Loading placeholders of the agent template catalog. */
+.template-skeleton{display:flex;flex-direction:column;gap:10px;min-height:160px;padding:16px}
+.template-skeleton>.skeleton{height:12px}

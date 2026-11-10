@@ -1,0 +1,4 @@
+/* Only what the shared chat views (aiws.conversation.ui) do not cover; every color comes from AIWS's theme tokens. */
+.dn-outputs{display:flex;flex-direction:column;gap:2px}
+.dn-outputs>div{display:flex;align-items:baseline;gap:9px;min-width:0;font-size:12.5px}
+.dn-links{margin:0;padding:0;list-style:none}

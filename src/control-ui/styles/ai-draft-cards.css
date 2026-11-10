@@ -1,0 +1,70 @@
+/* A node: the label chip with badges and hover tools, then the card. The tools stay focusable while faded out. */
+.ai-node{position:relative;z-index:1;display:flex;flex-direction:column;gap:8px;min-width:0;transition:opacity var(--dur) var(--ease-out)}
+.ai-draft-list.has-focus>.ai-node:not(.is-near){opacity:.45}
+.ai-node.is-dragging{z-index:5;cursor:grabbing}
+.ai-node-tag{display:flex;align-items:center;gap:8px;height:24px;min-width:0}
+.ai-node-chip{display:inline-flex;align-items:center;gap:5px;flex:none;height:22px;padding:0 8px;border-radius:var(--radius-sm);background:var(--tone-bg);color:var(--tone);font-size:12px;font-weight:500;white-space:nowrap;font-variant-numeric:tabular-nums}
+.ai-card-badges{display:flex;align-items:center;gap:8px;min-width:0;overflow:hidden}
+.ai-badge{color:var(--tone);font-size:11.5px;font-weight:500;white-space:nowrap}
+.ai-card-tools{display:flex;gap:2px;margin-left:auto;opacity:0;transition:opacity var(--dur-fast) var(--ease-out)}
+.ai-node:is(:hover,:focus-within) .ai-card-tools{opacity:1}
+.ai-card-icon{width:24px;height:24px;font-size:14px}
+.ai-card{display:flex;flex-direction:column;gap:10px;min-width:0;padding:14px 14px 12px;cursor:grab;transition:border-color var(--dur) var(--ease-out),box-shadow var(--dur) var(--ease-out),transform var(--dur) var(--ease-out)}
+.ai-node:hover .ai-card{border-color:var(--line-strong);box-shadow:var(--shadow-2);transform:translateY(-2px)}
+.ai-node.is-dragging .ai-card{border-color:var(--line-strong);box-shadow:var(--shadow-pop);transform:rotate(-1deg) scale(1.02)}
+/* An open draft wears its priority: a tinted top edge and a faint wash under the title. */
+.ai-card[data-priority=high]{--card-accent:var(--tone-needs)}
+.ai-card[data-priority=medium]{--card-accent:var(--accent)}
+.ai-card[data-priority=low]{--card-accent:var(--tone-idle)}
+.ai-card[data-priority]{background:linear-gradient(180deg,color-mix(in srgb,var(--card-accent) 7%,var(--surface)),var(--surface) 84px)}
+.ai-card[data-priority]::after{content:"";position:absolute;inset:-1px;border-top:2px solid var(--card-accent);border-radius:inherit;pointer-events:none}
+/* A draft the planner rewrote flashes this ring once (app/ai-draft-cards.js fades its opacity). */
+.ai-card::before{content:"";position:absolute;inset:-1px;border-radius:inherit;box-shadow:0 0 0 2px color-mix(in srgb,var(--accent) 55%,transparent),0 0 0 7px color-mix(in srgb,var(--accent) 12%,transparent);opacity:0;pointer-events:none}
+.ai-card-body{display:flex;flex-direction:column;gap:5px;width:calc(100% + 12px);margin:-5px -6px;padding:5px 6px;border:0;border-radius:var(--radius);background:transparent;color:inherit;text-align:left;cursor:pointer;transition:background-color var(--dur-fast) var(--ease-out)}
+.ai-card-body:hover{background:var(--surface-hover)}
+.ai-card-heading{display:flex;align-items:flex-start;gap:7px;min-width:0}
+.ai-card-heading>.ui-sparkle{margin-top:3px;font-size:13px}
+.ai-card-title{min-width:0;color:var(--ink-strong);font-size:14px;font-weight:600;line-height:1.4;overflow-wrap:anywhere;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.ai-card-summary{color:var(--muted);font-size:12.5px;line-height:1.55;overflow-wrap:anywhere;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+.ai-card-outline{display:flex;flex-wrap:wrap;gap:5px;margin-top:4px}
+.ai-card-outline .ui-icon{color:var(--tone-done)}
+.ai-card-fields{display:flex;flex-wrap:wrap;gap:6px}
+/* Chip-like native selects: the card's agent, model and priority and the composer's planner agent. */
+.ai-select-chip{position:relative;display:inline-flex;align-items:center;min-width:0;max-width:100%;height:24px;border-radius:var(--radius-sm);background:var(--raised);color:var(--ink);font-size:12px;transition:background-color var(--dur-fast) var(--ease-out)}
+.ai-select-chip:hover{background:var(--line-strong)}
+.ai-select-chip select,.ai-select-chip select:focus{appearance:none;-webkit-appearance:none;min-width:0;max-width:100%;height:24px;min-height:0;padding:0 22px 0 8px;border:0;border-radius:inherit;background:transparent;box-shadow:none;color:inherit;font-size:inherit;text-overflow:ellipsis;cursor:pointer}
+.ai-select-chip select:focus-visible{box-shadow:var(--ring)}
+.ai-select-chip>.ui-icon{position:absolute;right:6px;color:var(--muted);font-size:11px;pointer-events:none}
+.ai-card-labels{display:flex;flex-wrap:wrap;align-items:center;gap:5px}
+.ai-card-labels .label-chip{font-size:11px;padding:0 7px}
+.ai-card-add-label{height:22px;min-height:0;padding:0 8px;border:1px dashed var(--line-strong);border-radius:var(--radius-pill);background:transparent;color:var(--muted);font-size:11.5px;cursor:pointer}
+.ai-card-add-label:hover{border-color:var(--faint);color:var(--ink-strong)}
+.ai-card-dependencies{display:flex;flex-wrap:wrap;align-items:center;gap:5px}
+.ai-card-label{margin-right:2px;color:var(--faint);font-size:10.5px;font-weight:600;letter-spacing:.06em;text-transform:uppercase}
+.ai-dependency{display:inline-flex;align-items:center;gap:4px;max-width:100%;height:22px;padding:0 2px 0 8px;border-radius:var(--radius-sm);background:var(--tone-bg);color:var(--ink);font-size:11.5px}
+.ai-dependency>span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ai-dependency strong{color:var(--tone);font-weight:600}
+.ai-dependency button{display:grid;place-items:center;flex:none;width:18px;height:18px;padding:0;border:0;border-radius:var(--radius-sm);background:transparent;color:var(--muted);font-size:11px}
+.ai-dependency button:hover{background:var(--surface-hover);color:var(--danger)}
+.ai-card-extra{margin:0;color:var(--muted);font-size:12px}
+.ai-card-actions{display:flex;align-items:center;gap:8px;padding-top:10px;border-top:1px solid var(--line)}
+.ai-card-status{flex:1;min-width:0;color:var(--muted);font-size:12px}
+.ai-card-status.error{color:var(--danger)}
+/* A created draft keeps its place as a compact done node. */
+.ai-node.created .ai-card{flex-direction:row;align-items:center;gap:10px;padding:10px 8px 10px 12px;border-color:var(--tone-line)}
+.ai-card-done{display:grid;place-items:center;flex:none;width:24px;height:24px;border-radius:50%;background:var(--tone-bg);color:var(--tone);font-size:13px}
+.ai-card-created-text{display:flex;flex-direction:column;flex:1;min-width:0}
+.ai-card-created-text strong{overflow:hidden;color:var(--ink-strong);font-size:13px;font-weight:600;text-overflow:ellipsis;white-space:nowrap}
+.ai-card-created-text small{color:var(--muted);font-size:11.5px;font-variant-numeric:tabular-nums}
+/* Entrance (AIWSUI.motion.enter marks new nodes one after another): the card rises in, its content follows and the chip settles
+   last. Both finish within the node's own entrance, which ends the sequence by removing .ui-enter. */
+.ai-node.ui-enter{animation:ui-rise var(--dur-layout) var(--ease-spring) var(--enter-delay,0ms) both}
+.ai-node.ui-enter .ai-card>*{animation:ui-fade var(--dur-slow) var(--ease-out) calc(var(--enter-delay,0ms) + 180ms) both}
+.ai-node.ui-enter .ai-node-tag{animation:ui-enter var(--dur-slow) var(--ease-out) calc(var(--enter-delay,0ms) + 240ms) both}
+.ai-skeleton .ai-card{min-height:156px;gap:10px;background:color-mix(in srgb,var(--surface) 70%,transparent);box-shadow:none}
+.ai-skeleton .skeleton{display:block;height:9px;border-radius:var(--radius-pill)}
+.ai-skeleton .ai-card>.skeleton:first-child{width:52%;height:12px}
+.ai-skeleton .ai-card>.skeleton:nth-child(2){width:92%}
+.ai-skeleton .ai-card>.skeleton:nth-child(3){width:68%}
+.ai-skeleton-chips{display:flex;gap:6px;margin-top:6px}
+.ai-skeleton :is(.ai-skeleton-chips>.skeleton,.ai-skeleton-chip){width:64px;height:22px;border-radius:var(--radius-sm)}
