@@ -70,6 +70,7 @@ function updateSessionTerminals(){
   const path=selected?.workspacePath||project?.repositoryPath||'',pathElement=element.querySelector('[data-shell-path]');pathElement.textContent=path;pathElement.title=path;
   element.querySelector('[data-shell-status]').textContent=selected?[project?.name,(selected.taskId?sessionStatus(selected):terminalStatus(selected)).label].filter(Boolean).join(' · '):'';
   element.querySelector('[data-shell-close]').hidden=!entry.items.length;element.querySelector('[data-terminal-menu]').disabled=!state.projects.length;
+  syncTerminalQuick(entry);
   syncTerminalMenu(entry,allTerminalMenuHtml);
   const empty=element.querySelector('[data-terminal-empty]'),showEmpty=!entry.items.length&&entry.loaded;empty.hidden=!showEmpty;
   if(showEmpty){const html=t.template`<div class="terminal-empty-card"><div class="terminal-empty-glyph" aria-hidden="true">&gt;_</div><h2>Açık terminal yok</h2><p>Projelerinde açtığın terminaller burada toplanır. + ile bir projede yeni terminal aç ya da canlı bir oturumu buraya getir.</p><div class="terminal-empty-actions"><button type="button" class="button" data-overview-tab="sessions">Canlı oturumlar</button></div></div>`;if(entry.emptyHtml!==html){empty.innerHTML=html;entry.emptyHtml=html;}}
