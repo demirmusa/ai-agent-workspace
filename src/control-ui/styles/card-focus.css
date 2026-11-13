@@ -1,0 +1,4 @@
+/* The blink that marks a board card reached from a blocked-by chip; it follows the AI ordering lock so it shows on locked cards too. */
+.task-card.focus-blink{animation:task-focus-blink .5s var(--ease-in-out) 4;border-color:var(--accent)}
+@keyframes task-focus-blink{50%{box-shadow:0 0 0 3px color-mix(in srgb,var(--accent) 55%,transparent);background:color-mix(in srgb,var(--accent) 14%,var(--surface))}}
+:root[data-motion=reduced] .task-card.focus-blink{animation-duration:1.4s;animation-iteration-count:1}

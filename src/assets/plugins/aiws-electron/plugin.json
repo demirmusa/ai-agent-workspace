@@ -1,0 +1,19 @@
+{
+  "id": "aiws.electron",
+  "name": {
+    "tr": "Electron",
+    "en": "Electron"
+  },
+  "version": "1.0.1",
+  "apiVersion": 1,
+  "description": {
+    "tr": "Sohbette electron-builder, Forge, packager, rebuild ve electron-vite komutları için özel kartlar; değişen süreçleri ve zayıflayan güvenlik ayarlarını gösterir.",
+    "en": "Dedicated chat cards for electron-builder, Forge, packager, rebuild and electron-vite; shows the processes an edit touches and weakened security settings."
+  },
+  "author": "AIWS",
+  "homepage": "https://github.com/demirmusa/ai-agent-workspace",
+  "main": "plugin.js",
+  "styles": [
+    "style.css"
+  ]
+}

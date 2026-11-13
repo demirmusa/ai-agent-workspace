@@ -1,0 +1,79 @@
+# syntax=docker/dockerfile:1.7
+FROM debian:bookworm-slim
+
+ARG DEBIAN_FRONTEND=noninteractive
+ARG TARGETARCH
+# Use "latest" to resolve at build time, or pass an exact actions/runner version.
+ARG RUNNER_VERSION=2.336.0
+ARG RUNNER_UID=10001
+ARG RUNNER_GID=10001
+ARG DOCKER_GID=999
+
+SHELL ["/bin/bash", "-o", "pipefail", "-c"]
+
+RUN apt-get update \
+ && apt-get install -y --no-install-recommends \
+      bash ca-certificates curl dumb-init git gnupg gosu jq libicu72 libkrb5-3 \
+      liblttng-ust1 libssl3 libunwind8 openssh-client passwd procps python3 tar unzip util-linux zlib1g \
+ && install -m 0755 -d /etc/apt/keyrings \
+ && curl -fsSL https://download.docker.com/linux/debian/gpg -o /etc/apt/keyrings/docker.asc \
+ && chmod a+r /etc/apt/keyrings/docker.asc \
+ && echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/debian bookworm stable" \
+      > /etc/apt/sources.list.d/docker.list \
+ && curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg \
+      -o /usr/share/keyrings/githubcli-archive-keyring.gpg \
+ && chmod go+r /usr/share/keyrings/githubcli-archive-keyring.gpg \
+ && echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" \
+      > /etc/apt/sources.list.d/github-cli.list \
+ && apt-get update \
+ && apt-get install -y --no-install-recommends \
+      docker-buildx-plugin docker-ce-cli docker-compose-plugin gh \
+ && rm -rf /var/lib/apt/lists/*
+
+RUN set -eux; \
+    arch="${TARGETARCH:-}"; \
+    if [[ -z "$arch" ]]; then arch="$(dpkg --print-architecture)"; fi; \
+    case "$arch" in \
+      amd64) runner_arch=x64 ;; \
+      arm64) runner_arch=arm64 ;; \
+      *) echo "Unsupported runner architecture: $arch" >&2; exit 1 ;; \
+    esac; \
+    version="$RUNNER_VERSION"; \
+    if [[ "$version" == latest ]]; then \
+      version="$(curl -fsSL https://api.github.com/repos/actions/runner/releases/latest | jq -er '.tag_name | ltrimstr("v")')"; \
+    fi; \
+    [[ "$version" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]] || { echo "Invalid runner version: $version" >&2; exit 1; }; \
+    install -d -m 0755 /opt/actions-runner-dist; \
+    curl -fsSL --retry 4 --retry-all-errors \
+      "https://github.com/actions/runner/releases/download/v${version}/actions-runner-linux-${runner_arch}-${version}.tar.gz" \
+      -o /tmp/actions-runner.tar.gz; \
+    tar -xzf /tmp/actions-runner.tar.gz -C /opt/actions-runner-dist; \
+    rm -f /tmp/actions-runner.tar.gz; \
+    printf '%s\n' "$version" > /opt/actions-runner-dist/.aiws-runner-version
+
+RUN groupadd --gid "$RUNNER_GID" runner \
+ && useradd --uid "$RUNNER_UID" --gid "$RUNNER_GID" --create-home --shell /bin/bash runner \
+ && docker_group="$(getent group "$DOCKER_GID" | cut -d: -f1 || true)" \
+ && if [[ -z "$docker_group" ]]; then groupadd --gid "$DOCKER_GID" hostdocker; docker_group=hostdocker; fi \
+ && usermod --append --groups "$docker_group" runner \
+ && install -d -o runner -g runner -m 0750 /var/lib/aiws/runner /var/lib/aiws/work \
+ && install -d -o runner -g runner -m 0700 /var/lib/aiws/io
+
+COPY bin/ /opt/aiws/bin/
+COPY VERSION /opt/aiws/VERSION
+RUN chown -R root:root /opt/aiws /opt/actions-runner-dist \
+ && find /opt/aiws/bin -type f -exec sed -i 's/\r$//' {} + \
+ && sed -i 's/\r$//' /opt/aiws/VERSION \
+ && install -d -o root -g root -m 0555 /opt/aiws/empty-hooks \
+ && find /opt/aiws/bin -type f -name '*.sh' -exec chmod 0555 {} + \
+ && chmod 0444 /opt/aiws/VERSION \
+ && chmod -R a-w /opt/actions-runner-dist
+
+ENV AIWS_RUNTIME_VERSION=0.2.0 \
+    AIWS_GITHUB_API_VERSION=2026-03-10 \
+    AIWS_RUNNER_STATE_DIR=/var/lib/aiws/runner \
+    AIWS_RUNNER_WORK_ROOT=/var/lib/aiws/work \
+    AIWS_RUNTIME_IO_ROOT=/var/lib/aiws/io
+
+WORKDIR /var/lib/aiws/runner
+ENTRYPOINT ["/usr/bin/dumb-init", "--", "/opt/aiws/bin/runner-entrypoint.sh"]

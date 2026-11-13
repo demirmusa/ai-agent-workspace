@@ -1,0 +1,32 @@
+{
+  "id": "aiws.theme-sunset",
+  "name": { "tr": "Gün Batımı Teması", "en": "Sunset Theme" },
+  "version": "1.0.0",
+  "apiVersion": 1,
+  "description": {
+    "tr": "Kod içermeyen tema eklentisi örneği: yalnız plugin.json ile sıcak tonlu açık ve koyu tema.",
+    "en": "A theme plugin without code: a warm light and dark theme from plugin.json alone."
+  },
+  "author": "AIWS",
+  "themes": [
+    {
+      "id": "sunset",
+      "name": { "tr": "Gün Batımı", "en": "Sunset" },
+      "description": { "tr": "Kehribar vurgu, sıcak gri yüzeyler", "en": "Amber accent, warm grey surfaces" },
+      "dark": {
+        "ground": "#1d1715", "sidebar": "#181311", "surface": "#231c19", "surface-hover": "#2b2320", "raised": "#342a26",
+        "surface-sunken": "#140f0e", "column": "#191412", "track": "#171210", "popover": "#271f1c", "input": "#1a1412",
+        "ink": "#ece0d9", "ink-strong": "#fff7f2", "muted": "#ad9c93", "faint": "#7a6b64", "line": "#332925", "line-strong": "#43362f",
+        "canvas-dot": "#3a2f2a", "accent": "#ff8a4c", "accent-hover": "#ffa06b", "accent-ink": "#1d1009", "link": "#ffab7d",
+        "primary": "#fbeee6", "primary-hover": "#ffffff", "primary-ink": "#1d1715"
+      },
+      "light": {
+        "ground": "#fbf6f2", "sidebar": "#f6efe9", "surface": "#ffffff", "surface-hover": "#f7efe9", "raised": "#efe5de",
+        "surface-sunken": "#f1e8e1", "column": "#f5ede7", "track": "#f2e9e2", "popover": "#ffffff", "input": "#ffffff",
+        "ink": "#2b1f1a", "ink-strong": "#160e0b", "muted": "#7a675e", "faint": "#ad9b92", "line": "#eadfd7", "line-strong": "#dfd0c6",
+        "canvas-dot": "#e2d4ca", "accent": "#d9601f", "accent-hover": "#c2531a", "accent-ink": "#ffffff", "link": "#c4551a",
+        "primary": "#2b1f1a", "primary-hover": "#3d2e27", "primary-ink": "#ffffff"
+      }
+    }
+  ]
+}

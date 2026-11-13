@@ -1,0 +1,26 @@
+/* Styles of the example plugin. They use only AIWS theme tokens (var(--surface), var(--accent) ...), so light/dark mode
+      and plugin themes apply automatically. Classes start with the plugin's own "hx-" prefix and do not override app rules. */
+.hx-page{max-width:960px;padding:20px 24px}
+.hx-title{margin:0 0 12px;font-size:15px}
+.hx-stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:10px}
+.hx-stat{display:flex;flex-direction:column;gap:4px;padding:14px 16px;border:1px solid var(--line);border-radius:var(--radius-lg);background:var(--surface)}
+.hx-stat small{color:var(--muted)}
+.hx-stat strong{font-size:22px;font-weight:650;color:var(--ink-strong)}
+.hx-bars{display:flex;flex-direction:column;gap:8px;margin-top:20px;padding:16px;border:1px solid var(--line);border-radius:var(--radius-lg);background:var(--surface)}
+.hx-bar-row{display:grid;grid-template-columns:130px 1fr 40px;align-items:center;gap:10px;font-size:12.5px}
+.hx-bar{height:8px;border-radius:var(--radius-pill);background:var(--track);overflow:hidden}
+.hx-bar i{display:block;height:100%;border-radius:inherit;background:var(--hx-highlight,var(--accent))}
+.hx-bar-row b{text-align:right;font-variant-numeric:tabular-nums}
+.hx-server{margin-top:12px;color:var(--muted);font-size:12px}
+.hx-note-form{display:flex;flex-direction:column;align-items:flex-end;gap:8px}
+.hx-note-form textarea{width:100%}
+.hx-notes{display:flex;flex-direction:column;gap:8px;margin:16px 0 0;padding:0;list-style:none}
+.hx-notes li{display:grid;grid-template-columns:1fr auto;gap:4px 12px;padding:10px 12px;border:1px solid var(--line);border-radius:var(--radius);background:var(--surface)}
+.hx-notes li p{white-space:pre-wrap}
+.hx-notes li small{color:var(--muted)}
+.hx-notes li button{grid-row:1/3;grid-column:2;align-self:center}
+.hx-empty{padding:16px;color:var(--muted)}
+.hx-checklist{margin:8px 0 0;padding:0;list-style:none}
+.hx-checklist .checkbox-field{margin-top:8px}
+.hx-ping{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.hx-ping code{font-family:var(--font-mono);font-size:11.5px;color:var(--muted);overflow-wrap:anywhere}

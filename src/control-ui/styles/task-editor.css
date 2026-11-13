@@ -1,0 +1,36 @@
+/* Compact task options: the task dialog shows the title and description first; "Gelişmiş seçenekler" and each option group open on
+   their own, keep their values and expand smoothly. The model and reasoning lines inside belong to the model picker. */
+.task-editor-modal{width:min(900px,calc(100vw - 48px));max-width:900px;max-height:calc(100dvh - 56px);overflow:hidden}
+.task-editor-modal #task-editor-form{display:flex;flex-direction:column;flex:1;min-height:0;overflow:hidden}
+.task-editor-scroll{flex:1;min-height:0;overflow-y:auto;overscroll-behavior:contain;padding:8px 24px 24px}
+.task-editor-scroll>.form-field{margin-top:18px}
+.task-editor-scroll>.form-field:first-child{margin-top:14px}
+.task-editor-scroll #field-title{padding:10px 12px;font-size:16px;font-weight:500;letter-spacing:-.15px}
+.task-editor-scroll #field-description{min-height:185px;max-height:440px;padding:12px;font-size:13.5px;line-height:1.7;resize:vertical}
+.task-auto-merge{flex:none;gap:6px;margin:0;font-size:12.5px;white-space:nowrap}
+.app-modal .modal-footer>.task-create-another{margin:0;cursor:pointer}
+.task-advanced{margin-top:22px;padding-top:12px;border-top:1px solid var(--line);interpolate-size:allow-keywords}
+.task-advanced>summary{display:flex;align-items:center;gap:10px;padding:6px 0;list-style:none;cursor:pointer;font-size:13px;font-weight:600;color:var(--ink-strong)}
+.task-advanced>summary small{font-size:12px;font-weight:400;color:var(--muted)}
+.task-advanced>summary::-webkit-details-marker{display:none}
+.task-advanced>summary:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
+.advanced-chevron{display:grid;place-items:center;flex:none;margin-left:auto;font-size:14px;color:var(--muted);transition:transform var(--dur) var(--ease-out)}
+.task-advanced[open]>summary>.advanced-chevron{transform:rotate(180deg)}
+.task-advanced::details-content{block-size:0;overflow:clip;transition:block-size var(--dur-slow) var(--ease-out),content-visibility var(--dur-slow) allow-discrete}
+.task-advanced[open]::details-content{block-size:auto}
+.task-advanced-content{display:flex;flex-direction:column;gap:8px;padding-top:10px}
+.task-advanced-content>.field-info{margin-top:6px}
+.task-option-tabs{align-self:flex-start;max-width:100%;overflow-x:auto}
+.task-option-count:not(:empty){min-width:16px;padding:0 5px;border-radius:999px;background:var(--surface-hover);color:var(--muted);font-size:11px;line-height:16px;text-align:center}
+.task-option-panel{display:flex;flex-direction:column;gap:14px;padding:6px 2px 2px}
+.task-option-panel>*,.task-option-panel .form-grid .form-field{margin-top:0}
+.task-option-panel .form-field small{font-size:12px;line-height:1.55}
+@media(max-width:650px){
+.task-editor-modal{width:calc(100vw - 20px);max-width:none;max-height:calc(100dvh - 20px)}
+.task-editor-scroll{padding:2px 16px 20px}
+.task-editor-scroll #field-title{font-size:15px}
+.task-editor-scroll #field-description{min-height:170px;font-size:13px}
+.task-advanced>summary{flex-wrap:wrap;gap:4px 10px}
+.task-advanced>summary small{display:none}
+.task-option-panel .form-grid,.usage-trigger-field{grid-template-columns:1fr;gap:12px}
+}

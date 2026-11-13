@@ -1,0 +1,61 @@
+/* Tool activity: quiet one-line rows between messages; opened, a row becomes a card with its command, fields and output. */
+.cv-node:is(.cv-tool,.cv-files,.cv-fold){margin:5px 0}
+/* The calls an opened fold reveals hang off its row on one rail, so what belongs to it stays visible. */
+.cv-node.cv-fold-member{margin:0 0 0 15px;padding:2px 0 2px 8px;border-left:2px solid var(--line-strong)}
+.cv-tool-fold,.cv-tool-details>summary{display:flex;align-items:center;gap:9px;min-width:0;max-width:100%;padding:5px 8px;border-radius:var(--radius-sm);list-style:none;cursor:pointer;transition:background-color var(--dur-fast) var(--ease-out)}
+.cv-tool-details>summary::-webkit-details-marker{display:none}
+.cv-tool-fold{width:100%;border:0;background:none;color:inherit;font:inherit;text-align:left}
+.cv-tool-fold[aria-expanded=true] .cv-tool-heading>strong{color:var(--ink-strong)}
+.cv-tool-fold:hover,.cv-tool-details>summary:hover{background:var(--surface-hover)}
+.cv-tool-details[open]{padding-bottom:6px;border:1px solid var(--line);border-radius:var(--radius-md);background:var(--surface)}
+.cv-tool-details[open]>summary{border-radius:var(--radius-md) var(--radius-md) 0 0}
+.cv-tool-icon{--spinner-size:12px;display:inline-grid;place-items:center;flex:none;width:16px;color:var(--muted);font:12px/1 var(--font-mono)}
+.cv-tool-icon[data-tone]{color:var(--tone)}
+.cv-tool-heading{display:flex;align-items:baseline;gap:9px;flex:1;min-width:0;overflow:hidden}
+.cv-tool-heading>strong{flex:0 1 auto;min-width:0;overflow:hidden;color:var(--ink);font-size:13px;font-weight:500;white-space:nowrap;text-overflow:ellipsis}
+.cv-tool-details[open]>summary .cv-tool-heading>strong{color:var(--ink-strong)}
+.cv-tool-preview{flex:1;min-width:0;overflow:hidden;color:var(--muted);font:12.5px/1.6 var(--font-mono);white-space:nowrap;text-overflow:ellipsis}
+.cv-tool-metrics{flex:none;color:var(--faint);font-size:12px;white-space:nowrap;font-variant-numeric:tabular-nums}
+.cv-tool-status{flex:none;color:var(--muted);font:500 12px var(--font-ui);white-space:nowrap}
+.cv-tool-status.running{color:var(--tone-running)}
+.cv-tool-status:is(.failed,.incomplete){color:var(--tone-failed)}
+.cv-tool-status.completed{display:none}
+.cv-disclosure{display:inline-grid;flex:none;color:var(--faint);transform:rotate(-90deg);transition:transform var(--dur) var(--ease-out)}
+.cv-tool-fold[aria-expanded=true] .cv-disclosure,.cv-tool-details[open]>summary .cv-disclosure{transform:none}
+.cv-command-label{display:flex;align-items:center;justify-content:space-between;gap:8px;margin:10px 12px 5px;color:var(--muted);font:600 12px var(--font-ui)}
+.cv-command,.cv-output:not(.cv-node){max-width:100%;max-height:320px;margin:0;padding:9px 12px;overflow:auto;background:var(--surface-sunken);white-space:pre-wrap;overflow-wrap:anywhere;word-break:break-word;tab-size:2;font:12.5px/1.65 var(--font-mono)}
+.cv-command{color:var(--ink-strong)}
+.cv-output:not(.cv-node){color:var(--ink)}
+.aiws-agent-console .cv-web-output{max-height:360px;overflow-y:auto;white-space:normal;font:13px/1.7 var(--font-ui)}
+.cv-tool-fields{min-width:0;margin:7px 0 10px;padding:0 12px}
+.cv-tool-field{display:grid;grid-template-columns:minmax(70px,90px) minmax(0,1fr);gap:12px;padding:6px 0}
+.cv-tool-field dt{color:var(--muted);font-size:12.5px}
+.cv-tool-field dd{display:flex;flex-wrap:wrap;align-items:baseline;gap:8px;min-width:0;margin:0;font-size:13px;overflow-wrap:anywhere}
+.cv-tool-field dd>:is(span,a){min-width:0;max-width:100%;overflow-wrap:anywhere}
+.cv-tool-field dd>small{flex-basis:100%;color:var(--muted);font-size:12px}
+.cv-tool-field dd>.cv-text-button{margin-left:auto}
+.cv-tool-field a,.cv-tool-sources a{color:var(--link);text-decoration:underline;text-underline-offset:3px}
+.cv-tool-sources{display:flex;flex-wrap:wrap;gap:6px 14px;min-width:0;padding:4px 12px 10px}
+.cv-tool-sources a{max-width:100%;font-size:12.5px;overflow-wrap:anywhere}
+.cv-files{margin:0;padding:0;list-style:none}
+.cv-files li{display:flex;flex-wrap:wrap;align-items:flex-start;gap:8px;padding:8px 12px;border-top:1px solid var(--line)}
+.cv-file-kind{flex:none;color:var(--accent);font-size:12px;line-height:1.8;white-space:nowrap}
+.cv-files code{flex:1;min-width:0;font:12.5px/1.7 var(--font-mono);overflow-wrap:anywhere}
+.cv-diff{width:100%;font-size:12px}
+.cv-diff summary{cursor:pointer;color:var(--muted)}
+.cv-diff pre{max-height:320px;overflow:auto;white-space:pre-wrap;overflow-wrap:anywhere;font:12px/1.7 var(--font-mono)}
+.cv-tool-footer{display:flex;flex-wrap:wrap;align-items:center;gap:12px;padding:8px 12px 2px;color:var(--muted);font-size:12px;line-height:1.7;font-variant-numeric:tabular-nums}
+.cv-tool-footer span:last-child{margin-left:auto}
+.cv-tool-footer b{font-weight:500;color:var(--ink)}
+.cv-tool-details>.cv-text-button{margin:6px 12px 2px}
+.cv-tool-details>.cv-raw{padding:0 12px}
+.cv-tool-empty{padding:10px 12px;color:var(--muted);font-size:12px}
+.cv-output-truncated{padding:7px 12px;color:var(--warning);font-size:12px;line-height:1.7}
+.cv-node:is(.cv-output,.cv-error,.cv-unknown){overflow:hidden;border:1px solid var(--line);border-radius:var(--radius-md);background:var(--surface)}
+.cv-node.cv-error{border-color:var(--tone-failed-line);background:var(--tone-failed-bg)}
+.cv-output-heading{display:flex;align-items:center;gap:10px;padding:7px 12px;color:var(--muted);font:600 12px var(--font-ui)}
+.cv-output-heading strong{flex:1;font-weight:600}
+.cv-output-heading time{font-weight:400}
+.cv-error :is(.cv-output-heading,.cv-output){background:none;color:var(--danger)}
+.cv-node:is(.cv-output,.cv-error)>.cv-output{max-height:260px;border-top:1px solid color-mix(in srgb,currentColor 12%,transparent)}
+.cv-node:is(.cv-error,.cv-unknown)>.cv-raw{padding:6px 12px}

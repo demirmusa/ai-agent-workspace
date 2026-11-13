@@ -1,0 +1,10 @@
+/* Only what the shared chat views (aiws.conversation.ui) do not cover; every color comes from AIWS's theme tokens. */
+.rn-wrong{margin:0;color:var(--tone-failed);font:12px/1.5 var(--font-mono);overflow-wrap:anywhere}
+.rn-devices{display:flex;flex-direction:column;gap:2px}
+.rn-devices>div{display:flex;align-items:baseline;gap:9px;padding-left:8px;border-left:2px solid var(--tone);font-size:12.5px}
+.rn-devices code{color:var(--muted);font:12px var(--font-mono)}
+.rn-devices span{margin-left:auto;color:var(--tone);font-size:12px}
+.rn-log{display:flex;flex-direction:column;gap:1px}
+.rn-log>div{display:flex;gap:8px;min-width:0}
+.rn-log b{flex:none;color:var(--tone-failed);font-weight:500}
+.rn-log span{min-width:0;overflow-wrap:anywhere}

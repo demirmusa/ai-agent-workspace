@@ -1,0 +1,87 @@
+{
+  "id": "aiws.example",
+  "name": { "tr": "Örnek Eklenti", "en": "Example Plugin" },
+  "version": "1.0.0",
+  "apiVersion": 1,
+  "description": {
+    "tr": "Eklenti API'sinin tamamını gösteren örnek: istatistik sayfası, proje notları, görev tahmini ve kabul kriterleri, kart rozetleri, komut, sunucu rotası, agent prompt bağlamı ve iki tema.",
+    "en": "A tour of the whole plugin API: a statistics page, project notes, task estimates and acceptance criteria, card badges, a command, a server route, agent prompt context and two themes."
+  },
+  "author": "AIWS",
+  "homepage": "https://github.com/demirmusa/ai-agent-workspace",
+  "icon": "icon.svg",
+  "main": "plugin.js",
+  "server": "server.js",
+  "styles": ["style.css"],
+  "settings": [
+    {
+      "key": "pointUnit",
+      "type": "select",
+      "label": { "tr": "Tahmin birimi", "en": "Estimate unit" },
+      "default": "SP",
+      "options": [
+        { "value": "SP", "label": "Story point" },
+        { "value": "h", "label": { "tr": "Saat", "en": "Hours" } }
+      ]
+    },
+    {
+      "key": "showBadges",
+      "type": "boolean",
+      "label": { "tr": "Kartlarda tahmin ve risk rozeti göster", "en": "Show estimate and risk badges on cards" },
+      "default": true
+    },
+    {
+      "key": "celebrate",
+      "type": "boolean",
+      "label": { "tr": "Görev tamamlanınca bildirim göster", "en": "Show a notice when a task is done" },
+      "default": true
+    },
+    {
+      "key": "promptContext",
+      "type": "boolean",
+      "label": { "tr": "Tahmini ve kabul kriterlerini agent prompt'una ekle", "en": "Add the estimate and acceptance criteria to the agent prompt" },
+      "description": { "tr": "Sunucu kodu bu bilgiyi görev başlarken agent'a gönderir.", "en": "The server code sends this to the agent when the task starts." },
+      "default": true
+    },
+    {
+      "key": "highlight",
+      "type": "color",
+      "label": { "tr": "Vurgu rengi", "en": "Highlight colour" },
+      "description": { "tr": "\"Vurgu\" teması ve eklentinin grafiklerinde kullanılır.", "en": "Used by the \"Highlight\" theme and the plugin's charts." },
+      "default": "#7c5cff"
+    }
+  ],
+  "themes": [
+    {
+      "id": "midnight",
+      "name": { "tr": "Gece Yarısı", "en": "Midnight" },
+      "description": { "tr": "Lacivert yüzeyler, mor vurgu", "en": "Navy surfaces, violet accent" },
+      "dark": {
+        "ground": "#0f1222", "sidebar": "#0c0f1d", "surface": "#151935", "surface-hover": "#1c2142", "raised": "#232a52",
+        "surface-sunken": "#0a0d19", "column": "#0d1020", "track": "#0b0e1b", "popover": "#171c3a", "input": "#0e1226",
+        "ink": "#dfe3f5", "ink-strong": "#f6f7ff", "muted": "#9aa1c4", "faint": "#6a7096", "line": "#242a4d", "line-strong": "#313863",
+        "canvas-dot": "#262c52", "accent": "#8b7bff", "accent-hover": "#a294ff", "accent-ink": "#ffffff", "link": "#a99dff",
+        "primary": "#eef0ff", "primary-hover": "#ffffff", "primary-ink": "#12152b", "tooltip-bg": "#1d2247"
+      },
+      "light": {
+        "ground": "#f6f7fc", "sidebar": "#eef0fa", "surface": "#ffffff", "surface-hover": "#eff1fb", "raised": "#e6e9f7",
+        "surface-sunken": "#e9ecf7", "column": "#eef0f9", "track": "#eceef8", "popover": "#ffffff", "input": "#ffffff",
+        "ink": "#1b1f3a", "ink-strong": "#0b0d1f", "muted": "#5f6488", "faint": "#9a9fbd", "line": "#e1e4f2", "line-strong": "#d3d7ec",
+        "canvas-dot": "#d6d9ec", "accent": "#5b47e0", "accent-hover": "#4a37cc", "accent-ink": "#ffffff", "link": "#4d3bd6",
+        "primary": "#1b1f3a", "primary-hover": "#2a2f52", "primary-ink": "#ffffff"
+      }
+    },
+    {
+      "id": "forest",
+      "name": { "tr": "Orman", "en": "Forest" },
+      "description": { "tr": "Koyu yeşil, yalnız koyu mod", "en": "Deep green, dark mode only" },
+      "dark": {
+        "ground": "#141a17", "sidebar": "#101512", "surface": "#19211d", "surface-hover": "#202a25", "raised": "#28332d",
+        "surface-sunken": "#0d120f", "column": "#121814", "track": "#111612", "popover": "#1c2520", "input": "#121813",
+        "ink": "#d9e4dc", "ink-strong": "#f2f8f3", "muted": "#93a69a", "faint": "#63756a", "line": "#26302a", "line-strong": "#334038",
+        "canvas-dot": "#2a352f", "accent": "#3fbf7f", "accent-hover": "#5ad196", "accent-ink": "#08140d", "link": "#6fd6a1",
+        "primary": "#e8f3eb", "primary-hover": "#ffffff", "primary-ink": "#0f1712"
+      }
+    }
+  ]
+}

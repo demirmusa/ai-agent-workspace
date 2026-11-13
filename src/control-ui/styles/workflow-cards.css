@@ -1,0 +1,5 @@
+/* A workflow card's chain of steps. */
+.workflow-steps{display:flex;gap:28px;margin:12px 0;padding:12px 14px;list-style:none;overflow-x:auto;border-radius:var(--radius-md);background:var(--surface-sunken)}
+.workflow-steps>li{position:relative;display:flex;flex-direction:column;gap:2px;flex:0 0 auto;min-width:130px}
+.workflow-steps>li:not(:last-child)::after{content:"";position:absolute;top:11px;left:30px;right:-20px;height:1.5px;background:color-mix(in srgb,var(--accent) 55%,transparent)}
+.workflow-step-mark{display:grid;place-items:center;width:22px;height:22px;margin-bottom:6px;border:1px solid var(--line-strong);border-radius:50%;background:var(--surface);font-size:11px;font-weight:600}

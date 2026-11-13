@@ -1,0 +1,16 @@
+/* The live activity strip above the composer and the plugin panels above the timeline. */
+.cv-activity{--spinner-size:12px;display:flex;align-items:center;gap:9px;flex:none;min-width:0;min-height:30px;padding:4px 22px;border-top:1px solid var(--line);background:var(--ground);color:var(--tone-running);font-size:12.5px}
+.cv-activity>strong{flex:none;font-weight:500}
+.cv-activity>code{flex:1;min-width:0;overflow:hidden;color:var(--muted);font:12px/1.5 var(--font-mono);white-space:nowrap;text-overflow:ellipsis}
+.cv-activity-time{flex:none;margin-left:auto;color:var(--faint);font-size:12px;font-variant-numeric:tabular-nums}
+.cv-native-mode .cv-activity,.cv-native-mode .cv-insights{display:none}
+
+.cv-insights{display:flex;flex-direction:column;flex:none;max-height:45%;min-width:0;overflow:auto;border-bottom:1px solid var(--line)}
+.cv-insight+.cv-insight{border-top:1px solid var(--line)}
+.cv-insight-head{display:flex;align-items:center;gap:8px;width:100%;min-width:0;min-height:32px;padding:4px 22px;border:0;background:none;color:var(--ink);font:inherit;font-size:12.5px;text-align:left;cursor:pointer;transition:background-color var(--dur-fast) var(--ease-out)}
+.cv-insight-head:hover{background:var(--surface-hover)}
+.cv-insight-head>strong{flex:none;font-weight:500}
+.cv-insight-icon{display:inline-grid;place-items:center;flex:none;width:16px;color:var(--muted)}
+.cv-insight-summary{display:flex;align-items:center;gap:4px;flex:1;min-width:0;overflow:hidden}
+.cv-insight-head[aria-expanded=true] .cv-disclosure{transform:none}
+.cv-insight-body{padding:4px 22px 12px;font-size:12.5px}

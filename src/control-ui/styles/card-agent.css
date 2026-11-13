@@ -1,0 +1,9 @@
+/* The provider and agent chip of a board card, which opens the agent picker. */
+.provider{display:inline-flex;align-items:center;gap:6px;min-width:0;max-width:100%;color:var(--muted);white-space:nowrap}
+.provider>.provider-icon{width:18px;height:18px;border-radius:5px}
+.provider>.provider-icon img{width:14px;height:14px}
+.card-agent-level{display:inline-flex;flex:none;color:var(--accent);font-size:12px}
+.card-agent-button{height:26px;margin:-4px -6px -4px -4px;padding:0 5px 0 3px;border:1px solid transparent;border-radius:var(--radius);background:transparent;text-align:left}
+.card-agent-chevron{display:inline-flex;flex:none;color:var(--faint);font-size:11px;transition:color var(--dur-fast) var(--ease-out)}
+.card-agent-button:hover .card-agent-chevron{color:var(--muted)}
+.provider{font-size:12px}

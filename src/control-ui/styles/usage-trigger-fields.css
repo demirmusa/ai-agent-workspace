@@ -1,0 +1,9 @@
+/* Quota trigger: a one-line button that opens a popup with provider, usage window and minutes before it resets. */
+.usage-trigger{position:relative;min-width:0}
+.usage-trigger-button{display:flex;width:100%;align-items:center;text-align:left;min-width:0}
+.usage-trigger-summary{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.usage-trigger-field{position:fixed;inset:auto;margin:0;overflow:visible;box-sizing:border-box;width:max-content;min-width:280px;max-width:calc(100vw - 16px);padding:10px;display:grid;grid-template-columns:minmax(0,1fr);gap:8px}
+.usage-trigger-field.is-above{transform-origin:bottom}
+.usage-trigger-field[hidden]{display:none}
+.usage-trigger-minutes{display:flex;align-items:center;gap:6px;font-size:12.5px;color:var(--muted);white-space:nowrap}
+.usage-trigger-minutes input{width:84px}

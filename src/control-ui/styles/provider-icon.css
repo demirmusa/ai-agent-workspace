@@ -1,0 +1,10 @@
+/* Provider logos in round chips: task meta, library avatars and history rows. */
+.provider-icon{display:inline-grid;place-items:center;vertical-align:middle;flex:none;width:23px;height:23px;border-radius:5px;overflow:hidden}
+.provider-icon img{display:block;width:18px;height:18px;object-fit:contain}
+.provider-icon.codex{background:#fff;border:1px solid #e1e4e7}
+.provider-icon.claude{background:transparent}
+.provider-fallback{font:9px var(--font-mono);color:var(--muted);background:var(--raised)}
+.library-avatar .provider-icon{width:29px;height:29px}
+.library-avatar .provider-icon img{width:22px;height:22px}
+.history-provider-avatar .provider-icon{width:28px;height:28px}
+.task-meta dd>.provider-icon{margin-right:4px}

@@ -1,0 +1,14 @@
+{
+  "name": "ai-agent-workspace-root",
+  "private": true,
+  "description": "Repository root wrapper; the application lives in src/. Commands here forward to src/.",
+  "scripts": {
+    "postinstall": "cd src && npm install",
+    "build": "cd src && npm run build",
+    "typecheck": "cd src && npm run typecheck",
+    "test": "cd src && npm test",
+    "control": "cd src && npm run control",
+    "desktop": "cd src && npm run desktop",
+    "desktop:start": "cd src && npm run desktop:start"
+  }
+}

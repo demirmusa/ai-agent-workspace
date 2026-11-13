@@ -1,0 +1,12 @@
+/* The provider models window: one row per model with default, auto merge and enabled controls. */
+.provider-model-tools{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:16px}
+.provider-model-list{display:flex;flex-direction:column;gap:2px;margin:0;padding:0;list-style:none}
+.provider-model-columns,.provider-model-row{display:grid;grid-template-columns:minmax(0,1fr) 72px 112px 64px;align-items:center;gap:12px;padding:10px 8px}
+.provider-model-columns{font-size:11px;font-weight:600;color:var(--muted);border-bottom:1px solid var(--line);margin-bottom:4px}
+.provider-model-columns>span:not(:first-child){text-align:center}
+.provider-model-row{min-height:48px;border-radius:var(--radius-sm)}
+.provider-model-row>:not(:first-child){justify-self:center}
+.provider-model-row:hover{background:var(--surface-hover)}
+.provider-model-default{border-bottom:1px solid var(--line);border-radius:0;margin-bottom:4px;color:var(--muted)}
+.provider-model-name{min-width:0;font-size:12px;overflow-wrap:anywhere}
+@media(max-width:540px){.provider-model-columns,.provider-model-row{grid-template-columns:minmax(0,1fr) 44px 76px 44px;gap:6px;padding-inline:4px}.provider-model-columns{font-size:10px}.provider-model-tools{align-items:flex-start;flex-direction:column}}

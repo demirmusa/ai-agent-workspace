@@ -1,0 +1,17 @@
+{
+  "id": "aiws.angular",
+  "name": {
+    "tr": "Angular",
+    "en": "Angular"
+  },
+  "version": "1.0.1",
+  "apiVersion": 1,
+  "description": {
+    "tr": "Sohbette ng ve nx komutları için özel kartlar: paket boyutları, bütçe uyarıları, derleme hataları, Karma ve Jest sonuçları, üretilen dosyalar ve durum paneli.",
+    "en": "Dedicated chat cards for ng and nx: bundle sizes, budget warnings, compiler errors, Karma and Jest results, generated files and a status panel."
+  },
+  "author": "AIWS",
+  "homepage": "https://github.com/demirmusa/ai-agent-workspace",
+  "main": "plugin.js",
+  "styles": ["style.css"]
+}

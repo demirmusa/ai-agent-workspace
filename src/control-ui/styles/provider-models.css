@@ -1,0 +1,11 @@
+/* A provider card's model summary: status, refresh, chips and the manage action. */
+.provider-auto-mode,.provider-models{padding:10px 12px;border-radius:var(--radius-md);background:var(--track)}
+.provider-models{display:flex;flex-direction:column;gap:10px}
+.provider-models-head{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.provider-models-text{display:flex;flex-direction:column;gap:2px;min-width:0;font-size:12px}
+.provider-models-text small{color:var(--muted);font-size:11px;overflow-wrap:anywhere}
+.provider-models .button{flex-shrink:0}
+.provider-models-summary{color:var(--muted);font-size:11px}
+.provider-models>[data-provider-models-manage]{align-self:flex-start}
+.provider-model-chips{display:flex;flex-wrap:wrap;gap:5px}
+.provider-model-chips .ui-chip{background:var(--surface);box-shadow:inset 0 0 0 1px var(--line)}

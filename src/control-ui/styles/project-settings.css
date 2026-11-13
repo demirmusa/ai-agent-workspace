@@ -1,0 +1,28 @@
+/* Project settings page */
+.project-settings-board{display:block;overflow:visible;min-height:0}
+.project-settings{width:100%}
+.project-settings-layout{display:grid;grid-template-columns:200px minmax(0,1fr);gap:32px;align-items:start}
+.settings-panel{min-width:0;max-width:960px}
+.settings-panel-header{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;padding-bottom:12px;margin-bottom:18px;border-bottom:1px solid var(--line)}
+.settings-panel-header h2{margin:0;font-size:16px;font-weight:600;color:var(--ink-strong)}
+.settings-panel-header p{margin:4px 0 0;font-size:12.5px;color:var(--muted);line-height:1.6;max-width:720px}
+.settings-panel>.form-field:first-of-type{margin-top:0}
+.settings-panel .repository-detection{margin-top:16px}
+.settings-status-card{border:1px solid var(--line);border-radius:6px;background:var(--surface);padding:12px 14px}
+.settings-status-card>header{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:10px;font-size:13px;color:var(--ink-strong)}
+.settings-status-actions{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end}
+.settings-status-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px 20px;margin:0}
+.settings-status-grid dt{font-size:12px;color:var(--muted)}
+.settings-status-grid dd{margin:2px 0 0;font-size:13px;font-weight:600;color:var(--ink-strong);overflow-wrap:anywhere}
+.settings-status-grid dd.is-error{color:var(--danger)}
+.danger-zone{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:14px 16px;border:1px solid color-mix(in srgb,var(--danger) 45%,var(--line));border-radius:6px;background:color-mix(in srgb,var(--danger) 6%,var(--ground))}
+.danger-zone strong{font-size:13px;color:var(--ink-strong)}
+.danger-zone p{margin:4px 0 0;font-size:12.5px;color:var(--muted)}
+.danger-zone .button.danger{flex-shrink:0;border-color:color-mix(in srgb,var(--danger) 55%,var(--line))}
+.danger-zone-mark{display:grid;place-items:center;flex:none;width:34px;height:34px;border-radius:var(--radius-md);background:var(--tone-bg);color:var(--tone);font-size:16px}
+@media(max-width:760px){
+.app-shell>main{flex:1 1 auto}
+.project-settings-layout{grid-template-columns:minmax(0,1fr);gap:16px}
+.settings-panel-header{flex-direction:column}
+.danger-zone{flex-direction:column;align-items:flex-start}
+}

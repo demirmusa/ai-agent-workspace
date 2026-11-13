@@ -1,0 +1,39 @@
+/* Input requests: the header's notifications are a bell with a badge for new requests and a dropdown with one row per request, whose rows fade in and out; toasts slide in at the bottom right, show how long they stay with a draining line, slide out and let the others glide into place. Kind pills (question, approval) are shared with the agent console. */
+.request-kind{--tone:var(--tone-running);--tone-bg:var(--tone-running-bg);display:inline-flex;align-items:center;flex:none;height:20px;padding:0 7px;border-radius:var(--radius-sm);background:var(--tone-bg);color:var(--tone);font-size:11.5px;font-weight:600;line-height:1}
+.request-kind[data-kind=approval]{--tone:var(--tone-needs);--tone-bg:var(--tone-needs-bg)}
+.notifications{position:relative;flex:none}
+.notifications-badge{position:absolute;top:1px;right:0;min-width:16px;height:16px;padding:0 4px;border-radius:var(--radius-pill);background:var(--accent);color:var(--accent-ink);font-size:10.5px;font-weight:600;line-height:16px;text-align:center;font-variant-numeric:tabular-nums;pointer-events:none}
+.notifications-badge:not([hidden]){animation:ui-pop var(--dur) var(--ease-out)}
+.notifications-menu{position:absolute;z-index:60;top:calc(100% + 8px);right:0;display:flex;flex-direction:column;gap:2px;width:min(420px,calc(100vw - 88px));max-height:min(70vh,480px);overflow:hidden auto;overscroll-behavior:contain;font-size:13px}
+.notifications-title{margin:0;padding:6px 8px 4px;font-size:12px;font-weight:600;color:var(--muted)}
+.notifications-empty{margin:0;padding:10px 8px 14px;font-size:12.5px;color:var(--muted)}
+.notifications-offer{margin-left:auto;padding:2px 6px;border:0;border-radius:var(--radius-sm);background:none;color:var(--muted);font-size:12px}
+.notifications-offer:is(:hover,:focus-visible){color:var(--ink-strong)}
+.input-request-list{display:flex;flex-direction:column;gap:2px}
+.input-request-row{display:flex;align-items:center;gap:10px;width:100%;min-width:0;padding:6px 8px;border:0;border-radius:var(--radius);background:transparent;color:var(--ink);font:inherit;text-align:left;transition:background-color var(--dur-fast) var(--ease-out),opacity var(--dur) var(--ease-out),transform var(--dur) var(--ease-out)}
+.input-request-row:is(:hover,:focus-visible){background:var(--surface-hover);outline:none}
+.input-request-row.is-leaving{opacity:0;transform:translateX(16px)}
+.input-request-text{display:flex;flex-direction:column;gap:1px;flex:1;min-width:0;overflow:hidden}
+.input-request-text strong{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:600;color:var(--ink-strong)}
+.input-request-text small{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:12px;color:var(--muted)}
+.input-request-go{display:inline-flex;align-items:center;gap:4px;flex:none;font-size:12.5px;font-weight:600;color:var(--muted);transition:color var(--dur-fast) var(--ease-out)}
+.input-request-row:is(:hover,:focus-visible) .input-request-go{color:var(--ink-strong)}
+.input-request-go .ui-icon{transition:transform var(--dur-fast) var(--ease-out)}
+.input-request-row:hover .input-request-go .ui-icon{transform:translateX(2px)}
+.input-request-foot{display:flex;align-items:center;gap:8px;min-height:24px;padding:0 8px;font-size:12px;color:var(--muted)}
+.input-request-toasts{position:fixed;right:20px;bottom:44px;z-index:1000;display:flex;flex-direction:column;gap:8px;width:min(340px,calc(100vw - 32px));pointer-events:none}
+.input-request-toast{position:relative;display:flex;flex-direction:column;gap:4px;overflow:hidden;padding:10px 12px 12px;border:1px solid var(--line);border-radius:var(--radius-lg);background:var(--popover);color:var(--ink);box-shadow:var(--shadow-pop);pointer-events:auto;transition:opacity var(--dur) var(--ease-out),transform var(--dur) var(--ease-out)}
+.input-request-toast.ui-enter{animation-name:ui-slide}
+.input-request-toast.is-leaving{opacity:0;transform:translateX(16px)}
+.input-request-toast>header{display:flex;align-items:center;gap:8px;min-width:0}
+.input-request-toast>header small{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:11.5px;color:var(--muted)}
+.request-toast-close{display:grid;place-items:center;width:24px;height:24px;margin-right:-4px;padding:0;border:0;border-radius:var(--radius-sm);background:none;color:var(--muted);font-size:13px}
+.request-toast-close:hover{background:var(--surface-hover);color:var(--ink-strong)}
+.input-request-toast>strong{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:13.5px;font-weight:600;color:var(--ink-strong)}
+.input-request-toast>p{display:-webkit-box;margin:0;overflow:hidden;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow-wrap:anywhere;font-size:12.5px;line-height:1.45;color:var(--ink)}
+.input-request-toast>footer{display:flex;justify-content:flex-end;margin-top:6px}
+.request-toast-life{position:absolute;left:0;right:0;bottom:0;height:2px;background:var(--tone);transform-origin:left;animation:request-toast-life var(--toast-life) linear forwards}
+@keyframes request-toast-life{to{transform:scaleX(0)}}
+@media(max-width:760px){
+.input-request-toasts{left:16px;right:16px;bottom:16px;width:auto}
+}

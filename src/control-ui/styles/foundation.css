@@ -1,0 +1,59 @@
+/* Foundation: shared motion keyframes, status tones, status marks, surfaces and the switch every component builds on. */
+.ui-enter{animation:ui-enter var(--dur-enter) var(--ease-out) var(--enter-delay,0ms) both}
+.ui-enter-fade{animation:ui-fade var(--dur-enter) var(--ease-out) var(--enter-delay,0ms) both}
+@keyframes ui-enter{from{opacity:0;transform:translateY(6px) scale(.985)}to{opacity:1;transform:none}}
+@keyframes ui-fade{from{opacity:0}to{opacity:1}}
+/* An entrance from the right edge for toasts. */
+@keyframes ui-slide{from{opacity:0;transform:translateX(24px)}to{opacity:1;transform:none}}
+/* A larger entrance for canvas nodes: rises and settles with a slight spring. Only opacity and transform move, so it stays on the compositor. */
+@keyframes ui-rise{0%{opacity:0;transform:translateY(22px) scale(.92)}55%{opacity:1}to{opacity:1;transform:none}}
+@keyframes ui-spin{to{transform:rotate(360deg)}}
+@keyframes ui-ping{from{opacity:.55;transform:scale(1)}to{opacity:0;transform:scale(2.6)}}
+@keyframes ui-shimmer{to{transform:translateX(100%)}}
+/* A live-state pulse that dims from whatever opacity the element has and back. */
+@keyframes ui-pulse{50%{opacity:.4}}
+/* Foundation · tones: data-tone (and a task status chip's status class) sets --tone, --tone-bg and --tone-line for the element
+   and everything inside it, so a toned card tints its own sparkle, dots and hairlines. Pills and chips start from idle. */
+.status-pill,.task-status-chip{--tone:var(--tone-idle);--tone-bg:var(--tone-idle-bg);--tone-line:var(--tone-idle-line);--dot-size:6px;--spinner-size:10px;display:inline-flex;align-items:center;gap:5px;flex:none;height:20px;padding:0 7px 0 6px;border:0;border-radius:var(--radius-sm);background:var(--tone-bg);color:var(--tone);font:500 12px/1 var(--font-ui);white-space:nowrap;font-variant-numeric:tabular-nums}
+[data-tone=running],.task-status-chip:is(.running,.completing){--tone:var(--tone-running);--tone-bg:var(--tone-running-bg);--tone-line:var(--tone-running-line)}
+[data-tone=done],.task-status-chip:is(.done,.review){--tone:var(--tone-done);--tone-bg:var(--tone-done-bg);--tone-line:var(--tone-done-line)}
+[data-tone=needs],.task-status-chip.waiting{--tone:var(--tone-needs);--tone-bg:var(--tone-needs-bg);--tone-line:var(--tone-needs-line)}
+[data-tone=failed],.task-status-chip.failed{--tone:var(--tone-failed);--tone-bg:var(--tone-failed-bg);--tone-line:var(--tone-failed-line)}
+[data-tone=idle]{--tone:var(--tone-idle);--tone-bg:var(--tone-idle-bg);--tone-line:var(--tone-idle-line)}
+[data-tone=accent]{--tone:var(--accent);--tone-bg:color-mix(in srgb,var(--accent) 14%,transparent);--tone-line:color-mix(in srgb,var(--accent) 34%,transparent)}
+/* Foundation · status marks: pills from AIWSUI.statusPill, ring spinners, dots with an optional live ping, the AI sparkle and
+   outline icons. Task status chips lead with a dot, or a spinner while running; a busy button reuses the spinner. */
+.status-pill>.ui-icon{font-size:12px}
+.task-status-chip::before{content:""}
+.ui-spinner,.task-status-chip:is(.running,.completing)::before,.button.is-busy::before{display:inline-block;flex:none;box-sizing:border-box;width:var(--spinner-size,12px);height:var(--spinner-size,12px);border:1.5px solid color-mix(in srgb,currentColor 25%,transparent);border-top-color:currentColor;border-radius:50%;animation:ui-spin .8s linear infinite}
+.ui-dot,.task-status-chip:not(.running,.completing)::before{position:relative;display:inline-block;flex:none;width:var(--dot-size,7px);height:var(--dot-size,7px);border-radius:50%;background:currentColor}
+.ui-dot[data-tone],.ui-sparkle[data-tone]{color:var(--tone)}
+.ui-dot.is-live::after{content:"";position:absolute;inset:0;border-radius:inherit;background:currentColor;animation:ui-ping 1.6s var(--ease-out) infinite}
+.ui-sparkle{display:inline-grid;place-items:center;flex:none;width:1em;height:1em;line-height:1}
+.ui-sparkle>svg{display:block;width:100%;height:100%}
+.ui-icon{display:inline-block;flex:none;vertical-align:-.125em}
+/* Foundation · surfaces: cards, logo boxes, chips, tooltips, the dotted canvas and loading skeletons. An interactive card lifts on
+   hover by fading in a shadow layer, so nothing re-lays out or repaints a large shadow. */
+.ui-card{position:relative;border:1px solid var(--line);border-radius:var(--radius-lg);background:var(--surface);box-shadow:var(--shadow-1)}
+.ui-card.is-interactive{cursor:pointer;transition:border-color var(--dur) var(--ease-out),background-color var(--dur) var(--ease-out)}
+.ui-card.is-interactive::after{content:"";position:absolute;inset:-1px;border-radius:inherit;box-shadow:var(--shadow-2);opacity:0;pointer-events:none;transition:opacity var(--dur) var(--ease-out)}
+.ui-card.is-interactive:hover{border-color:var(--line-strong)}
+.ui-card.is-interactive:hover::after{opacity:1}
+.ui-icon-box{display:inline-grid;place-items:center;flex:none;width:24px;height:24px;overflow:hidden;border:1px solid var(--line);border-radius:7px;background:var(--surface);color:var(--ink-strong);font-size:12px;font-weight:600;line-height:1}
+.ui-icon-box>:is(img,svg){display:block;width:14px;height:14px;object-fit:contain}
+.ui-chip{display:inline-flex;align-items:center;gap:4px;flex:none;height:20px;padding:0 7px;border-radius:var(--radius-sm);background:var(--raised);color:var(--muted);font-size:11.5px;font-weight:500;line-height:1;white-space:nowrap}
+.ui-chip.is-mono{font-family:var(--font-mono);font-weight:400}
+.ui-chip.is-accent{background:color-mix(in srgb,var(--accent) 12%,transparent);color:var(--link)}
+.ui-chip[data-tone]{background:var(--tone-bg);color:var(--tone)}
+.ui-tooltip{max-width:320px;padding:7px 10px;border:1px solid color-mix(in srgb,var(--tooltip-ink) 8%,var(--tooltip-bg));border-radius:var(--radius-md);background:var(--tooltip-bg);color:var(--tooltip-ink);box-shadow:var(--shadow-2);font-size:12.5px;line-height:1.45}
+.ui-tooltip:not([hidden]){animation:ui-fade var(--dur-fast) var(--ease-out)}
+.ui-tooltip :is(small,.muted){color:var(--tooltip-muted)}
+.ui-canvas{background-image:radial-gradient(circle,var(--canvas-dot) 1px,transparent 1.5px);background-size:18px 18px;background-position:center}
+.skeleton{position:relative;overflow:hidden;border-radius:var(--radius-sm);background:var(--raised);color:transparent;pointer-events:none}
+.skeleton::after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,transparent 15%,var(--shimmer) 50%,transparent 85%);transform:translateX(-100%);animation:ui-shimmer 1.6s var(--ease-in-out) infinite}
+/* Foundation · switch: input[type=checkbox].ui-switch; the knob slides with a transform and the track takes the accent when on. */
+.ui-switch{appearance:none;-webkit-appearance:none;position:relative;flex:none;width:30px;height:18px;min-height:0;margin:0;padding:0;border:0;border-radius:6px;background:var(--line-strong);cursor:pointer;vertical-align:middle;transition:background-color var(--dur) var(--ease-out),box-shadow var(--dur-fast) var(--ease-out)}
+.ui-switch::before{content:"";position:absolute;top:2px;left:2px;width:14px;height:14px;border-radius:4px;background:var(--accent-ink);box-shadow:var(--shadow-1);transition:transform var(--dur) var(--ease-out)}
+.ui-switch:checked{background:var(--accent)}
+.ui-switch:checked::before{transform:translateX(12px)}
+.ui-switch:disabled{opacity:.5;cursor:not-allowed}

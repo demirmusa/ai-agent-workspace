@@ -1,0 +1,23 @@
+/* Form fields, hints and errors shared by dialogs and settings pages, and the base dialog header and body. */
+.modal-header{display:flex;justify-content:space-between;align-items:center;padding:21px 25px 16px}
+.modal-header h2{font-size:19px;letter-spacing:-.4px}
+.modal-body{padding:0 25px 24px}
+.form-field{display:flex;flex-direction:column;gap:6px;margin-top:16px;font-size:13px}
+.form-field label,.field-label,.task-editor-scroll>.form-field>label{font-weight:600;font-size:13px;color:var(--ink-strong)}
+.form-field small,.form-hint{color:var(--muted);font-size:12.5px;line-height:1.55}
+.form-field select{padding:5px 8px;min-height:32px;font-size:13px;color:var(--ink)}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:15px}
+.form-grid .form-field{min-width:0}
+.checkbox-field{display:flex;gap:9px;align-items:center;font-size:13px;margin-top:18px}
+.modal-footer{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-top:25px}
+.modal-footer-right{display:flex;gap:8px;margin-left:auto}
+.form-error{color:var(--danger);font-size:12px;margin-top:14px;white-space:pre-wrap}
+.form-section{margin:25px 0 10px;font-size:13px}
+.form-section small{font-weight:400;color:var(--muted)}
+.field-info{margin-top:13px;padding:10px 12px;border:1px solid var(--line);border-radius:var(--radius);background:var(--ground);color:var(--muted);font-size:12.5px;line-height:1.6}
+@media(max-width:650px){
+.modal-header{padding:18px 19px 13px}
+.modal-body{padding:0 19px 20px}
+.form-grid{gap:12px}
+.source-badge{font-size:9px}
+}

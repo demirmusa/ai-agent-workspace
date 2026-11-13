@@ -1,0 +1,92 @@
+{
+  "name": "ai-agent-workspace",
+  "version": "0.2.0",
+  "description": "Local-first Kanban and Electron control center for coding agents, with optional GitHub Projects sync.",
+  "type": "module",
+  "bin": {
+    "ai-agent-workspace": "dist/cli/index.js",
+    "aiws": "dist/cli/index.js",
+    "mycli": "dist/cli/index.js"
+  },
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist",
+    "assets",
+    "control-ui",
+    "examples",
+    "README.md",
+    "LICENSE",
+    "!control-ui/tests"
+  ],
+  "engines": {
+    "node": ">=22.13"
+  },
+  "packageManager": "npm@10.9.2",
+  "scripts": {
+    "clean": "node --eval \"import('node:fs').then(({rmSync})=>rmSync('dist',{recursive:true,force:true}))\"",
+    "build": "npm run clean && tsc -p tsconfig.json",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "test": "vitest run",
+    "test:docker": "npm run build && node runtime/tests/docker-smoke.mjs",
+    "test:provider": "npm run build && node control-server/tests/control-provider-smoke.mjs",
+    "test:pty": "npm run build && node control-server/tests/control-pty-smoke.mjs",
+    "test:planning": "npm run build && node control-server/tests/control-planning-smoke.mjs",
+    "test:draft": "npm run build && node control-server/tests/control-draft-smoke.mjs",
+    "test:history": "npm run build && node control-server/tests/control-history-smoke.mjs",
+    "test:subagents": "npm run build && node control-server/tests/control-subagents-smoke.mjs",
+    "test:watch": "vitest",
+    "control": "node dist/cli/index.js control serve",
+    "desktop:install": "node node_modules/electron/install.js",
+    "desktop": "npm run desktop:install && npm run build && electron dist/desktop-app/main.js",
+    "desktop:start": "npm run desktop:install && npm run build && electron dist/desktop-app/main.js",
+    "prepack": "node scripts/prepare-package.mjs && npm run build && npm test",
+    "test:ui": "vitest run control-ui/tests",
+    "test:server": "vitest run control-server/tests",
+    "test:cli": "vitest run cli/tests",
+    "postpack": "node scripts/prepare-package.mjs --clean"
+  },
+  "keywords": [
+    "github-actions",
+    "self-hosted-runner",
+    "codex",
+    "claude-code",
+    "docker",
+    "cli"
+  ],
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/demirmusa/ai-agent-workspace.git"
+  },
+  "dependencies": {
+    "@inquirer/prompts": "^7.8.4",
+    "@xterm/addon-fit": "^0.11.0",
+    "@xterm/xterm": "^6.0.0",
+    "chalk": "^5.6.0",
+    "commander": "^14.0.0",
+    "dompurify": "^3.4.17",
+    "easymde": "^2.21.0",
+    "monaco-editor": "^0.57.0",
+    "node-pty": "^1.1.0",
+    "ws": "^8.22.0",
+    "yaml": "^2.8.1",
+    "zod": "^4.1.5"
+  },
+  "devDependencies": {
+    "@types/jsdom": "^21.1.7",
+    "@types/node": "^22.15.30",
+    "@types/ws": "^8.18.2",
+    "electron": "^44.7.2",
+    "happy-dom": "^21.0.1",
+    "jsdom": "^26.1.0",
+    "typescript": "^5.9.2",
+    "vitest": "^3.2.4"
+  }
+}

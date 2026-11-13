@@ -1,0 +1,94 @@
+/* The project Sessions tab: past and external agent sessions. .history-source (the project folder line) is shared with the schedules intro. */
+.project-sessions-board{display:block;overflow:auto}
+.project-sessions{max-width:1300px;margin:0 auto;width:100%}
+.history-heading{display:flex;align-items:flex-start;justify-content:space-between;gap:20px}
+.history-heading h2{font-size:16px;font-weight:600;letter-spacing:-.3px}
+.history-heading p{font-size:13px;color:var(--muted);line-height:1.8;margin-top:7px}
+.history-heading>div:last-child{display:flex;align-items:center;gap:8px;flex-shrink:0}
+.history-heading select{font-size:11px;max-width:180px}
+.history-source{display:flex;gap:8px;align-items:center;font:12px/1.8 var(--font-mono);color:var(--muted);padding:13px 0 19px;overflow-wrap:anywhere}
+.history-session-list{display:block;transition:opacity var(--dur-fast) var(--ease-out)}
+.history-session-card{display:flex;align-items:flex-start;gap:12px;width:100%;border:1px solid var(--line);background:var(--surface);border-radius:6px;padding:12px 14px;text-align:left;color:var(--ink);cursor:pointer;box-shadow:none}
+.history-session-card:hover{background:var(--surface-hover);border-color:var(--line-strong);box-shadow:none}
+.history-provider-avatar{display:grid;place-items:center;flex:none;width:36px;height:36px;border:0;border-radius:4px;background:var(--raised);color:var(--ink-strong);font-size:11px}
+.history-session-content{flex:1;min-width:0}
+.history-session-content>span{display:flex;align-items:center;flex-wrap:wrap;gap:9px}
+.history-session-content strong{font-size:13.5px;font-weight:600;line-height:1.6;overflow-wrap:anywhere}
+.history-session-content>small{display:block;font:11.5px/1.8 var(--font-mono);color:var(--muted);margin-top:6px;overflow-wrap:anywhere}
+.history-session-meta{display:flex;align-items:flex-end;flex-direction:column;gap:4px;font-size:12px;color:var(--muted);flex:none}
+.history-session-meta>span:last-child{font-size:16px;margin-top:3px}
+/* The sessions empty state is an .empty-state with a dashed frame. */
+.history-empty{border:1px dashed var(--line);border-radius:6px;font-size:12px;color:var(--muted)}
+.history-empty>span{font-size:25px;color:var(--accent)}
+.history-empty p{max-width:390px}
+.history-more{display:block;margin:20px auto}
+.history-error{font-size:12px;line-height:1.8;color:var(--danger);padding:14px 0}
+.history-warnings{font-size:11px;line-height:1.8;color:var(--muted);margin-bottom:16px}
+.history-warnings summary{cursor:pointer}
+#history-resume-message{width:100%}
+@media(max-width:760px){
+.history-heading{flex-direction:column;gap:12px}
+.history-heading>div:last-child{width:100%}
+.history-heading select{flex:1;max-width:none}
+.history-session-card{padding:13px 12px;gap:10px}
+.history-session-content strong{font-size:12px}
+.history-session-meta{font-size:9px}
+.history-source{font-size:9px}
+}
+/* Search toolbar, date groups and session cards with inline actions. */
+.history-toolbar{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin:16px 0 12px}
+.history-search{display:flex;align-items:center;gap:8px;flex:1 1 320px;min-height:var(--control-h);padding:0 10px;border:1px solid var(--line-strong);border-radius:var(--radius);background:var(--input);color:var(--muted)}
+.history-search:focus-within{border-color:var(--focus);box-shadow:var(--ring)}
+.history-search input{flex:1;min-width:0;border:0;outline:0;background:transparent;color:var(--ink);font-size:13px;padding:6px 0;box-shadow:none}
+.history-search input:focus-visible{outline:none}
+.history-search kbd{display:inline-block;font-size:11px}
+.history-toolbar select{font-size:12.5px;min-height:var(--control-h)}
+.history-summary{display:flex;align-items:center;flex-wrap:wrap;gap:8px;min-height:22px;margin:4px 0 10px;font-size:12.5px;color:var(--muted)}
+.link-button{border:0;background:none;padding:0;color:var(--link);font-size:inherit;text-align:left;cursor:pointer;text-underline-offset:2px}
+.link-button:hover{text-decoration:underline}
+.history-group{margin-bottom:18px}
+.history-group-heading{display:flex;align-items:center;gap:8px;margin:0 0 8px;font-size:11.5px;font-weight:600;letter-spacing:.4px;text-transform:uppercase;color:var(--muted)}
+.history-group-heading small{font-weight:500;padding:0 6px;border-radius:9px;background:var(--raised)}
+.history-group>[role=list]{display:flex;flex-direction:column;gap:6px}
+.history-session-list.is-stale{opacity:.55}
+.history-session-card.selected{border-color:var(--accent);background:var(--selection)}
+.history-session-card:focus-within{border-color:var(--line-strong)}
+.history-session-open{flex:1;min-width:0;display:flex;flex-direction:column;gap:5px;border:0;background:none;padding:0;text-align:left;color:inherit;font:inherit}
+.history-session-open:focus-visible{outline:2px solid var(--accent);outline-offset:4px;border-radius:2px}
+.history-session-title{font-size:13.5px;font-weight:600;line-height:1.45;color:var(--ink-strong);overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow-wrap:anywhere}
+.history-session-preview{font-size:12.5px;line-height:1.5;color:var(--muted);overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow-wrap:anywhere}
+.history-session-badges{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin-top:2px}
+.history-session-badges code{font:11px var(--font-mono);color:var(--muted)}
+.history-session-card mark{display:inline;width:auto;height:auto;margin:0;padding:0 1px;font:inherit;letter-spacing:normal;border-radius:2px;background:color-mix(in srgb,var(--warning) 35%,transparent);color:inherit}
+.history-badge{display:inline-flex;align-items:center;gap:4px;font-size:11px;line-height:1.6;padding:0 7px;border-radius:9px;background:var(--raised);color:var(--muted)}
+.history-badge.live{color:var(--success);background:color-mix(in srgb,var(--success) 14%,transparent)}
+.history-badge.done{color:var(--ink)}
+.history-badge.failed{color:var(--danger);background:color-mix(in srgb,var(--danger) 12%,transparent)}
+.history-badge.stopped,.history-badge.open{color:var(--warning);background:color-mix(in srgb,var(--warning) 12%,transparent)}
+.history-badge.linked{color:var(--accent);background:color-mix(in srgb,var(--accent) 12%,transparent)}
+.history-session-side{display:flex;flex-direction:column;align-items:flex-end;gap:2px;flex:none;font-size:12px;color:var(--muted)}
+.history-session-side time{color:var(--ink)}
+.history-session-side small{font-size:11px}
+.history-session-actions{display:flex;gap:4px;margin-top:8px;opacity:.75;transition:opacity var(--dur-fast) var(--ease-out)}
+.history-session-card:hover .history-session-actions,.history-session-card:focus-within .history-session-actions,.history-session-card.selected .history-session-actions{opacity:1}
+.history-import-status{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin:0 0 12px;padding:10px 12px;border:1px solid var(--line);border-left:3px solid var(--accent);border-radius:4px;background:var(--surface);color:var(--ink);font-size:13px;line-height:1.8}
+.history-import-status p{margin:0}
+.history-import-status small{display:block;color:var(--muted);margin-top:2px}
+.history-import-status details{margin-top:6px;font-size:12px;color:var(--muted)}
+.history-import-status.pending{align-items:center;justify-content:flex-start;color:var(--muted)}
+.history-import-status.partial{border-left-color:var(--warning)}
+.history-import-status.failed{border-left-color:var(--danger)}
+.history-import-actions{display:flex;gap:4px;flex:none}
+.history-skeleton{display:flex;flex-direction:column;gap:6px}
+.history-skeleton-card{display:flex;gap:12px;padding:14px;border:1px solid var(--line);border-radius:6px;background:var(--surface)}
+.history-skeleton-card>span{width:36px;height:36px;border-radius:4px;background:var(--raised);flex:none}
+.history-skeleton-card>div{flex:1;display:flex;flex-direction:column;gap:8px;padding-top:3px}
+.history-skeleton-card i{display:block;height:10px;border-radius:3px;background:var(--raised);animation:ui-pulse 2.4s var(--ease-in-out) infinite}
+.history-skeleton-card i:last-child{width:45%}
+@media(max-width:760px){
+.history-session-card{flex-wrap:wrap}
+.history-session-side{width:100%;flex-direction:row;flex-wrap:wrap;align-items:center;gap:8px}
+.history-session-actions{margin:0 0 0 auto;opacity:1}
+.history-search{flex-basis:100%}
+}
+:root[data-motion=reduced] .history-skeleton-card i{animation:none}

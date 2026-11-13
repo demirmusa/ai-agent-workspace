@@ -1,0 +1,12 @@
+/* Welcome: the empty workspace. The AI sparkle sits in a raised tile with a soft accent glow on a dotted canvas that fades out at its edges; the parts rise in once. */
+.welcome{position:relative;isolation:isolate;flex:1;align-self:stretch;display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:360px;padding:48px 24px;text-align:center}
+.welcome-canvas{position:absolute;inset:0;z-index:-1;-webkit-mask-image:radial-gradient(closest-side,var(--ink) 35%,transparent);mask-image:radial-gradient(closest-side,var(--ink) 35%,transparent)}
+.welcome-mark{display:grid;place-items:center;width:56px;height:56px;margin-bottom:24px;border:1px solid var(--line);border-radius:var(--radius-xl);background:linear-gradient(180deg,var(--surface),color-mix(in srgb,var(--accent) 7%,var(--surface)));box-shadow:var(--shadow-2),0 14px 44px -10px color-mix(in srgb,var(--accent) 60%,transparent);font-size:24px}
+.welcome h2{max-width:460px;font-size:22px;font-weight:600;letter-spacing:-.4px;color:var(--ink-strong)}
+.welcome p{max-width:460px;margin:10px 0 22px;font-size:13.5px;line-height:1.7;color:var(--muted)}
+.welcome .welcome-note{margin:22px 0 0;font-size:12px;color:var(--faint)}
+.welcome>:not(.welcome-canvas){animation:ui-enter var(--dur-enter) var(--ease-out) both}
+.welcome>h2{animation-delay:50ms}
+.welcome>p{animation-delay:100ms}
+.welcome>.button{animation-delay:150ms}
+.welcome>.welcome-note{animation-delay:200ms}

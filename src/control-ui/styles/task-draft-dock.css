@@ -1,0 +1,4 @@
+/* The minimized new task draft button. */
+.task-draft-resume{position:fixed;cursor:grab;user-select:none;right:24px;bottom:24px;z-index:60;max-width:calc(100vw - 32px);padding:14px 20px;border:1px solid var(--line);border-radius:var(--radius-lg);background:var(--surface);color:var(--ink);box-shadow:var(--shadow-pop);font:inherit;font-size:13px}
+.task-draft-resume:hover{background:var(--surface-hover)}
+.task-draft-resume:focus-visible{outline:2px solid var(--accent);outline-offset:3px}

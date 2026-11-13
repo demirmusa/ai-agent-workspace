@@ -1,0 +1,4 @@
+/* Reduced motion for the shell: panels, banners, toasts and the welcome screen appear without moving, the AI ring and the progress sweep hold still, and option groups open at once. */
+:root[data-motion=reduced] .files-panel,:root[data-motion=reduced] .notifications-badge,:root[data-motion=reduced] .error-banner,:root[data-motion=reduced] .welcome>*,:root[data-motion=reduced] .theme-icon>span,:root[data-motion=reduced] .file-twisty.turning,:root[data-motion=reduced] .request-toast-life,:root[data-motion=reduced] .ai-button::before,:root[data-motion=reduced] .task-key-copied,:root[data-motion=reduced] .dependency-search-results{animation:none!important}
+:root[data-motion=reduced] .request-progress::before{animation:none;width:100%;opacity:.6}
+:root[data-motion=reduced] .task-advanced::details-content{transition:none}

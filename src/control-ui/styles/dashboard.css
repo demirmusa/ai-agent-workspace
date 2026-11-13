@@ -1,0 +1,101 @@
+/* Dashboard: totals, period charts, analysis, the project table and agent metrics. */
+.board.dashboard-board{display:block;overflow:auto}
+.dashboard-page{display:flex;flex-direction:column;gap:14px;min-width:0}
+.dashboard-toolbar{display:flex;justify-content:flex-end}
+.dashboard-grid{display:grid;grid-template-columns:minmax(0,1.55fr) minmax(0,1fr);gap:14px;min-width:0}
+.dashboard-panel{display:flex;flex-direction:column;gap:12px;min-width:0;padding:14px 16px;border:1px solid var(--line);border-radius:var(--radius-lg);background:var(--surface);box-shadow:var(--shadow-1)}
+.dashboard-panel-head{display:flex;align-items:baseline;flex-wrap:wrap;gap:4px 10px;min-width:0}
+.dashboard-panel-head>h2{margin:0;color:var(--ink-strong);font-size:13.5px;font-weight:600}
+.dashboard-panel-head>small{color:var(--muted);font-size:12px}
+.dashboard-panel-head>.button{margin-left:auto}
+.dashboard-empty{margin:auto 0;padding:22px 8px;border:1px dashed var(--line);border-radius:var(--radius);color:var(--faint);font-size:12.5px;text-align:center}
+/* Activity: four totals over a stacked bar per day. */
+.dashboard-summary{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
+.dashboard-summary>div{display:flex;flex-direction:column;gap:3px;min-width:0}
+.dashboard-summary small{color:var(--muted);font-size:11.5px}
+.dashboard-summary strong{overflow:hidden;color:var(--ink-strong);font-size:20px;font-weight:600;font-variant-numeric:tabular-nums;letter-spacing:-.01em;text-overflow:ellipsis;white-space:nowrap}
+.dashboard-chart{display:grid;grid-auto-flow:column;grid-auto-columns:minmax(0,1fr);gap:4px;height:160px;padding-top:6px}
+.dashboard-day{display:flex;flex-direction:column;align-items:center;gap:6px;min-width:0;min-height:0}
+.dashboard-track{display:flex;flex:1;align-items:flex-end;justify-content:center;width:100%;min-height:0;border-bottom:1px solid var(--line)}
+.dashboard-bar{display:flex;flex-direction:column-reverse;width:100%;max-width:28px;min-height:2px;overflow:hidden;border-radius:var(--radius-sm) var(--radius-sm) 2px 2px;background:var(--viz-empty);transition:filter var(--dur) var(--ease-out)}
+.dashboard-day:hover .dashboard-bar{filter:brightness(1.15)}
+.dashboard-bar>span{min-height:2px}
+.dashboard-day>small{color:var(--faint);font-size:10.5px;font-variant-numeric:tabular-nums}
+.dashboard-day.is-today>small{color:var(--ink-strong);font-weight:600}
+.dashboard-legend{display:flex;flex-wrap:wrap;gap:6px 14px;color:var(--muted);font-size:11.5px}
+.dashboard-legend>span{display:inline-flex;align-items:center;gap:6px}
+.dashboard-swatch{width:8px;height:8px;border-radius:2px}
+.dashboard-bar>.is-done,.dashboard-swatch.is-done{background:var(--tone-done)}
+.dashboard-bar>.is-failed,.dashboard-swatch.is-failed{background:var(--tone-failed)}
+.dashboard-bar>.is-running,.dashboard-swatch.is-running{background:var(--tone-running)}
+.dashboard-bar>.is-other,.dashboard-swatch.is-other{background:var(--viz-2)}
+.dashboard-delta{color:var(--muted);font-size:11px;font-style:normal;font-variant-numeric:tabular-nums}
+.dashboard-bar.is-usage{background:var(--accent)}
+/* Highlights: one fact per row. */
+.dashboard-insights{display:flex;flex-direction:column;margin:0}
+.dashboard-insights>div{display:flex;align-items:baseline;justify-content:space-between;gap:12px;padding:7px 0;border-top:1px solid var(--line);font-size:12.5px}
+.dashboard-insights>div:first-child{border-top:0}
+.dashboard-insights dt{flex:none;color:var(--muted)}
+.dashboard-insights dd{display:flex;align-items:baseline;gap:8px;min-width:0;margin:0}
+.dashboard-insights strong,.dashboard-insight-link{overflow:hidden;color:var(--ink-strong);font-weight:600;text-overflow:ellipsis;white-space:nowrap}
+.dashboard-insight-link{padding:0;border:0;background:transparent;color:var(--link);font-size:inherit}
+.dashboard-insights small{flex:none;color:var(--muted);font-size:11.5px}
+/* Heatmap: a weekday row of 24 hour cells. */
+.dashboard-heat{display:grid;grid-template-columns:auto repeat(24,minmax(0,1fr));gap:2px;align-items:center;color:var(--faint);font-size:10.5px}
+.dashboard-heat-day{padding-right:6px;color:var(--muted);font-size:11px}
+.dashboard-heat-cell{height:16px;border-radius:2px;background:color-mix(in srgb,var(--accent) var(--heat),var(--viz-empty))}
+/* Distribution: a labelled bar per column or provider. */
+.dashboard-bars{display:flex;flex-direction:column;gap:8px;margin:0;padding:0;list-style:none}
+.dashboard-bars>li{display:grid;grid-template-columns:120px minmax(0,1fr) 32px 44px;align-items:center;gap:8px;font-size:12px}
+.dashboard-bars-label{display:flex;align-items:center;gap:7px;min-width:0;overflow:hidden;white-space:nowrap}
+.dashboard-bars strong{color:var(--ink-strong);font-variant-numeric:tabular-nums;text-align:right}
+.dashboard-bars small{color:var(--muted);font-size:11px;text-align:right}
+.dashboard-subhead{margin:4px 0 0;color:var(--muted);font-size:12px;font-weight:600}
+/* Who works on what: one row per live run. */
+.dashboard-live{display:flex;flex-direction:column;gap:6px;max-height:268px;overflow:auto}
+.dashboard-live-row{display:flex;align-items:center;gap:10px;width:100%;min-width:0;padding:8px 10px;border:1px solid var(--line);border-radius:var(--radius);background:var(--column);color:var(--ink);text-align:left;transition:border-color var(--dur) var(--ease-out),background var(--dur) var(--ease-out)}
+.dashboard-live-row:hover{border-color:var(--line-strong);background:var(--surface-hover)}
+.dashboard-live-text{display:flex;flex-direction:column;gap:1px;flex:1;min-width:0}
+.dashboard-live-text>*{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.dashboard-live-text>strong{color:var(--ink-strong);font-size:12.5px;font-weight:600}
+.dashboard-live-text>span{font-size:12.5px}
+.dashboard-live-text>small{color:var(--muted);font-size:11.5px}
+.dashboard-live-row>time{flex:none;min-width:44px;color:var(--muted);font-size:11.5px;font-variant-numeric:tabular-nums;text-align:right}
+.dashboard-now>.button{align-self:flex-start}
+/* Projects: one table row per project. */
+.dashboard-table-scroll{min-width:0;margin:0 -16px -14px;overflow-x:auto}
+.dashboard-table{width:100%;border-collapse:collapse;font-size:12.5px}
+.dashboard-table th,.dashboard-table td{padding:8px 10px;border-top:1px solid var(--line);text-align:left;white-space:nowrap}
+.dashboard-table thead th{border-top:0;color:var(--muted);font-size:11.5px;font-weight:500}
+.dashboard-table th:first-child,.dashboard-table td:first-child{padding-left:16px}
+.dashboard-table th:last-child,.dashboard-table td:last-child{padding-right:12px}
+.dashboard-table tbody tr{transition:background var(--dur-fast) var(--ease-out)}
+.dashboard-table tbody tr:hover{background:var(--surface-hover)}
+.dashboard-table tbody th{max-width:280px;font-weight:400}
+.dashboard-table .is-number{color:var(--ink);font-variant-numeric:tabular-nums;text-align:right}
+.dashboard-table td.is-number>small{display:block;color:var(--muted);font-size:11px}
+.dashboard-table td.is-running{color:var(--tone-running);font-weight:600}
+.dashboard-table td.is-review{color:var(--purple);font-weight:600}
+.dashboard-table td.is-done{color:var(--tone-done);font-weight:600}
+.dashboard-zero{color:var(--faint)}
+.dashboard-latest{color:var(--muted);text-align:right}
+.dashboard-row-action{width:1px}
+/* Agents: runs, success and usage of the busiest agents. */
+.dashboard-agents{display:flex;flex-direction:column;gap:12px;margin:0;padding:0;list-style:none}
+.dashboard-agent{display:grid;grid-template-columns:auto minmax(0,1fr) auto;grid-template-areas:"icon name usage" "icon meter usage";align-items:center;gap:5px 10px;min-width:0}
+.dashboard-agent>:first-child{grid-area:icon}
+.dashboard-agent-name{grid-area:name;display:flex;align-items:baseline;justify-content:space-between;gap:8px;min-width:0}
+.dashboard-agent-name>strong{overflow:hidden;color:var(--ink-strong);font-size:12.5px;font-weight:600;text-overflow:ellipsis;white-space:nowrap}
+.dashboard-agent-name>small{display:inline-flex;align-items:center;gap:5px;flex:none;color:var(--muted);font-size:11.5px}
+.dashboard-agent-meter{grid-area:meter;height:6px;overflow:hidden;border-radius:var(--radius-pill);background:var(--track)}
+.dashboard-agent-meter>span{display:block;height:100%;border-radius:inherit;background:var(--accent)}
+.dashboard-agent-usage{grid-area:usage;display:flex;flex-direction:column;align-items:flex-end;min-width:58px}
+.dashboard-agent-usage>strong{color:var(--ink-strong);font-size:12.5px;font-weight:600;font-variant-numeric:tabular-nums}
+.dashboard-agent-usage>small{color:var(--muted);font-size:11px}
+@media(max-width:1100px){
+.dashboard-grid{grid-template-columns:minmax(0,1fr)}
+}
+@media(max-width:560px){
+.dashboard-summary{grid-template-columns:repeat(2,minmax(0,1fr))}
+.dashboard-chart{gap:3px}
+}

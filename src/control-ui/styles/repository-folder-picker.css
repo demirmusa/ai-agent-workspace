@@ -1,0 +1,20 @@
+/* The project folder field and the server folder browser. */
+.repository-folder-selection{display:flex;gap:12px;align-items:center;border:1px solid var(--line);border-radius:var(--radius);background:var(--surface);padding:11px 12px}
+.repository-folder-selection .folder-glyph{font-size:24px;color:var(--accent)}
+.repository-folder-selection output{flex:1;min-width:0;overflow-wrap:anywhere;font:11px/1.7 var(--font-mono);color:var(--muted)}
+.repository-folder-selection>.button{flex:none;font-size:11px}
+.server-folder-browser{margin-top:10px;border:1px solid var(--line);border-radius:var(--radius);background:var(--surface);padding:14px}
+.server-folder-browser>header{display:flex;justify-content:space-between;align-items:center;gap:12px;font-size:12px}
+.folder-navigation{display:flex;align-items:center;flex-wrap:wrap;gap:7px;margin-top:12px}
+.folder-navigation>span{flex-basis:100%;font:10px/1.7 var(--font-mono);overflow-wrap:anywhere;color:var(--muted)}
+.folder-browser-status{font-size:11px;line-height:1.7;color:var(--muted);margin:8px 0}
+.folder-browser-list{max-height:240px;overflow:auto;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+.folder-browser-list>button{display:flex;align-items:center;gap:10px;width:100%;padding:10px 6px;border:0;border-bottom:1px solid var(--line);background:transparent;text-align:left;font-size:12px}
+.folder-browser-list>button:hover{background:var(--surface-hover)}
+.folder-browser-list>button>span:first-child{font-size:18px;color:var(--accent)}
+.folder-browser-list>button>span:nth-child(2){flex:1;overflow-wrap:anywhere}
+.folder-browser-actions{display:flex;justify-content:flex-end;gap:10px;margin-top:12px}
+@media(max-width:760px){
+.repository-folder-selection{gap:8px;padding:10px}
+.repository-folder-selection>.button{font-size:10px;padding:7px 9px}
+}

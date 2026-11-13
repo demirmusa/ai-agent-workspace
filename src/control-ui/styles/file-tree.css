@@ -1,0 +1,40 @@
+/* Project files: a read-only, VS Code style explorer tree. Rows highlight on hover; a folder's chevron turns as it opens (continuing
+   across redraws through --turn-delay) and the rows it reveals fade in. */
+.project-files{display:flex;flex-direction:column;height:100%;min-height:0;background:var(--sidebar)}
+.project-files-header{display:flex;flex:none;align-items:center;justify-content:space-between;gap:8px;min-height:40px;padding:6px 8px 6px 14px;border-bottom:1px solid var(--line);font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--faint)}
+.project-files-title{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.project-files-actions{display:flex;gap:2px}
+.project-files-actions .icon-button{width:26px;height:26px;font-size:14px}
+.project-files-hint{flex:none;margin:0;padding:8px 14px;border-top:1px solid var(--line);font-size:11.5px;line-height:1.5;color:var(--faint)}
+.project-files-tree{flex:1 1 auto;min-height:0;overflow:auto;padding:4px 6px;font-size:13px;user-select:none}
+.file-row{--indent:calc(var(--depth,0) * 14px);display:flex;align-items:center;gap:4px;height:26px;padding:0 8px 0 calc(4px + var(--indent));border:1px solid transparent;border-radius:var(--radius-sm);white-space:nowrap;cursor:default;outline:none;color:var(--ink);transition:background-color var(--dur-fast) var(--ease-out)}
+.file-row[role=treeitem]:hover{background:var(--surface-hover)}
+.file-row.selected{background:var(--raised);color:var(--ink-strong)}
+.file-row:focus-visible{border-color:var(--focus)}
+.file-row.ignored .file-name{opacity:.55}
+.file-twisty{display:inline-grid;place-items:center;flex:none;width:16px;height:16px;color:var(--faint)}
+.file-twisty.open{transform:rotate(90deg)}
+.file-twisty.turning{animation:file-twisty-open var(--dur) var(--ease-out) var(--turn-delay) both}
+.file-twisty.turning:not(.open){animation-name:file-twisty-close}
+@keyframes file-twisty-open{from{transform:none}to{transform:rotate(90deg)}}
+@keyframes file-twisty-close{from{transform:rotate(90deg)}to{transform:none}}
+.file-icon{display:inline-grid;place-items:center;flex:none;width:16px;height:16px;color:var(--faint)}
+.file-icon.folder{color:var(--muted)}
+.file-row.selected .file-icon{color:var(--ink)}
+.file-name{overflow:hidden;text-overflow:ellipsis}
+/* Git change markers: a status letter on changed files, a dot on folders holding them; the name takes the same tone. */
+:is(.file-row,.change-row,.file-change,.file-change-dot):is([data-change=modified],[data-change=renamed]){--change-tone:var(--tone-needs)}
+:is(.file-row,.change-row,.file-change,.file-change-dot):is([data-change=added],[data-change=untracked]){--change-tone:var(--tone-done)}
+:is(.file-row,.change-row,.file-change,.file-change-dot):is([data-change=deleted],[data-change=conflicted]){--change-tone:var(--tone-failed)}
+.file-row.changed .file-name,.change-row .change-name,.file-change{color:var(--change-tone)}
+.file-change{flex:none;min-width:14px;margin-left:auto;font:600 11.5px var(--font-mono);text-align:right}
+.file-change-dot{flex:none;width:6px;height:6px;margin:0 4px 0 auto;border-radius:50%;background:var(--change-tone);opacity:.85}
+.file-message{padding-left:calc(28px + var(--indent));font-style:italic;color:var(--muted)}
+.file-message.error{font-style:normal;color:var(--danger)}
+.file-context-menu{position:fixed;z-index:1000;min-width:220px;display:flex;flex-direction:column}
+.file-context-menu button{border:0;background:none;text-align:left;padding:5px 12px;border-radius:4px;font-size:13px;color:var(--ink)}
+.file-mention-popup{position:fixed;z-index:1000;width:min(460px,calc(100vw - 16px));max-height:280px;overflow:auto;font-size:13px}
+.file-mention-option{display:flex;align-items:baseline;gap:8px;padding:4px 8px;border-radius:4px;cursor:pointer;white-space:nowrap;overflow:hidden}
+.file-mention-option small{color:var(--muted);overflow:hidden;text-overflow:ellipsis}
+.file-mention-option[aria-selected=true] small{color:inherit;opacity:.8}
+.file-mention-empty{padding:6px 8px;color:var(--muted)}

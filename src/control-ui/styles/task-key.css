@@ -1,0 +1,5 @@
+/* Task key in the detail header: a monospace chip that copies the task ID and confirms with a short dark tooltip. */
+.task-key{flex:none;height:22px;padding:0 7px;border:0;border-radius:var(--radius-sm);background:var(--raised);color:var(--muted);font:500 12px/22px var(--font-mono);cursor:copy;transition:background-color var(--dur-fast) var(--ease-out),color var(--dur-fast) var(--ease-out)}
+.task-key:hover{background:var(--line-strong);color:var(--ink-strong)}
+.task-key-copied{position:absolute;left:0;top:calc(100% + 6px);z-index:2;padding:4px 9px;border-radius:var(--radius-sm);background:var(--tooltip-bg);color:var(--tooltip-ink);box-shadow:var(--shadow-2);font-size:12px;font-weight:500;white-space:nowrap;pointer-events:none;animation:task-key-copied 1.6s var(--ease-out) forwards}
+@keyframes task-key-copied{0%{opacity:0;transform:translateY(-4px) scale(.96)}12%,80%{opacity:1;transform:none}100%{opacity:0}}

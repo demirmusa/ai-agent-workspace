@@ -1,0 +1,7 @@
+/* The placeholder a task console shows before it mounts and while its earlier sessions are read: message bubbles that fade in row by row. */
+.console-skeleton{display:flex;flex-direction:column;gap:18px;flex:1;padding:22px}
+.console-skeleton-row{animation:ui-enter var(--dur-enter) var(--ease-out) calc(var(--row,0) * 60ms) both}
+.console-skeleton-row{display:flex;flex-direction:column;gap:8px;align-items:flex-start}
+.console-skeleton-row.is-own{align-items:flex-end}
+.console-skeleton-row>i{width:28px;height:10px}
+.console-skeleton-row>span{height:44px;max-width:100%;border-radius:var(--radius-lg)}

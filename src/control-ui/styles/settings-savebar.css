@@ -1,0 +1,14 @@
+/* The sticky save bar of the settings pages and its save state. */
+.settings-savebar{position:sticky;bottom:0;z-index:2;display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px;margin-top:28px;padding:12px 0 14px;border-top:1px solid var(--line);background:var(--ground)}
+.settings-savebar>.form-error{flex-basis:100%;margin:0;font-size:12.5px}
+.settings-savebar>.form-error:empty{display:none}
+.save-state{font-size:12.5px;color:var(--muted)}
+.save-state[data-state=dirty]{color:var(--warning)}
+.save-state[data-state=saved]{color:var(--success)}
+.save-state[data-state=error]{color:var(--danger)}
+.settings-savebar-actions{display:flex;gap:8px;margin-left:auto}
+.settings-savebar[data-state=clean],.settings-savebar[data-state=""]{visibility:hidden}
+@media(max-width:760px){
+.settings-savebar-actions{width:100%}
+.settings-savebar-actions .button{flex:1}
+}

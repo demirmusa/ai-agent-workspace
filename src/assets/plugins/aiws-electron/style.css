@@ -1,0 +1,2 @@
+/* Only what the shared chat views (aiws.conversation.ui) do not cover; every color comes from AIWS's theme tokens. */
+.el-failed{margin:0;color:var(--tone-failed);font:12px/1.5 var(--font-mono);overflow-wrap:anywhere}

@@ -1,0 +1,42 @@
+/* Task details open beside the board; the board keeps its place and the app header and footer stay uncovered. The panel slides in from the right each time it
+   is shown and out when it closes; its header (status, task key, title and actions), the Sohbet | Agent Console | Bilgiler segmented control and the content
+   share its height. The workspace clips instead of hiding its overflow: a hidden box still scrolls for scrollIntoView and focus, and the sliding panel would push the page sideways. */
+.workspace{position:relative;flex:1;min-height:0;display:flex;flex-direction:column;overflow:clip}
+.task-panel,.agent-child-panel{background:var(--ground);border-left:1px solid var(--line-strong);box-shadow:var(--shadow-float)}
+.task-panel{position:absolute;inset:0 0 0 auto;z-index:30;display:flex;flex-direction:column;width:var(--task-panel-width,60%);min-width:560px;max-width:100%;overflow:hidden}
+/* The task panel and the side panel slide in from the right when shown and slide back out when hidden; display is a discrete
+   transition so the panel stays painted until it has left. */
+.task-panel,.agent-child-panel{transition:opacity var(--dur) var(--ease-out),transform var(--dur) var(--ease-out),display var(--dur) allow-discrete}
+:is(.task-panel,.agent-child-panel):not([hidden]){transition-duration:var(--dur-enter)}
+:is(.task-panel,.agent-child-panel)[hidden]{opacity:0;transform:translateX(28px);pointer-events:none}
+@starting-style{:is(.task-panel,.agent-child-panel):not([hidden]){opacity:0;transform:translateX(28px)}}
+.panel-header{display:flex;align-items:center;gap:10px;border-bottom:1px solid var(--line)}
+.task-panel>.panel-header{flex:none;min-height:52px;padding:10px 12px 10px 18px;border-bottom:0}
+.detail-heading{display:flex;align-items:center;gap:8px;flex:1;min-width:0}
+.detail-heading>.task-status-chip{flex:none}
+.task-panel .detail-title-line{position:relative;display:flex;align-items:center;gap:8px;flex:1;min-width:0}
+.detail-title-button{display:block;width:100%;padding:0;border:0;background:none;color:inherit;font:inherit;letter-spacing:inherit;text-align:left;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;cursor:text}
+.detail-title-empty{color:var(--muted);font-weight:500}
+.detail-title-input{width:100%;height:auto;padding:1px 6px;font:inherit}
+.task-panel #task-detail-title{flex:1;min-width:0;margin:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:15px;font-weight:600;line-height:1.4;letter-spacing:-.15px;color:var(--ink-strong)}
+.panel-actions{display:flex;align-items:center;gap:6px;flex:none}
+.task-panel .panel-actions .icon-button{width:28px;height:28px;font-size:16px}
+.task-panel .header-run-action{white-space:nowrap}
+.task-panel .header-run-action:disabled{opacity:.65;cursor:default}
+.task-panel .header-run-action .ui-sparkle{font-size:13px}
+.detail-more{position:relative}
+.detail-more>summary{list-style:none;cursor:pointer;user-select:none}
+.detail-more>summary::-webkit-details-marker{display:none}
+.detail-more[open]>summary{background:var(--surface-hover);color:var(--ink-strong)}
+.detail-more-menu{position:absolute;right:0;top:100%;z-index:60;display:flex;flex-direction:column;gap:2px;min-width:180px;margin-top:4px;transform-origin:top right}
+.task-panel .detail-more-menu .button{justify-content:flex-start;width:100%;border-color:transparent;background:none;box-shadow:none;color:var(--ink);white-space:nowrap}
+.task-panel .detail-more-menu .button.danger{color:var(--danger)}
+.task-panel>.detail-tabs{display:flex;flex:none;align-items:center;justify-content:space-between;gap:8px;padding:2px 18px 12px;border-bottom:1px solid var(--line)}
+.detail-changes-tab{flex:none}
+.session-fullscreen .task-panel{z-index:50;width:100%;min-width:0;max-width:none}
+@media(max-width:760px){
+.task-panel{width:100vw;min-width:0}
+.task-panel>.panel-header{min-height:48px;gap:8px;padding:8px 8px 8px 14px}
+.task-panel #task-detail-title{font-size:14px}
+.task-panel>.detail-tabs{padding:2px 14px 10px}
+}

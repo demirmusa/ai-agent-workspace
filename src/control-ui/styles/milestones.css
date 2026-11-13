@@ -1,0 +1,33 @@
+/* Milestones: the project settings list with progress bars, the milestone form, and the milestone flag on board cards. */
+.project-milestones{display:flex;flex-direction:column;gap:12px}
+.project-milestones-toolbar{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.milestone-tabs .view-tab span{color:var(--muted);font-variant-numeric:tabular-nums}
+.project-milestones-list{display:flex;flex-direction:column;border:1px solid var(--line);border-radius:var(--radius);background:var(--surface)}
+.project-milestones-list>.form-hint{padding:12px;margin:0}
+.milestone-row{display:grid;grid-template-columns:minmax(0,1fr) minmax(160px,240px);gap:8px 20px;align-items:start;padding:12px;border-top:1px solid var(--line)}
+.milestone-row:first-child{border-top:0}
+.milestone-row.is-current{box-shadow:inset 3px 0 0 var(--accent)}
+.milestone-row.is-editing{display:block}
+.milestone-main{display:flex;flex-direction:column;gap:3px;min-width:0}
+.milestone-heading{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.milestone-title{display:inline-flex;align-items:center;gap:6px;min-width:0;color:var(--ink-strong);font-size:14px}
+.milestone-title>span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.milestone-current-badge{padding:0 8px;border:1px solid var(--accent);border-radius:var(--radius-pill);color:var(--accent);font-size:11px;line-height:1.6}
+.milestone-due{color:var(--muted);font-size:12px}
+.milestone-due.is-overdue{color:var(--danger)}
+.milestone-description{margin:2px 0 0;color:var(--muted);font-size:12.5px;white-space:pre-wrap;overflow-wrap:anywhere}
+.milestone-progress{display:flex;flex-direction:column;gap:5px;padding-top:4px}
+.milestone-progress small{color:var(--muted);font-size:11.5px;font-variant-numeric:tabular-nums}
+.milestone-bar{height:8px;border-radius:var(--radius-pill);background:var(--track);overflow:hidden}
+.milestone-bar>span{display:block;width:var(--milestone-progress);height:100%;border-radius:inherit;background:var(--success);transition:width var(--dur) var(--ease-out)}
+.milestone-actions{grid-column:1/-1;display:flex;gap:6px;flex-wrap:wrap}
+.milestone-form{display:grid;grid-template-columns:minmax(160px,1fr) 160px;gap:8px;align-items:center}
+.milestone-form textarea{grid-column:1/-1;resize:vertical}
+.milestone-form-actions{grid-column:1/-1;display:flex;gap:8px}
+.milestone-chip{display:inline-flex;align-items:center;gap:4px;max-width:100%;margin:4px 0 2px;color:var(--muted);font-size:11px}
+.milestone-chip>span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:200px}
+.milestone-chip.is-overdue{color:var(--danger)}
+.milestone-chip.is-closed{opacity:.7}
+@media (max-width:640px){
+.milestone-row,.milestone-form{grid-template-columns:1fr}
+}

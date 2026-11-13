@@ -1,0 +1,12 @@
+/* The side panel beside the task panel: a subagent console, a Git changes list or a context map. */
+.agent-child-panel{position:absolute;inset:0 var(--child-panel-right,45vw) 0 auto;z-index:32;display:flex;flex-direction:column;min-width:0;width:var(--child-panel-width,45vw);max-width:max(0px,calc(100% - var(--child-panel-right,45vw)));overflow:hidden;border-right:1px solid var(--line)}
+.agent-child-panel>.panel-header{flex:0 0 auto;display:flex;align-items:flex-start;padding:17px 20px;gap:14px;overflow:hidden}
+.agent-child-panel .detail-heading{flex:1;min-width:0;display:flex;flex-direction:column;gap:8px}
+.agent-child-panel h2{font-size:16px;font-weight:600;line-height:1.5;overflow-wrap:anywhere;min-width:0}
+.agent-child-panel .task-status-chip{align-self:flex-start}
+.child-agent-footer{flex:0 0 auto;display:flex;align-items:center;gap:12px;padding:12px 16px;border-top:1px solid var(--line);background:var(--sidebar);flex-wrap:wrap}
+.child-agent-footer>span{flex:1;color:var(--muted);font-size:12.5px}
+.agent-child-panel[data-stacked=true]{z-index:55;inset:0;width:100%;max-width:100%}
+.agent-child-panel .cv-console-heading{max-width:100%}
+/* The side panel shows either an agent console or a Git changes list. */
+.agent-child-panel:not([data-view=agent]) :is(#child-agent-console-host,.child-agent-footer),.agent-child-panel:not([data-view=changes]) #child-changes-host,.agent-child-panel:not([data-view=context]) #child-context-host{display:none}

@@ -1,0 +1,7 @@
+/* Popup menus: every dropdown, context menu and popover shares one surface, one open motion and one highlighted item. */
+:is(.popup-menu,.terminal-shortcuts-pop){padding:4px;border:1px solid var(--line);border-radius:var(--radius-lg);background:var(--popover);color:var(--ink);box-shadow:var(--shadow-pop);transform-origin:top;transition:opacity var(--dur-fast) var(--ease-out),transform var(--dur-fast) var(--ease-out),display var(--dur-fast) allow-discrete}
+/* Opening pops in; a hidden menu stays drawn until its short fade ends and takes no clicks meanwhile. */
+:is(.popup-menu,.terminal-shortcuts-pop):not([hidden]){animation:ui-pop var(--dur) var(--ease-out)}
+:is(.popup-menu,.terminal-shortcuts-pop)[hidden]{opacity:0;transform:translateY(-2px) scale(.98);pointer-events:none}
+@keyframes ui-pop{from{opacity:0;transform:translateY(-3px) scale(.97)}}
+:is(.terminal-menu-item,.git-menu-item,.file-context-menu button,.detail-more-menu .button):is(:hover:not(:disabled),:focus-visible),.file-mention-option[aria-selected=true],.model-option:focus,.context-agent-option:is(:hover,:focus-visible),.model-provider:is(:hover:not(:disabled),:focus),.model-toggle:focus-within{background:var(--raised);color:var(--ink-strong);outline:none}

@@ -1,0 +1,48 @@
+/* Schedules: recurring definitions per project and the general workspace. */
+.schedules-board{display:block;width:100%;max-width:none}
+.schedules-intro{display:flex;justify-content:space-between;align-items:flex-start;gap:24px;padding:20px 22px;margin:0 0 20px;border:1px solid var(--line);border-radius:8px;background:var(--surface)}
+.schedules-intro h2{margin:0 0 6px;font-size:16px;letter-spacing:-.2px}
+.schedules-intro p{margin:0;font-size:13px;color:var(--muted);max-width:720px}
+.schedules-intro .history-source{margin-top:10px;font-size:12px;overflow-wrap:anywhere}
+.schedules-intro .button{flex-shrink:0}
+.schedule-list{display:grid;gap:12px}
+.schedule-card{border:1px solid var(--line);border-radius:8px;background:var(--surface);padding:16px 18px;transition:background-color var(--dur-fast) var(--ease-out),border-color var(--dur-fast) var(--ease-out)}
+.schedule-card:hover{background:var(--surface-hover)}
+.schedule-card.is-disabled{opacity:.72}
+.schedule-card.is-disabled .schedule-rule{text-decoration:line-through;text-decoration-color:var(--muted)}
+.schedule-card header{display:flex;align-items:flex-start;gap:14px}
+.schedule-heading{flex:1;min-width:0}
+.schedule-heading h3{margin:0;font-size:14px;font-weight:600;overflow-wrap:anywhere}
+.schedule-heading p{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin:4px 0 0;font-size:12.5px;color:var(--muted)}
+.schedule-actions{display:flex;gap:6px;flex-shrink:0}
+.schedule-toggle{flex-shrink:0;margin-top:2px}
+.schedule-facts{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px 18px;margin:14px 0 0;padding:12px 0 0;border-top:1px solid var(--line)}
+.schedule-facts dt{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.4px}
+.schedule-facts dd{margin:2px 0 0;font-size:12.5px;overflow-wrap:anywhere}
+.schedule-outcome{margin:10px 0 0;font-size:12px;color:var(--muted)}
+.schedule-outcome time{margin-left:4px}
+.schedule-outcome.created strong{color:var(--success)}
+.schedule-outcome.skipped strong{color:var(--warning)}
+.schedule-outcome.failed strong{color:var(--danger)}
+.schedule-outcome.blocked strong{color:var(--warning)}
+.schedule-outcome .link-button{margin-left:4px}
+.schedule-description{margin:8px 0 0;font-size:12.5px;color:var(--muted);white-space:pre-wrap}
+.schedules-empty{margin-top:8px}
+.scheduled-tasks{margin-top:26px}
+.scheduled-tasks h3{display:flex;align-items:center;gap:8px;margin:0 0 10px;font-size:13px}
+.scheduled-tasks h3 span{font-size:11px;color:var(--muted);font-weight:500}
+.scheduled-tasks ul{list-style:none;margin:0;padding:0;display:grid;gap:6px}
+.scheduled-task-row{display:grid;grid-template-columns:minmax(150px,auto) minmax(0,1fr) auto auto;align-items:center;gap:12px;width:100%;padding:10px 14px;border:1px solid var(--line);border-radius:6px;background:var(--surface);text-align:left;font-size:13px}
+.scheduled-task-row:hover{background:var(--surface-hover)}
+.scheduled-task-row strong{font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.scheduled-task-row small{color:var(--muted)}
+.schedule-time{font-variant-numeric:tabular-nums;color:var(--muted)}
+.schedule-countdown[data-tone]{background:var(--tone-bg);color:var(--tone)}
+.schedule-rule{display:flex;flex-wrap:wrap;align-items:center;gap:5px;margin:6px 0 0}
+@media(max-width:900px){
+.schedule-facts{grid-template-columns:repeat(2,minmax(0,1fr))}
+.schedules-intro{flex-direction:column}
+.schedule-card header{flex-wrap:wrap}
+.schedule-actions{width:100%}
+.scheduled-task-row{grid-template-columns:minmax(0,1fr) auto}
+}

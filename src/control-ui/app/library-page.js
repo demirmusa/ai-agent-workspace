@@ -1,0 +1,24 @@
+'use strict';
+// The agent and skill library screens.
+// Library cards: a logo or glyph box, the name with its subtitle, a description, chips and the edit action. The whole card opens the editor.
+function agentLibraryCard(item){
+  const t=globalThis.AIWSI18n,availability=state.agentAvailability?.[item.id],[tone,label]=!item.enabled?['idle','Devre dışı']:availability?.available?['done','Uygun']:availability?.runId?['running','Çalışıyor']:['idle','Hazır'],tasks=state.tasks.filter(task=>task.agentId===item.id).length;
+  return t.template`<article class="library-card ui-card is-interactive${item.enabled?'':' is-disabled'}" data-motion-key="agent:${esc(item.id)}" data-library-open="agent:${esc(item.id)}"><header class="library-card-head"><span class="ui-icon-box provider-logo">${providerIcon(item.provider)}</span><div class="library-card-title"><h2>${esc(item.name)}</h2><small>${esc(providers[item.provider])}${item.model?` · ${esc(item.model)}`:''}</small></div>${window.AIWSUI.statusPill(tone,t.text(label))}</header><p>${esc(item.description||item.instructions||t.text('Henüz talimat eklenmedi.'))}</p><div class="library-tags"><span class="ui-chip">${item.terminalMode==='pty'?'Terminal / PTY':t.text('Akış')}</span>${(item.capabilities||[]).map(value=>`<span class="ui-chip">${esc(value)}</span>`).join('')}${item.skillIds.map(id=>`<span class="ui-chip is-accent">${esc(state.skills.find(skill=>skill.id===id)?.name||id)}</span>`).join('')}</div><footer class="library-card-foot"><span>Revizyon ${item.revision} · ${tasks} görev</span><button class="button small" data-edit-agent="${esc(item.id)}" aria-label="${esc(item.name)} agentını düzenle">Düzenle</button></footer></article>`;
+}
+function skillLibraryCard(item){
+  const t=globalThis.AIWSI18n;
+  return t.template`<article class="library-card ui-card is-interactive" data-motion-key="skill:${esc(item.id)}" data-library-open="skill:${esc(item.id)}"><header class="library-card-head"><span class="ui-icon-box library-glyph">${window.AIWSUI.icon('tool')}</span><div class="library-card-title"><h2>${esc(item.name)}</h2><small>SKILL.md · Revizyon ${item.revision}</small></div></header><p>${esc(item.description||t.text('SKILL.md talimatları'))}</p><div class="library-tags"><span class="ui-chip">${item.files.length} destek dosyası</span></div><footer class="library-card-foot"><span>${relative(item.updatedAt)} önce güncellendi</span><button class="button small" data-edit-skill="${esc(item.id)}" aria-label="${esc(item.name)} skillini düzenle">Düzenle</button></footer></article>`;
+}
+function renderLibrary() {
+  const isAgents=activeScreen==='agents', items=isAgents?state.agents:state.skills, t=globalThis.AIWSI18n.text, board=$('#board');
+  setPageHeader(isAgents?t('Agentlar'):t('Skiller'),isAgents?t('Talimatları, ön bilgileri ve skilleri bir profilde birleştir. Her görevde yeniden kullan.'):t('SKILL.md ve destek dosyalarını sakla. Bir agenta varsayılan olarak, bir göreve ek olarak bağla.'));
+  $('#task-panel').hidden=true;
+  $('#create-task').hidden=false; $('#create-task').innerHTML=`<span aria-hidden="true">+</span> ${isAgents?t('Yeni agent'):t('Yeni skill')}`;
+  $('#task-count').textContent=globalThis.AIWSI18n.template`${items.length} ${isAgents?'agent profili':'skill'} · Kontrol merkezinde kalıcı saklanır`;
+
+  board.className='board library-surface';
+  const html=`<div class="library-intro"><span class="library-intro-mark" aria-hidden="true">${window.AIWSUI.sparkle('accent')}</span><div><strong>${isAgents?t('Göreve hazır profiller'):t('Skill kütüphanesi')}</strong><p>${isAgents?t('Yeni çalışmalar profilin güncel halini alır. Başlamış çalışmaların yapılandırması korunur.'):t('Skill dosyaları her çalışma için ayrı hazırlanır. Kaynaklar kendiliğinden çalıştırılmaz.')}</p></div>${!isAgents?t('<button class="button" data-action="import-skill-folder">Sunucudan içe aktar</button>'):''}</div>${items.length?`<div class="library-list">${items.map(isAgents?agentLibraryCard:skillLibraryCard).join('')}</div>`:emptyState({className:'library-empty',title:isAgents?t('İlk agentını tanımla.'):t('İlk skillini ekle.'),text:isAgents?t('Bir isim, çalışma talimatı ve ön bilgiyle başla. Skilleri sonra da ekleyebilirsin.'):t('Mevcut bir SKILL.md dosyası yükle veya editörde kendi talimatlarını yaz.'),action:`<button class="button primary" data-action="${isAgents?'new-agent':'new-skill'}">${isAgents?t('Agent oluştur'):t('Skill oluştur')}</button>`})}`;
+  if(isAgents){renderAgentTemplates(html);return;}
+  setHtml(board,skillDiscoveryHtml()+`<section class="skill-catalog" aria-label="${esc(t('AIWS kataloğu'))}">${html}</section>`);window.AIWSUI.motion.enter(board,'[data-motion-key]','data-motion-key');
+  if(!skillDiscovery.loading&&(!skillDiscovery.data&&!skillDiscovery.error||skillDiscovery.data&&skillDiscovery.projectsKey!==skillProjectsKey()))void loadSkillDiscovery();
+}
