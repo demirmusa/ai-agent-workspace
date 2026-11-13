@@ -22,10 +22,11 @@ function syncTerminalMenu(entry,html){
   const focused=document.activeElement?.dataset?.terminalOpen;menu.innerHTML=next;entry.menuHtml=next;if(focused)menu.querySelector(`[data-terminal-open="${CSS.escape(focused)}"]`)?.focus();
 }
 document.addEventListener('pointerdown',event=>{for(const entry of [...projectShells.values(),...(sessionWorkspace?[sessionWorkspace]:[])]){const menu=entry.element.querySelector('[data-terminal-menu-list]');if(!menu.hidden&&!event.target.closest?.('.terminal-new'))setTerminalMenu(entry,false);}});
-// One-click buttons beside + for every installed agent whose provider is enabled.
+// One-click buttons beside +: a plain shell first, then every installed agent whose provider is enabled.
 function syncTerminalQuick(entry){
   const quick=entry.element.querySelector('[data-terminal-quick]'),t=globalThis.AIWSI18n.text;
-  const html=(terminalAgents.items||[]).filter(agent=>agent.available&&providerEnabled(agent.provider)).map(agent=>`<button type="button" data-terminal-open="agent:${esc(agent.provider)}" title="${esc(`${t('Yeni terminal')}: ${providers[agent.provider]}`)}" aria-label="${esc(`${t('Yeni terminal')}: ${providers[agent.provider]}`)}">${terminalIcon(agent.provider)}</button>`).join('');
+  const shell=`<button type="button" data-terminal-open="shell" title="${esc(`${t('Yeni terminal')}: ${shellName}`)}" aria-label="${esc(`${t('Yeni terminal')}: ${shellName}`)}">${terminalIcon('command')}</button>`;
+  const html=shell+(terminalAgents.items||[]).filter(agent=>agent.available&&providerEnabled(agent.provider)).map(agent=>`<button type="button" data-terminal-open="agent:${esc(agent.provider)}" title="${esc(`${t('Yeni terminal')}: ${providers[agent.provider]}`)}" aria-label="${esc(`${t('Yeni terminal')}: ${providers[agent.provider]}`)}">${terminalIcon(agent.provider)}</button>`).join('');
   if(entry.quickHtml!==html){quick.innerHTML=html;entry.quickHtml=html;}quick.hidden=!html;
 }
 // sessions: the running task sessions offered in the menu; the project menu shows its own, All projects shows every project's.
