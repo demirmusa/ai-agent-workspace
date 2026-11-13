@@ -22,9 +22,12 @@
 .terminal-dot.running{background:var(--success);box-shadow:0 0 0 2px color-mix(in srgb,var(--success) 25%,transparent)}
 .terminal-dot.failed{background:var(--danger)}
 .terminal-new{position:relative;display:flex;align-items:center;flex:none;margin-left:-4px;padding-right:8px;border-right:1px solid var(--terminal-line)}
-.terminal-new>button{display:grid;place-items:center;height:24px;border:0;background:transparent;color:var(--terminal-text);border-radius:4px}
+.terminal-quick{display:flex;align-items:center;gap:2px;flex:none;padding-right:8px;border-right:1px solid var(--terminal-line)}
+.terminal-quick[hidden]{display:none}
+.terminal-new>button,.terminal-quick>button{display:grid;place-items:center;height:24px;border:0;background:transparent;color:var(--terminal-text);border-radius:4px}
 .terminal-new-button{width:28px;font-size:18px;line-height:1}
-.terminal-new>button:hover:not(:disabled){background:var(--terminal-line);color:var(--terminal-cursor)}
+.terminal-quick>button{width:28px}
+.terminal-new>button:hover:not(:disabled),.terminal-quick>button:hover{background:var(--terminal-line);color:var(--terminal-cursor)}
 .terminal-new>button:disabled{opacity:.45;cursor:not-allowed}
 .terminal-menu{position:absolute;top:calc(100% + 4px);left:0;z-index:20;min-width:270px;max-width:440px;max-height:calc(100vh - 180px);overflow-y:auto}
 .terminal-menu-section{display:flex;align-items:center;justify-content:space-between;padding:7px 8px 4px;font-size:11px;font-weight:600;letter-spacing:.3px;text-transform:uppercase;color:var(--muted)}
@@ -76,7 +79,7 @@
 .terminal-pane-grip{flex:1;align-self:stretch;min-width:8px}
 .terminal-pane-close{flex:none;display:grid;place-items:center;width:22px;height:22px;border:0;border-radius:4px;background:transparent;color:inherit;font-size:15px;line-height:1;opacity:.65;cursor:pointer}
 .terminal-pane-close:hover{opacity:1;background:var(--terminal-line);color:var(--terminal-cursor)}
-.terminal-pane-title:focus-visible,.terminal-pane-close:focus-visible,.terminal-new>button:focus-visible,.terminal-menu-item:focus-visible{outline:1px solid var(--focus);outline-offset:-1px}
+.terminal-pane-title:focus-visible,.terminal-pane-close:focus-visible,.terminal-new>button:focus-visible,.terminal-quick>button:focus-visible,.terminal-menu-item:focus-visible{outline:1px solid var(--focus);outline-offset:-1px}
 .terminal-stage.dragging,.terminal-stage.dragging *{cursor:grabbing!important}
 .terminal-stage.dragging .terminal-host{pointer-events:none}
 .terminal-pane.drag-source{opacity:.45}
