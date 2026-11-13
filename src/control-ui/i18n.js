@@ -8,8 +8,8 @@
 (function (global) {
   'use strict';
   const catalog = global.AIWSTranslationsEn || {};
-  let language = 'en';
-  try { if (localStorage.getItem('aiws.language') === 'tr') language = 'tr'; } catch { /* Storage may be disabled. */ }
+  let language = 'tr';
+  try { if (localStorage.getItem('aiws.language') === 'en') language = 'en'; } catch { /* Storage may be disabled. */ }
   const escapePattern = value => value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
   const keys = Object.keys(catalog);
   const pattern = keys.length ? new RegExp('(?<![\\p{L}\\p{N}_])(?:' + keys.sort((a,b) => b.length-a.length).map(escapePattern).join('|') + ')(?![\\p{L}\\p{N}_])', 'gu') : null;
