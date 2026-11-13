@@ -129,7 +129,7 @@ While the desktop app is running on your computer, you can run the project from 
 What comes back:
 
 - When a run of a linked task finishes, the result is posted as an issue comment: the agent's final answer left with `aiws control reply` (or `aiws control complete --reply`), otherwise its last message.
-- Questions asked with `aiws control ask` are posted on the issue too.
+- Questions asked with `aiws control ask` are posted on the issue too. Images attached with `--image` are committed to the `aiws-attachments` branch and shown in the comment. Your reply comment goes to the agent word for word, so you can answer with new instructions as well as yes or no. Native CLI dialogs of terminal runs (for example a permission menu) are posted with their numbered options: reply with a number to pick one, or with any other text to dismiss the dialog and type that text into the agent's terminal.
 - Accepted comments get a 👀 reaction. Requests that cannot start get 😕 and an explanatory comment.
 
 **Who is allowed.** Only the repository owner, organization members and collaborators can open work, answer questions or trigger the AI. Other comments are ignored and logged. AIWS's own comments carry a hidden marker and are never read as requests. Issues and comments from before the connection are not processed.

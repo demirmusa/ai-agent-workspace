@@ -127,6 +127,7 @@ aiws control ask "Should the API response stay backward compatible?"
 aiws control ask "Do you approve this migration?" --approval
 aiws control ask "Which version?" --run run_ID --timeout 3600
 aiws control ask "Waiting for approval" --run run_ID --no-wait
+aiws control ask "Does the new layout look right?" --image before.png --image after.png
 aiws control reply "Apple Pay is now available at checkout."
 aiws control complete --summary "Change and test summary"
 aiws control complete --failed --summary "Could not finish"

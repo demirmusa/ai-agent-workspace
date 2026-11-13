@@ -31,6 +31,8 @@
 .cv-markdown .cv-code code{padding:0;border-radius:0;background:none;color:var(--ink);font:inherit}
 .cv-markdown .cv-code[data-language]::before{content:attr(data-language);display:block;margin:-3px 0 6px;color:var(--muted);font:11px var(--font-ui)}
 .cv-markdown .cv-image{display:block;max-width:100%;max-height:480px;height:auto;margin:8px 0;border:1px solid var(--line);border-radius:var(--radius-sm);background:var(--raised)}
+.cv-markdown .cv-image-gallery{display:flex;flex-wrap:wrap;gap:8px;margin:8px 0}
+.cv-markdown .cv-image-gallery .cv-image{width:160px;height:120px;max-height:none;margin:0;object-fit:cover}
 .cv-markdown a{color:var(--link);text-decoration:underline;text-decoration-color:color-mix(in srgb,currentColor 40%,transparent);text-underline-offset:3px}
 .cv-markdown a:hover{text-decoration-color:currentColor}
 .cv-file-reference{padding:1px 4px;border-radius:var(--radius-sm);background:var(--raised);color:var(--link);font-family:var(--font-mono);font-size:12.5px;cursor:help}

@@ -165,7 +165,7 @@ export class ControlService extends EventEmitter {
       sendTaskMessage: (taskId, input) => this.sendTaskMessage(taskId, input), resumeTaskSession: (taskId, input) => this.resumeTaskSession(taskId, input) });
     this.milestones = new MilestoneManager(ctx);
     this.githubBridge = new GitHubBridge(ctx, this.github, { attachments: this.attachments, learnLabels: (projectId, tags) => this.projects.learnLabels(projectId, tags), applyMilestones: (project, before, result) => this.milestones.applySync(project, before, result), dependencySatisfied: (task) => this.delivery.dependencySatisfied(task), hasMergeTarget: (task) => this.delivery.hasMergeTarget(task),
-      answer: (questionId, input) => this.answer(questionId, input), postMessage: (taskId, input) => this.postMessage(taskId, input), sendTaskMessage: (taskId, input) => this.sendTaskMessage(taskId, input),
+      answer: (questionId, input) => this.answer(questionId, input), answerNativePrompt: (question, reply) => this.controls.answerNativePrompt(question, reply), postMessage: (taskId, input) => this.postMessage(taskId, input), sendTaskMessage: (taskId, input) => this.sendTaskMessage(taskId, input),
       updateProject: (projectId, input) => this.updateProject(projectId, input), importLabels: (projectId, input) => this.importGitHubLabels(projectId, input), exportLabels: (projectId) => this.exportGitHubLabels(projectId) });
     this.repository = new RepositoryOperations(ctx, this.github, this.delivery);
     const fields = new TaskFieldValidator(ctx, this.catalog, this.workflows);

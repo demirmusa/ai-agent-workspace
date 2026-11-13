@@ -6,11 +6,12 @@ import { promisify } from 'node:util';
 import { gzip } from 'node:zlib';
 import { createHash } from 'node:crypto';
 import { isPathInside } from '../../shared/core/paths.js';
+import { IMAGE_CONTENT_TYPES } from '../../shared/core/media-types.js';
 import { ControlError } from '../types.js';
 
 /** Serves the control UI, its vendor libraries and plugin files with validators, so a reload costs only 304 replies. */
 const CONTENT_TYPES: Record<string, string> = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.mjs': 'text/javascript; charset=utf-8', '.css': 'text/css; charset=utf-8', '.json': 'application/json; charset=utf-8', '.md': 'text/markdown; charset=utf-8', '.txt': 'text/plain; charset=utf-8',
-  '.svg': 'image/svg+xml', '.png': 'image/png', '.jpg': 'image/jpeg', '.jpeg': 'image/jpeg', '.gif': 'image/gif', '.webp': 'image/webp', '.ico': 'image/x-icon', '.woff': 'font/woff', '.woff2': 'font/woff2', '.ttf': 'font/ttf' };
+  ...IMAGE_CONTENT_TYPES, '.woff': 'font/woff', '.woff2': 'font/woff2', '.ttf': 'font/ttf' };
 const VENDOR: Record<string, string> = { '/vendor/easymde.js': 'easymde/dist/easymde.min.js', '/vendor/easymde.css': 'easymde/dist/easymde.min.css', '/vendor/purify.js': 'dompurify/dist/purify.min.js', '/vendor/xterm.js': '@xterm/xterm/lib/xterm.js', '/vendor/xterm.css': '@xterm/xterm/css/xterm.css', '/vendor/addon-fit.js': '@xterm/addon-fit/lib/addon-fit.js' };
 /** Monaco loads its own modules, workers and stylesheet by name, so its whole browser build (the package's `min` folder) is served under one prefix. */
 const MONACO = { prefix: '/vendor/monaco/', entry: 'monaco-editor' };

@@ -8,6 +8,17 @@ export interface QuestionDependencies {
   postIssueComment(project: Project, task: Task, body: string, runId?: string | null): void;
 }
 
+/** A question as an issue comment. A native CLI dialog lists its options, since a reply picks one by number. */
+function issueComment(question: Question): string {
+  const heading = `❓ **AIWS ${question.kind === 'approval' ? 'needs approval' : 'question'}**`, prompt = question.prompt;
+  if (question.source !== 'terminal') return `${heading}\n\n${question.text}\n\n_Reply with a comment on this issue to answer._`;
+  const details = [prompt?.title, ...(prompt?.context ?? []), prompt?.question ?? question.text].filter(Boolean).join('\n\n');
+  const command = prompt?.command ? `\n\n\`\`\`\n${prompt.command}\n\`\`\`` : '';
+  const options = prompt?.options.length ? `\n\n${prompt.options.map((option, index) => `${index + 1}. ${option.label}`).join('\n')}` : '';
+  const reply = options ? 'Reply with an option number, or with instructions to dismiss the dialog and tell the agent what to do instead.' : 'Reply with a comment on this issue; it is typed into the agent\'s terminal.';
+  return `${heading}\n\n${details}${command}${options}\n\n_${reply}_`;
+}
+
 /** Questions and approval requests of agents, and the user's answers that continue the run. */
 export class Questions {
   /** Native dialogs that received a number key, until they settle. */
@@ -27,7 +38,7 @@ export class Questions {
     if (run.status !== 'paused') { run.status = 'waiting'; task.status = 'waiting'; }
     this.ctx.event(runId, run.taskId, 'question', questionText, { questionId: question.id }); this.ctx.changed();
     const project = this.ctx.project(task.projectId);
-    if (question.source === 'agent' && project.github && task.github?.issueNumber && !task.externalDependency) this.deps.postIssueComment(project, task, `❓ **AIWS ${question.kind === 'approval' ? 'needs approval' : 'question'}**\n\n${questionText}\n\n_Reply with a comment on this issue to answer._`, runId);
+    if (project.github && task.github?.issueNumber && !task.externalDependency) this.deps.postIssueComment(project, task, issueComment(question), runId);
     return structuredClone(question);
   }
   answer(questionId: string, input: unknown): Question {

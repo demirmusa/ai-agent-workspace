@@ -1,4 +1,4 @@
-import { ControlError, type Run } from '../types.js';
+import { ControlError, type Question, type Run } from '../types.js';
 import { jsonObject } from '../validation.js';
 import { accumulateTime, now, runEnded, text } from './common.js';
 import type { ControlContext } from './context.js';
@@ -120,6 +120,21 @@ export class RunControls {
   typeIntoTerminal(runId: string, message: string): void {
     this.input(runId, { data: message });
     setTimeout(() => { try { this.input(runId, { data: '\r' }); } catch { /* The terminal closed meanwhile. */ } }, serviceTiming.terminalSubmitDelayMs).unref();
+  }
+  /**
+   * A reply from outside the terminal (a GitHub comment) to a native CLI dialog. An option number picks that option, as typing it
+   * would; any other text dismisses the dialog and is typed as the agent's next instruction, so it can be told what to do instead.
+   */
+  answerNativePrompt(question: Question, reply: string): void {
+    const runId = question.runId, choice = /^\s*([1-9])[.)]?\s*$/.exec(reply)?.[1];
+    if (choice && question.prompt?.options[Number(choice) - 1]) {
+      this.input(runId, { data: choice });
+      // Some CLIs close the dialog on the number itself, others wait for Enter.
+      setTimeout(() => { if (question.status === 'pending') try { this.input(runId, { data: '\r' }); } catch { /* The terminal closed meanwhile. */ } }, serviceTiming.terminalSubmitDelayMs).unref();
+      return;
+    }
+    this.input(runId, { data: '\u001b' });
+    setTimeout(() => { try { this.typeIntoTerminal(runId, reply); } catch { /* The terminal closed meanwhile. */ } }, serviceTiming.terminalSubmitDelayMs).unref();
   }
   terminal(runId: string): { mode: string; output: string; end: number; cols: number; rows: number; resizes: { offset: number; cols: number; rows: number }[]; interactive: boolean } {
     const run = this.ctx.run(runId), output = this.ctx.store.terminalOutput(run);

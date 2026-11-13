@@ -8,8 +8,23 @@ function renderFilesPanel(){
   const current=activeScreen==='board'?project():null,open=Boolean(current)&&filesPanelOpen(),panel=$('#files-panel'),toggle=$('#files-toggle'),label=globalThis.AIWSI18n.text(open?'Dosyaları gizle':'Dosyaları göster');
   toggle.hidden=!current;toggle.classList.toggle('active',open);toggle.setAttribute('aria-expanded',String(open));toggle.title=label;toggle.setAttribute('aria-label',label);
   const opening=open&&panel.hidden;$('.app-shell').classList.toggle('files-open',open);panel.hidden=!open;
-  if(open){const key=projectFolderKey(current);let view=projectFileViews.get(key);if(!view){view=window.AIWSFiles.create({projectId:current.id,api,toast,onClose:()=>setFilesPanel(false),onOpen:openProjectFile});projectFileViews.set(key,view);}const body=$('.files-panel-body',panel);if(view.element.parentElement!==body){body.replaceChildren(view.element);view.show();}else if(opening)view.refresh();}
+  if(open){const key=projectFolderKey(current);let view=projectFileViews.get(key);if(!view){view=window.AIWSFiles.create({projectId:current.id,api,toast,onClose:()=>setFilesPanel(false),onOpen:openProjectFile,onNewFile:folder=>newProjectFileDialog(current,folder)});projectFileViews.set(key,view);}const body=$('.files-panel-body',panel);if(view.element.parentElement!==body){body.replaceChildren(view.element);view.show();}else if(opening)view.refresh();}
   placeFilesPanel();
+}
+// "New file": the name with its extension and the folder it goes into (prefilled with the selected folder); the new file opens in the editor.
+function newProjectFileDialog(current,folder){
+  const t=globalThis.AIWSI18n.text;
+  showModal(t('Yeni dosya'),`<form>${field(t('Dosya adı'),'name','','text',`required maxlength="255" autofocus spellcheck="false" autocomplete="off" placeholder="${esc(t('Örn. notlar.md'))}"`)}${field(t('Klasör'),'folder',folder,'text',`list="new-file-folders" spellcheck="false" autocomplete="off" placeholder="${esc(t('Proje kök klasörü'))}"`)}<datalist id="new-file-folders"></datalist><p class="form-hint">${esc(t('Uzantıyı da yaz. Klasör proje klasörüne göredir; boş bırakırsan dosya proje kök klasörüne eklenir.'))}</p>${formFooter(t('Oluştur'))}</form>`,async data=>{
+    const created=await api(`/projects/${encodeURIComponent(current.id)}/files/create`,'POST',{name:String(data.get('name')||'').trim(),folder:String(data.get('folder')||'').trim()});
+    // The dialog closes before the file opens: an open dialog keeps the editor behind it as it is.
+    $('#modal').close();
+    await projectFileViews.get(projectFolderKey(current))?.reveal(created.path);
+    toast(t('Dosya oluşturuldu'));openProjectFile(created.path);
+  });
+  // Typing in the folder field suggests the project's folders, so a folder can be found by part of its name.
+  const input=$('#field-folder'),list=$('#new-file-folders');let asked='';
+  const suggest=async()=>{const query=input.value.trim();if(query===asked)return;asked=query;try{const {items}=await api(`/projects/${encodeURIComponent(current.id)}/files/search?${new URLSearchParams({q:query,limit:'50'})}`);if(asked===query&&list.isConnected)list.innerHTML=items.filter(item=>item.type==='directory').map(item=>`<option value="${esc(item.path)}"></option>`).join('');}catch{/* Suggestions are optional. */}};
+  input.addEventListener('input',()=>void suggest());void suggest();
 }
 function setFilesPanel(open){localStorage.setItem('aiws.files-panel',String(open));renderFilesPanel();applyDetailWidth();if(!open&&!$('#modal').open)$('#files-toggle').focus();}
 $('#files-toggle').onclick=()=>setFilesPanel(!filesPanelOpen());

@@ -100,6 +100,7 @@ Workflow steps files contain an ordered JSON array with `name`, `agentId`, `inst
 aiws control questions list
 aiws control questions answer <question-id> "Operator answer"
 aiws control ask "Missing requirement?" --run <own-run-id>
+aiws control ask "Does this screen look right?" --run <own-run-id> --image shot1.png --image shot2.png
 aiws control reply "Final answer for the requester" --run <own-run-id>
 aiws control session --run <own-run-id> [provider-session-id] [--model <own-model-id>]
 aiws control complete --run <own-run-id> --summary "Changes and tests" --reply "Final answer"

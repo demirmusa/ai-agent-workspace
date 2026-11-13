@@ -64,12 +64,15 @@ The files button on the right of the header toggles the **Files** panel. It show
 | Open a file outside AIWS | Right-click → **Open with default program** |
 | Find a folder on disk | Right-click → **Reveal in File Explorer** (**Reveal in Finder** on macOS) |
 | Copy a path | Right-click → **Copy path** or **Copy relative path** |
+| Create a file | The **New file** button in the panel header, or right-click → **New file…**. Type the name with its extension and the folder (prefilled with the selected folder; typing suggests matching folders). The file is created empty and opens in the editor; an existing file is never replaced. |
 
 The panel stays usable while the **New task** window is open.
 
 ### File editor
 
 Clicking a file opens it in the built-in editor (Monaco, the editor behind VS Code). Files open as tabs. An edited tab shows an unsaved marker; **Save** writes the change to disk and confirms with "File saved". Closing a tab with edits asks before discarding them.
+
+Pictures (PNG, JPEG, GIF, WebP, BMP, ICO and AVIF, up to 16 MiB) open as a preview in the same tab instead of the editor. SVG files are text, so they open in the editor.
 
 ![Built-in file editor](https://raw.githubusercontent.com/demirmusa/ai-agent-workspace/main/media/screenshots/file-editor.jpg)
 

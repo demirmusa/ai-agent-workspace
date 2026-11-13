@@ -1,5 +1,5 @@
 /* Project explorer: a VS Code style folder tree, shown as a panel on the right. A click (or Enter) on a file opens it in the project's
- * editor through `onOpen`; the context menu copies paths or hands them to the OS, and a dragged row drops its project-relative path into a
+ * editor through `onOpen`; "New file" asks `onNewFile(folder)` for a file in the selected folder; the context menu copies paths or hands them to the OS, and a dragged row drops its project-relative path into a
  * task description or its absolute path into a terminal. */
 (function () {
   'use strict';
@@ -8,13 +8,14 @@
   const chevron = '<svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="M6 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>';
   // Header actions on the same 16-unit outline grid as AIWSUI.icon: reload, and a folded box for "collapse all".
   const headerIcon = path => `<svg class="ui-icon" width="1em" height="1em" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${path}</svg>`;
+  const newFileIcon = headerIcon('<path d="M9 1.75H3.75v12.5h8.5V5z"/><path d="M9 1.75V5h3.25"/><path d="M8 7.5v4.5M5.75 9.75h4.5"/>');
   const refreshIcon = headerIcon('<path d="M13.25 8a5.25 5.25 0 1 1-1.54-3.71"/><path d="M13.5 2.5v2.75h-2.75"/>'), collapseIcon = headerIcon('<rect x="2.25" y="2.25" width="11.5" height="11.5" rx="2.5"/><path d="M5.5 8h5"/>');
   // A folder's chevron turns over this long; a redraw during the turn continues it instead of jumping (styles/file-tree.css, .file-twisty.turning).
   const turnMs = 180;
-  function create({ projectId, api, toast, onClose, onOpen }) {
+  function create({ projectId, api, toast, onClose, onOpen, onNewFile }) {
     const element = document.createElement('section');
     element.className = 'project-files'; element.setAttribute('aria-label', t('Proje dosyaları'));
-    element.innerHTML = `<header class="project-files-header"><span class="project-files-title" title=""></span><div class="project-files-actions"><button type="button" class="icon-button" data-files-refresh title="${esc(t('Yenile'))}" aria-label="${esc(t('Dosyaları yenile'))}">${refreshIcon}</button><button type="button" class="icon-button" data-files-collapse title="${esc(t('Tüm klasörleri daralt'))}" aria-label="${esc(t('Tüm klasörleri daralt'))}">${collapseIcon}</button>${onClose ? `<button type="button" class="icon-button" data-files-close title="${esc(t('Dosyaları kapat'))}" aria-label="${esc(t('Dosyaları kapat'))}">${icon('x')}</button>` : ''}</div></header><div class="project-files-tree" role="tree" aria-label="${esc(t('Proje dosyaları'))}"></div><p class="project-files-hint">${esc(t('Bir dosyayı görev açıklamasına, terminale veya bir kartın üstüne sürükleyip bırak.'))}</p>`;
+    element.innerHTML = `<header class="project-files-header"><span class="project-files-title" title=""></span><div class="project-files-actions">${onNewFile ? `<button type="button" class="icon-button" data-files-new title="${esc(t('Yeni dosya'))}" aria-label="${esc(t('Yeni dosya'))}">${newFileIcon}</button>` : ''}<button type="button" class="icon-button" data-files-refresh title="${esc(t('Yenile'))}" aria-label="${esc(t('Dosyaları yenile'))}">${refreshIcon}</button><button type="button" class="icon-button" data-files-collapse title="${esc(t('Tüm klasörleri daralt'))}" aria-label="${esc(t('Tüm klasörleri daralt'))}">${collapseIcon}</button>${onClose ? `<button type="button" class="icon-button" data-files-close title="${esc(t('Dosyaları kapat'))}" aria-label="${esc(t('Dosyaları kapat'))}">${icon('x')}</button>` : ''}</div></header><div class="project-files-tree" role="tree" aria-label="${esc(t('Proje dosyaları'))}"></div><p class="project-files-hint">${esc(t('Bir dosyayı görev açıklamasına, terminale veya bir kartın üstüne sürükleyip bırak.'))}</p>`;
     const tree = element.querySelector('.project-files-tree'), title = element.querySelector('.project-files-title');
     const folders = new Map(); const expanded = new Set(['']);
     let root = '', selected = '', loaded = false, turned = { path: null, at: 0 }, changes = changeIndex([]);
@@ -84,6 +85,18 @@
       if (open) { expanded.add(path); void load(path); } else expanded.delete(path);
       draw();
     }
+    /** The folder a new file goes into: the folder itself, or the folder that holds the file. */
+    const folderOf = item => !item ? '' : item.type === 'directory' ? item.path : item.path.includes('/') ? item.path.slice(0, item.path.lastIndexOf('/')) : '';
+    const selectedItem = () => { const row = selected && tree.querySelector(`[data-file-path="${CSS.escape(selected)}"]`); return row ? entryOf(row) : undefined; };
+    /** Shows a file that was just created: its folders open, the file selected. */
+    async function reveal(path) {
+      const parts = path.split('/');
+      for (let depth = 1; depth < parts.length; depth++) expanded.add(parts.slice(0, depth).join('/'));
+      await Promise.all([...expanded].map(folder => load(folder, true)));
+      // Selected once its folder is listed: a draw while it loads would select another row.
+      selected = path; draw();
+      void loadChanges();
+    }
     async function launch(item, action) {
       try { await api(`/projects/${encodeURIComponent(projectId)}/files/open`, 'POST', { path: item.path, action }); }
       catch (error) { toast(error.message); }
@@ -96,6 +109,7 @@
       showMenu(x, y, [
         directory ? { label: revealLabel(), run: () => launch(item, 'reveal') } : { label: t('Varsayılan programla aç'), run: () => launch(item, 'open') },
         ...(directory ? [] : [{ label: revealLabel(), run: () => launch(item, 'reveal') }]),
+        ...(onNewFile ? [{ label: t('Yeni dosya…'), run: () => onNewFile(folderOf(item)) }] : []),
         { label: t('Yolu kopyala'), run: () => copy(item.absolutePath) },
         { label: t('Göreli yolu kopyala'), run: () => copy(item.path) },
       ], row);
@@ -146,6 +160,7 @@
         event.preventDefault(); const box = row.getBoundingClientRect(); openMenu(row, box.left + 24, box.bottom);
       }
     });
+    element.querySelector('[data-files-new]')?.addEventListener('click', () => onNewFile(folderOf(selectedItem())));
     element.querySelector('[data-files-refresh]').addEventListener('click', () => refresh());
     element.querySelector('[data-files-collapse]').addEventListener('click', () => { expanded.clear(); expanded.add(''); draw(); });
     element.querySelector('[data-files-close]')?.addEventListener('click', () => onClose());
@@ -157,7 +172,7 @@
       void loadChanges();
     }
     function show() { if (!loaded) { void load(''); void loadChanges(); } else refresh(); }
-    return { element, show, refresh, refreshChanges: loadChanges };
+    return { element, show, refresh, reveal, refreshChanges: loadChanges };
   }
   Object.assign(window.AIWSFiles, { create });
 })();

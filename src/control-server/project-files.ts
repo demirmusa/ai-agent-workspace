@@ -1,14 +1,18 @@
 import { execFile, spawn } from 'node:child_process';
 import { createHash } from 'node:crypto';
 import { open, opendir, realpath, stat } from 'node:fs/promises';
-import { dirname, isAbsolute, join, relative, resolve } from 'node:path';
+import { basename, dirname, extname, isAbsolute, join, relative, resolve } from 'node:path';
+import { IMAGE_CONTENT_TYPES } from '../shared/core/media-types.js';
 import { isPathInside, toPosixPath } from '../shared/core/paths.js';
 import { ControlError } from './types.js';
 
 export interface ProjectFileEntry { name: string; path: string; absolutePath: string; type: 'directory' | 'file'; ignored?: boolean }
 export interface ProjectFileMatch { name: string; path: string; absolutePath: string; type: 'directory' | 'file' }
-/** A file for the editor. `version` identifies the bytes on disk; `unavailable` replaces `content` for files the editor does not open. */
-export interface ProjectFileContent { path: string; absolutePath: string; size: number; limit: number; version: string; content?: string; unavailable?: 'large' | 'binary' }
+/**
+ * A file for the editor. `version` identifies the bytes on disk; `image` (a picture as a data URL) or `unavailable` replaces `content`
+ * for files the editor does not open as text.
+ */
+export interface ProjectFileContent { path: string; absolutePath: string; size: number; limit: number; version: string; content?: string; image?: string; unavailable?: 'large' | 'binary' }
 
 // Mirrors VS Code's default files.exclude, so the tree reads like the Explorer view.
 const hidden = new Set(['.git', '.svn', '.hg', 'CVS', '.DS_Store', 'Thumbs.db']);
@@ -177,6 +181,13 @@ export async function openDirectory(absolute: string): Promise<{ ok: true }> {
 
 /** Largest file the editor opens or saves. */
 export const EDITABLE_FILE_BYTES = 2 * 1024 * 1024;
+/** Largest picture the editor previews. */
+export const PREVIEW_IMAGE_BYTES = 16 * 1024 * 1024;
+/** The content type of a picture the editor shows instead of its bytes; SVG is text and opens in the editor. */
+function previewImageType(path: string): string | undefined {
+  const extension = extname(path).toLowerCase();
+  return extension === '.svg' ? undefined : IMAGE_CONTENT_TYPES[extension];
+}
 const BOM = Buffer.from([0xef, 0xbb, 0xbf]);
 const fileVersion = (bytes: Buffer): string => createHash('sha256').update(bytes).digest('hex');
 /** UTF-8 text without its byte order mark, or undefined for anything else (binary data, other encodings). */
@@ -197,6 +208,12 @@ export async function readProjectFile(repositoryPath: string, value: unknown): P
   const file = await open(real, 'r').catch(() => { throw new ControlError('The file cannot be read.', 403); });
   try {
     const size = (await file.stat()).size, base = { path, absolutePath: absolute, size, limit: EDITABLE_FILE_BYTES };
+    const imageType = previewImageType(path);
+    if (imageType) {
+      if (size > PREVIEW_IMAGE_BYTES) return { ...base, limit: PREVIEW_IMAGE_BYTES, version: '', unavailable: 'large' };
+      const bytes = await file.readFile();
+      return { ...base, limit: PREVIEW_IMAGE_BYTES, version: fileVersion(bytes), image: `data:${imageType};base64,${bytes.toString('base64')}` };
+    }
     if (size > EDITABLE_FILE_BYTES) return { ...base, version: '', unavailable: 'large' };
     const bytes = await file.readFile(), content = decodeText(bytes);
     return content === undefined ? { ...base, version: '', unavailable: 'binary' } : { ...base, version: fileVersion(bytes), content };
@@ -225,4 +242,23 @@ export async function writeProjectFile(repositoryPath: string, input: unknown): 
     await file.truncate(0); await file.write(bytes, 0, bytes.length, 0);
     return { path, absolutePath: absolute, size: bytes.length, limit: EDITABLE_FILE_BYTES, version: fileVersion(bytes), content: value.content };
   } finally { await file.close(); }
+}
+/**
+ * Creates an empty file: `name` (with its extension) inside the project folder `folder`. Missing folders on the way are not created,
+ * and an existing file is never replaced (409).
+ */
+export async function createProjectFile(repositoryPath: string, input: unknown): Promise<ProjectFileEntry> {
+  const value = input as { folder?: unknown; name?: unknown } | null;
+  const name = typeof value?.name === 'string' ? value.name.trim() : '';
+  if (!name || name.length > 255 || name === '.' || name === '..' || /[\\/\0<>:"|?*]/.test(name) || basename(name) !== name) throw new ControlError('Enter a valid file name.');
+  const { root, absolute: folder, path: folderPath } = await resolveProjectPath(repositoryPath, value?.folder ?? '');
+  if (!(await stat(folder).catch(() => null))?.isDirectory()) throw new ControlError('Selected project path is not a folder.');
+  const absolute = join(folder, name), path = folderPath ? `${folderPath}/${name}` : name;
+  if (!isPathInside(root, absolute)) throw new ControlError('Select a path inside the project folder.', 403);
+  const file = await open(absolute, 'wx').catch((error: NodeJS.ErrnoException) => {
+    throw error.code === 'EEXIST' ? new ControlError('A file or folder with this name already exists.', 409) : new ControlError('The file cannot be created.', 403);
+  });
+  await file.close();
+  fileCache.delete(root);
+  return { name, path, absolutePath: absolute, type: 'file' };
 }

@@ -34,7 +34,10 @@ export class ControlGitHub extends GitHubApi {
   labels(project: ControlProject): Promise<ProjectLabel[]> { return repositoryLabels(this, project); }
   async exportLabels(project: ControlProject, labels: ProjectLabel[]): Promise<{ created: string[]; updated: string[] }> { return exportLabels(this, project, labels, await this.labels(project)); }
   createRepository(repositoryPath: string, options: CreateRepositoryOptions = {}): ReturnType<typeof createRepository> { return createRepository(this, repositoryPath, options); }
-  comment(project: ControlProject, issueNumber: number, body: string): Promise<{ id: number; url: string }> { return postComment(this, project, issueNumber, body); }
+  /** Posts a comment; local AIWS images in the body are published to GitHub first so the issue can show them. */
+  async comment(project: ControlProject, issueNumber: number, body: string, images?: ImageStore): Promise<{ id: number; url: string }> {
+    return postComment(this, project, issueNumber, project.github ? await this.images.toRemote(project.github.repository, body, images) : body);
+  }
   react(project: ControlProject, commentId: number, content: 'eyes' | 'confused'): Promise<void> { return reactToComment(this, project, commentId, content); }
   comments(project: ControlProject, since: string): Promise<IssueComment[]> { return issueComments(this, project, since); }
   detect(repositoryPath: string): Promise<GitHubDiscovery> { return detectRepository(this, repositoryPath); }

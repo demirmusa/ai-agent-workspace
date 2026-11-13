@@ -23,7 +23,8 @@
     content = esc(content).replace(/\*\*([^*\n]+)\*\*/g, '<strong>$1</strong>').replace(/(?<!\*)\*([^*\s][^*\n]*)\*(?!\*)/g, '<em>$1</em>').replace(/~~([^~\n]+)~~/g, '<del>$1</del>');
     return content.replace(/\u0000(\d+)\u0000/g, (_, index) => tokens[Number(index)] || '');
   }
-  const listMarker = /^(\s*)([-*+]|\d{1,9}[.)])\s+(.*)$/, fenceOpen = /^\s*(`{3,}|~{3,})\s*([\w+#.-]*)/, ruleLine = /^\s{0,3}([-*_])(?:\s*\1){2,}\s*$/;
+  const attachmentImageLine = /^\s*!\[[^\]\n]*\]\(\/api\/attachments\/[a-f0-9]{64}\.(?:png|jpg|gif|webp)\)\s*$/;
+  const listMarker =/^(\s*)([-*+]|\d{1,9}[.)])\s+(.*)$/, fenceOpen = /^\s*(`{3,}|~{3,})\s*([\w+#.-]*)/, ruleLine = /^\s{0,3}([-*_])(?:\s*\1){2,}\s*$/;
   const fenceClose = (line, fence) => new RegExp(`^\\s*${fence[0] === '`' ? '`' : '~'}{${fence.length},}\\s*$`).test(line);
   const blockStart = line => /^\s{0,3}(?:#{1,6}\s|>|`{3,}|~{3,})/.test(line) || ruleLine.test(line);
   const codeBlock = (code, language = '') => `<pre class="cv-code"${language ? ` data-language="${esc(language)}"` : ''}><code data-language="${esc(language)}">${esc(code)}</code></pre>`;
@@ -67,7 +68,12 @@
   function markdown(value) {
     const lines = String(value ?? '').replace(/\r\n?/g, '\n').replace(/\t/g, '  ').split('\n');
     const html = []; let paragraph = [];
-    const flush = () => { if (paragraph.length) { html.push(`<p>${paragraph.map(inline).join('<br>')}</p>`); paragraph = []; } };
+    // A paragraph of several attachment images only (e.g. the screenshots of an agent question) becomes a thumbnail gallery.
+    const flush = () => {
+      if (!paragraph.length) return;
+      const gallery = paragraph.length > 1 && paragraph.every(line => attachmentImageLine.test(line));
+      html.push(gallery ? `<div class="cv-image-gallery">${paragraph.map(inline).join('')}</div>` : `<p>${paragraph.map(inline).join('<br>')}</p>`); paragraph = [];
+    };
     const cells = row => row.trim().replace(/^\|/, '').replace(/\|$/, '').split(/(?<!\\)\|/).map(cell => cell.trim().replace(/\\\|/g, '|'));
     const separator = row => /^\s*\|?\s*:?-{1,}:?\s*(\|\s*:?-{1,}:?\s*)*\|?\s*$/.test(row) && row.includes('-') && row.includes('|');
     for (let index = 0; index < lines.length; index++) {

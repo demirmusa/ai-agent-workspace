@@ -1,7 +1,7 @@
 import { resolve } from 'node:path';
 import { ControlError } from '../../types.js';
 import { findScriptCandidates, powerShellScriptParameters } from '../../run-scripts.js';
-import { EDITABLE_FILE_BYTES, listProjectFiles, openProjectPath, readProjectFile, searchProjectFiles, writeProjectFile } from '../../project-files.js';
+import { EDITABLE_FILE_BYTES, createProjectFile, listProjectFiles, openProjectPath, readProjectFile, searchProjectFiles, writeProjectFile } from '../../project-files.js';
 import { MAX_ATTACHMENT_BODY, PROJECT_ATTACHMENTS } from '../../attachments.js';
 import type { RouteContext, RouteHandler } from './context.js';
 
@@ -49,6 +49,7 @@ async function files(c: RouteContext, repositoryPath: string): Promise<boolean> 
   if (!step && c.method === 'GET') return c.send(200, await listProjectFiles(repositoryPath, c.query.get('path') ?? ''));
   if (step === 'search' && !c.parts[5] && c.method === 'GET') return c.send(200, await searchProjectFiles(repositoryPath, c.query.get('q') ?? '', c.query.get('limit') ?? undefined));
   if (step === 'open' && !c.parts[5] && c.method === 'POST') return c.send(200, await openProjectPath(repositoryPath, await c.body()));
+  if (step === 'create' && !c.parts[5] && c.method === 'POST') return c.send(201, await createProjectFile(repositoryPath, await c.body()));
   return false;
 }
 

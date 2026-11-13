@@ -18,6 +18,8 @@ export interface GitHubBridgeDependencies {
   dependencySatisfied(task: Task): boolean;
   hasMergeTarget(task: Task): boolean;
   answer(questionId: string, input: unknown): Question;
+  /** Answers a native CLI dialog of a terminal run by typing into it. */
+  answerNativePrompt(question: Question, reply: string): void;
   postMessage(taskId: string, input: unknown): TaskMessage;
   sendTaskMessage(taskId: string, input: unknown): Promise<TaskMessage | null>;
   updateProject(projectId: string, input: unknown): Project;
@@ -209,7 +211,7 @@ export class GitHubBridge {
   /** Comments go to a possibly public issue, so they carry no secrets the agent may have printed. */
   postIssueComment(project: Project, task: Task, body: string, runId: string | null = null): void {
     const issueNumber = task.github?.issueNumber; if (!issueNumber) return;
-    void this.github.comment(project, issueNumber, this.ctx.journal.redact(body)).then((comment) => {
+    void this.github.comment(project, issueNumber, this.ctx.journal.redact(body), this.deps.attachments).then((comment) => {
       if (this.ctx.closing) return; this.ctx.event(runId, task.id, 'github.comment', `Posted a comment on issue #${issueNumber}.`, { url: comment.url }); this.ctx.changed();
     }).catch((error) => { if (!this.ctx.closing && this.ctx.state.tasks.includes(task)) { this.ctx.event(runId, task.id, 'github.comment.error', (error as Error).message); this.ctx.changed(); } });
   }
@@ -224,14 +226,17 @@ export class GitHubBridge {
       const task = ctx.state.tasks.find((item) => item.projectId === project.id && !item.externalDependency && !item.archivedAt && item.github?.issueNumber === comment.issueNumber);
       if (!task) continue;
       const request = triggeredRequest(comment.body, trigger);
-      const pending = ctx.state.questions.find((question) => question.taskId === task.id && question.status === 'pending' && question.source !== 'terminal');
+      const pending = ctx.state.questions.find((question) => question.taskId === task.id && question.status === 'pending');
       if ((pending || request !== null) && !trustedAuthor(comment.association)) {
         ctx.event(null, task.id, 'github.comment.ignored', `Ignored a request from @${comment.author} (${comment.association}); only owners, members and collaborators may direct agents.`, { url: comment.url });
         continue;
       }
       try {
-        if (pending) { this.deps.answer(pending.id, { answer: (request ?? comment.body).trim() || comment.body.trim() }); ctx.event(null, task.id, 'github.answer', `@${comment.author} answered from GitHub.`, { url: comment.url }); }
-        else if (request !== null) await this.request(task, request, comment);
+        if (pending) {
+          const answer = (request ?? comment.body).trim() || comment.body.trim();
+          if (pending.source === 'terminal') this.deps.answerNativePrompt(pending, answer); else this.deps.answer(pending.id, { answer });
+          ctx.event(null, task.id, 'github.answer', `@${comment.author} answered from GitHub.`, { url: comment.url });
+        } else if (request !== null) await this.request(task, request, comment);
         else continue;
         void this.github.react(project, comment.id, 'eyes').catch(() => {});
       } catch (error) {

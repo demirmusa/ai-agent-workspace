@@ -15,4 +15,8 @@
 .file-editor-host{position:absolute;inset:0}
 .file-editor-message{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;height:100%;padding:24px;text-align:center;font-size:13px;color:var(--muted)}
 .file-editor-message p{max-width:520px;margin:0}
-.file-editor-message[hidden],.file-editor-host[hidden]{display:none}
+.file-editor-message[hidden],.file-editor-host[hidden],.file-editor-preview[hidden]{display:none}
+/* A picture opened from the explorer: fitted into the body, never upscaled, on a checkerboard so transparent areas show. */
+.file-editor-preview{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;height:100%;padding:24px;overflow:auto}
+.file-editor-preview img{max-width:100%;max-height:calc(100% - 28px);object-fit:contain;border:1px solid var(--line);background:repeating-conic-gradient(var(--surface) 0 25%,var(--ground) 0 50%) 0 0/16px 16px}
+.file-editor-preview-size{font-size:12px;color:var(--muted)}

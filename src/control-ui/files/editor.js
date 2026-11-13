@@ -75,8 +75,8 @@
   function createEditor({ projectId, api, toast, error, confirm, onChange }) {
     const element = document.createElement('section');
     element.className = 'file-editor'; element.setAttribute('aria-label', t('Dosya editörü'));
-    element.innerHTML = `<header class="file-editor-bar"><div class="file-editor-tabs" role="tablist" aria-label="${esc(t('Açık dosyalar'))}"></div><button type="button" class="button small primary" data-editor-save title="Ctrl+S" disabled>${esc(t('Kaydet'))}</button></header><div class="file-editor-body"><div class="file-editor-host" hidden></div><div class="file-editor-message" hidden></div></div>`;
-    const tabs = element.querySelector('.file-editor-tabs'), saveButton = element.querySelector('[data-editor-save]'), host = element.querySelector('.file-editor-host'), message = element.querySelector('.file-editor-message');
+    element.innerHTML = `<header class="file-editor-bar"><div class="file-editor-tabs" role="tablist" aria-label="${esc(t('Açık dosyalar'))}"></div><button type="button" class="button small primary" data-editor-save title="Ctrl+S" disabled>${esc(t('Kaydet'))}</button></header><div class="file-editor-body"><div class="file-editor-host" hidden></div><div class="file-editor-message" hidden></div><div class="file-editor-preview" hidden></div></div>`;
+    const tabs = element.querySelector('.file-editor-tabs'), saveButton = element.querySelector('[data-editor-save]'), host = element.querySelector('.file-editor-host'), message = element.querySelector('.file-editor-message'), preview = element.querySelector('.file-editor-preview');
     const url = `/projects/${encodeURIComponent(projectId)}/files`, files = new Map();
     let active = '', monaco = null, editor = null, summary = '0|false';
 
@@ -102,8 +102,13 @@
       const text = !file ? '' : file.status === 'loading' ? t('Yükleniyor…') : file.status === 'error' ? file.message
         : file.status === 'large' ? `${t('Bu dosya editörde açılamayacak kadar büyük.')} ${megabytes(file.size)} / ${megabytes(file.limit)}`
         : file.status === 'binary' ? t('Bu dosya metin değil; editörde açılamaz.') : '';
-      message.hidden = !text; host.hidden = !file || Boolean(text);
+      const image = file?.status === 'image';
+      message.hidden = !text; host.hidden = !file || Boolean(text) || image; preview.hidden = !image;
       message.innerHTML = text ? `<p>${esc(text)}</p>${['large', 'binary'].includes(file.status) ? `<button type="button" class="button small" data-editor-launch>${esc(t('Varsayılan programla aç'))}</button>` : ''}` : '';
+      if (image && preview.dataset.version !== `${file.path}|${file.version}`) {
+        preview.dataset.version = `${file.path}|${file.version}`;
+        preview.innerHTML = `<img src="${esc(file.image)}" alt="${esc(file.name)}"><span class="file-editor-preview-size">${esc(megabytes(file.size))}</span>`;
+      } else if (!image && preview.innerHTML) { preview.replaceChildren(); delete preview.dataset.version; }
       if (!editor) return;
       if (file?.model) { if (editor.getModel() !== file.model) { editor.setModel(file.model); if (file.view) editor.restoreViewState(file.view); } }
       else if (editor.getModel()) editor.setModel(null);
@@ -125,6 +130,8 @@
     /** Puts what was read from disk into the file: a model on first load, new text afterwards. */
     function accept(file, result) {
       if (result.unavailable) { file.model?.dispose(); Object.assign(file, { status: result.unavailable, size: result.size, limit: result.limit, model: null }); return; }
+      // A picture is shown, not edited; its version lets revalidate pick up a new picture on disk.
+      if (result.image) { file.model?.dispose(); Object.assign(file, { status: 'image', image: result.image, size: result.size, version: result.version, model: null }); return; }
       if (file.model) file.model.setValue(result.content);
       else {
         const uri = monaco.Uri.file(result.absolutePath);
@@ -136,7 +143,8 @@
     }
     async function load(file) {
       try {
-        const [result] = await Promise.all([read(file.path), ensureEditor()]);
+        const result = await read(file.path);
+        if (!result.image) await ensureEditor();
         if (files.get(file.path) !== file) return;
         accept(file, result);
       } catch (problem) {
@@ -148,7 +156,7 @@
     }
     /** A file without unsaved changes follows the disk: it is read again when it is shown. */
     async function revalidate(file) {
-      if (file.status !== 'ready' || file.saving || file.checking || dirty(file)) return;
+      if (!['ready', 'image'].includes(file.status) || file.saving || file.checking || dirty(file)) return;
       file.checking = true;
       try {
         const result = await read(file.path);

@@ -3,7 +3,7 @@ import { mkdirSync, mkdtempSync, readFileSync, rmSync, symlinkSync, writeFileSyn
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { execFileSync } from 'node:child_process';
-import { EDITABLE_FILE_BYTES, listProjectFiles, openProjectPath, readProjectFile, searchProjectFiles, writeProjectFile } from '../project-files.js';
+import { EDITABLE_FILE_BYTES, createProjectFile, listProjectFiles, openProjectPath, readProjectFile, searchProjectFiles, writeProjectFile } from '../project-files.js';
 import { startControlServer, type RunningControlServer } from '../server.js';
 const roots: string[] = [], servers: RunningControlServer[] = [];
 afterEach(async () => { await Promise.all(servers.splice(0).map((server) => server.close())); for (const path of roots.splice(0)) rmSync(path, { recursive: true, force: true, maxRetries: 5, retryDelay: 100 }); });
@@ -94,14 +94,36 @@ describe('project file editor', () => {
     const bom = await readProjectFile(path, 'bom.txt'); expect(bom.content).toBe('şğ');
     await writeProjectFile(path, { path: 'bom.txt', content: 'öç', version: bom.version });
     expect([...readFileSync(join(path, 'bom.txt'))]).toEqual([0xef, 0xbb, 0xbf, ...Buffer.from('öç')]);
-    writeFileSync(join(path, 'image.png'), Buffer.from([0x89, 0x50, 0x4e, 0x47, 0, 1, 2, 3]));
-    expect(await readProjectFile(path, 'image.png')).toMatchObject({ unavailable: 'binary', size: 8 });
+    writeFileSync(join(path, 'data.bin'), Buffer.from([0x89, 0x50, 0x4e, 0x47, 0, 1, 2, 3]));
+    expect(await readProjectFile(path, 'data.bin')).toMatchObject({ unavailable: 'binary', size: 8 });
     writeFileSync(join(path, 'latin1.txt'), Buffer.from([0x63, 0x61, 0x66, 0xe9]));
     expect((await readProjectFile(path, 'latin1.txt')).unavailable).toBe('binary');
     writeFileSync(join(path, 'big.log'), Buffer.alloc(EDITABLE_FILE_BYTES + 1, 0x61));
     const big = await readProjectFile(path, 'big.log'); expect(big).toMatchObject({ unavailable: 'large', size: EDITABLE_FILE_BYTES + 1 }); expect(big.content).toBeUndefined();
     await expect(writeProjectFile(path, { path: 'README.md', content: 'a'.repeat(EDITABLE_FILE_BYTES + 1), overwrite: true })).rejects.toMatchObject({ statusCode: 413 });
     await expect(writeProjectFile(path, { path: 'big.log', content: 'small', overwrite: true })).rejects.toMatchObject({ statusCode: 409 });
+  });
+  it('returns pictures as data URLs for the preview and opens SVG as text', async () => {
+    const path = setup();
+    const bytes = Buffer.from([0x89, 0x50, 0x4e, 0x47, 0, 1, 2, 3]);
+    writeFileSync(join(path, 'Logo.PNG'), bytes);
+    const image = await readProjectFile(path, 'Logo.PNG');
+    expect(image).toMatchObject({ size: 8, image: `data:image/png;base64,${bytes.toString('base64')}` });
+    expect(image.version).toBeTruthy(); expect(image.content).toBeUndefined();
+    writeFileSync(join(path, 'icon.svg'), '<svg/>');
+    expect(await readProjectFile(path, 'icon.svg')).toMatchObject({ content: '<svg/>' });
+  });
+  it('creates an empty file with its extension in a chosen folder and never replaces one', async () => {
+    const path = setup();
+    expect(await createProjectFile(path, { folder: 'docs', name: 'notes.md' })).toMatchObject({ name: 'notes.md', path: 'docs/notes.md', type: 'file', absolutePath: join(path, 'docs', 'notes.md') });
+    expect(readFileSync(join(path, 'docs', 'notes.md'), 'utf8')).toBe('');
+    expect((await createProjectFile(path, { name: 'root.txt' })).path).toBe('root.txt');
+    await expect(createProjectFile(path, { folder: 'docs', name: 'notes.md' })).rejects.toMatchObject({ statusCode: 409 });
+    await expect(createProjectFile(path, { folder: 'docs', name: 'guide.md' })).rejects.toMatchObject({ statusCode: 409 });
+    for (const name of ['', '..', 'a/b.txt', 'a\\b.txt', 'bad?.txt']) await expect(createProjectFile(path, { folder: '', name })).rejects.toThrow(/valid file name/);
+    await expect(createProjectFile(path, { folder: '../', name: 'x.txt' })).rejects.toThrow(/inside the project/);
+    await expect(createProjectFile(path, { folder: 'missing', name: 'x.txt' })).rejects.toThrow();
+    await expect(createProjectFile(path, { folder: 'README.md', name: 'x.txt' })).rejects.toThrow(/not a folder/);
   });
   it('reads and writes only existing files inside the project folder, also through links', async () => {
     const path = setup(), outside = mkdtempSync(join(tmpdir(), 'aiws-project-files-outside-')); roots.push(outside);

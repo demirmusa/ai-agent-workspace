@@ -174,7 +174,7 @@ describe('control center renderer with the real local API', () => {
   });
   it('opens a file from the files panel in the Monaco editor tab and saves, keeps or reconciles its changes', async () => {
     const notes=join(directory,'notes.md'),onDisk=()=>readFile(notes,'utf8');
-    await writeFile(notes,'first\n');await writeFile(join(directory,'other.txt'),'other');await writeFile(join(directory,'image.bin'),Buffer.from([0,1,2,3]));
+    await writeFile(notes,'first\n');await writeFile(join(directory,'other.txt'),'other');await writeFile(join(directory,'image.bin'),Buffer.from([0,1,2,3]));await mkdir(join(directory,'docs'));await writeFile(join(directory,'photo.png'),Buffer.from([0x89,0x50,0x4e,0x47]));
     await createProject();
     // Monaco itself is not loaded in tests: a stand-in with the same calls records the model the editor shows.
     window.eval(`(()=>{const models=new Map(),stub=window.monacoStub={themes:[],editor:null};
@@ -227,6 +227,20 @@ describe('control center renderer with the real local API', () => {
     // A file that is not text shows why instead of an editor.
     click('[data-file-path="image.bin"]');
     await wait(()=>expect(element('.file-editor-message').textContent).toContain('Bu dosya metin değil'));expect(element('.file-editor-host').hidden).toBe(true);expect(element('[data-editor-launch]')).toBeTruthy();
+    // A picture is shown in the editor area instead of a text editor.
+    click('[data-file-path="photo.png"]');
+    await wait(()=>expect(element<HTMLImageElement>('.file-editor-preview img').getAttribute('src')).toBe(`data:image/png;base64,${Buffer.from([0x89,0x50,0x4e,0x47]).toString('base64')}`));
+    expect(element('.file-editor-host').hidden).toBe(true);expect(element('.file-editor-message').hidden).toBe(true);
+    // "New file" takes the name with its extension and a folder, creates the file there and opens it.
+    click('[data-files-new]');await wait(()=>expect(element('#modal-title').textContent).toBe('Yeni dosya'));assertModalShell();
+    expect(element<HTMLInputElement>('#field-folder').value).toBe('');
+    input('#field-name','todo.ts');input('#field-folder','docs');submit('#modal form');
+    await wait(async()=>expect(await readFile(join(directory,'docs','todo.ts'),'utf8')).toBe(''));
+    await wait(()=>expect(openTabs()).toContain('docs/todo.ts'));await wait(()=>expect(element('[data-file-path="docs/todo.ts"]')).toBeTruthy());
+    click('[data-files-new]');await wait(()=>expect(element('#modal').hasAttribute('open')).toBe(true));expect(element<HTMLInputElement>('#field-folder').value).toBe('docs');
+    input('#field-name','todo.ts');submit('#modal form');await wait(()=>expect(element('#modal .form-error').textContent).toContain('already exists'));click('#close-modal');
+    await wait(()=>expect(element('#modal').hasAttribute('open')).toBe(false));
+    click('[data-editor-close="docs/todo.ts"]');click('[data-editor-close="photo.png"]');
     click('[data-editor-close="image.bin"]');click('[data-editor-close="other.txt"]');
     await wait(()=>expect(element('#project-tab-editor').hidden).toBe(true));expect(element('#project-tab-board').getAttribute('aria-selected')).toBe('true');
   });
@@ -244,10 +258,10 @@ describe('control center renderer with the real local API', () => {
     click('[data-file-path="src/nested"]');await wait(()=>expect(element('[data-file-path="src/nested/deep.txt"]').getAttribute('aria-level')).toBe('3'));
     click('[data-file-path="src/nested/deep.txt"]');expect(element('[data-file-path="src/nested/deep.txt"]').classList.contains('selected')).toBe(true);expect(window.document.querySelector('#modal[open]')).toBeNull();
     element('[data-file-path="src/nested/deep.txt"]').dispatchEvent(new window.MouseEvent('contextmenu',{bubbles:true,cancelable:true,clientX:20,clientY:20}) as unknown as Event);
-    expect([...window.document.querySelectorAll('.file-context-menu button')].map(button=>button.textContent)).toEqual(['Varsayılan programla aç',"Dosya Gezgini'nde göster",'Yolu kopyala','Göreli yolu kopyala']);
+    expect([...window.document.querySelectorAll('.file-context-menu button')].map(button=>button.textContent)).toEqual(['Varsayılan programla aç',"Dosya Gezgini'nde göster",'Yeni dosya…','Yolu kopyala','Göreli yolu kopyala']);
     window.document.body.dispatchEvent(new window.Event('pointerdown',{bubbles:true}) as unknown as Event);expect(window.document.querySelector('.file-context-menu')).toBeNull();
     element('[data-file-path="src"]').dispatchEvent(new window.MouseEvent('contextmenu',{bubbles:true,cancelable:true,clientX:20,clientY:20}) as unknown as Event);
-    expect([...window.document.querySelectorAll('.file-context-menu button')].map(button=>button.textContent)).toEqual(["Dosya Gezgini'nde göster",'Yolu kopyala','Göreli yolu kopyala']);
+    expect([...window.document.querySelectorAll('.file-context-menu button')].map(button=>button.textContent)).toEqual(["Dosya Gezgini'nde göster",'Yeni dosya…','Yolu kopyala','Göreli yolu kopyala']);
     window.document.body.dispatchEvent(new window.Event('pointerdown',{bubbles:true}) as unknown as Event);
     element(`[data-project="${project.id}"]`).dispatchEvent(new window.MouseEvent('contextmenu',{bubbles:true,cancelable:true,clientX:20,clientY:20}) as unknown as Event);
     expect([...window.document.querySelectorAll('.file-context-menu button')].map(button=>button.textContent)).toEqual(["Dosya Gezgini'nde göster",'Arşive taşı','Proje yolunu kopyala']);

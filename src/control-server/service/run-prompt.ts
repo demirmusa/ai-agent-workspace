@@ -41,7 +41,7 @@ export class RunPromptBuilder {
     const schedule = task.scheduleId ? state.schedules.find((item) => item.id === task.scheduleId) : undefined;
     const lines = [
       `AIWS run ${run.id}, task ${task.id}. Verify before claiming success. Only you, not subagents, may run aiws control commands for this run.`,
-      run.terminalMode === 'pty' ? 'Ask the user with your own built-in question and approval prompts; AIWS notifies the user and shows them in the chat. Do not use aiws control ask.' : `Ask the user: aiws control ask "Your question" --run ${run.id} (add --approval for permission).`,
+      run.terminalMode === 'pty' ? `Ask the user with your own built-in question and approval prompts; AIWS notifies the user and shows them in the chat. To show the user images with a question, use aiws control ask "Your question" --run ${run.id} --image <path> (repeatable) instead.` : `Ask the user: aiws control ask "Your question" --run ${run.id} (add --approval for permission; --image <path> attaches a screenshot or other image, repeatable).`,
       `${replyInstruction(run.id)}${github}`,
       run.terminalMode === 'pty' ? `When done: aiws control complete --run ${run.id} --summary "Changes and tests" (add --failed on failure).` : '',
       run.provider !== 'command' ? `Before starting the work, record your provider session ID so follow-ups resume this conversation: aiws control session --run ${run.id} (pass the ID as an argument if it is not detected automatically) and your exact model ID: add --model <your-model-id>.` : '',
