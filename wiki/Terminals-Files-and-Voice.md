@@ -65,7 +65,7 @@ The files button on the right of the header toggles the **Files** panel. It show
 | Open a file outside AIWS | Right-click → **Open with default program** |
 | Find a folder on disk | Right-click → **Reveal in File Explorer** (**Reveal in Finder** on macOS) |
 | Copy a path | Right-click → **Copy path** or **Copy relative path** |
-| Create a file | The **New file** button in the panel header, or right-click → **New file…**. Type the name with its extension and the folder (prefilled with the selected folder; typing suggests matching folders). The file is created empty and opens in the editor; an existing file is never replaced. |
+| Create a file | The **New file** button in the panel header, or right-click → **New file…**. A name box opens right in the tree, VS Code style: the header button puts it in the selected item's folder, and the context menu of a folder puts it inside that folder (expanding it if collapsed). Type the name with its extension and press **Enter** to create it, or **Escape** to cancel; clicking away creates a typed name. The file is created empty, selected in the tree and opened in the editor; an existing file is never replaced, and a refused name shows the reason under the box. |
 
 The panel stays usable while the **New task** window is open.
 

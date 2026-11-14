@@ -33,6 +33,11 @@
 .file-row.changed .file-name,.change-row .change-name,.file-change{color:var(--change-tone)}
 .file-change{flex:none;min-width:14px;margin-left:auto;font:600 11.5px var(--font-mono);text-align:right}
 .file-change-dot{flex:none;width:6px;height:6px;margin:0 4px 0 auto;border-radius:50%;background:var(--change-tone);opacity:.85}
+/* The inline "New file" name box: a row in the tree whose name is an input; a refused name shows its reason under the box. */
+.file-row.file-new{position:relative;overflow:visible}
+.file-new-input,.file-new-input:focus{flex:1 1 auto;min-width:0;height:22px;padding:0 4px;border:1px solid var(--focus);border-radius:3px;background:var(--input);color:var(--ink-strong);font:inherit;outline:none;box-shadow:none}
+.file-row.file-new.invalid .file-new-input{border-color:var(--danger)}
+.file-new-error{position:absolute;z-index:1;top:calc(100% - 2px);left:calc(24px + var(--indent));right:8px;padding:4px 6px;border:1px solid var(--danger);border-radius:0 0 3px 3px;background:var(--popover);color:var(--ink);font-size:12px;white-space:normal}
 .file-message{padding-left:calc(28px + var(--indent));font-style:italic;color:var(--muted)}
 .file-message.error{font-style:normal;color:var(--danger)}
 .file-context-menu{position:fixed;z-index:1000;min-width:220px;display:flex;flex-direction:column}

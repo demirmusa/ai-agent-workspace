@@ -1,6 +1,7 @@
 /* Project explorer: a VS Code style folder tree, shown as a panel on the right. A click (or Enter) on a file opens it in the project's
- * editor through `onOpen`; the search field filters the tree to the files and folders whose name contains what is typed; open folders
- * follow the file system through the server's `files` events (`changed`), and reload on a timer when the folder cannot be watched; "New file" asks `onNewFile(folder)` for a file in the selected folder; the context menu copies paths or hands them to the OS, and a dragged row drops its project-relative path into a
+ * editor through `onOpen`; "New file" shows a name box inside the selected folder, VS Code style, and creates it through `onCreateFile(folder, name)`; the search field filters the tree to the files and folders whose name contains
+ * what is typed; open folders follow the file system through the server's `files` events (`changed`), and reload on a timer when the folder
+ * cannot be watched; the context menu copies paths or hands them to the OS, and a dragged row drops its project-relative path into a
  * task description or its absolute path into a terminal. */
 (function () {
   'use strict';
@@ -15,13 +16,15 @@
   const turnMs = 180;
   // Keystrokes closer than this make one search; without a file system watcher, open folders reload this often.
   const searchDelayMs = 80, pollMs = 5000, searchLimit = 200;
-  function create({ projectId, api, toast, onClose, onOpen, onNewFile }) {
+  function create({ projectId, api, toast, onClose, onOpen, onCreateFile }) {
     const element = document.createElement('section');
     element.className = 'project-files'; element.setAttribute('aria-label', t('Proje dosyaları'));
-    element.innerHTML = `<header class="project-files-header"><span class="project-files-title" title=""></span><div class="project-files-actions">${onNewFile ? `<button type="button" class="icon-button" data-files-new title="${esc(t('Yeni dosya'))}" aria-label="${esc(t('Yeni dosya'))}">${newFileIcon}</button>` : ''}<button type="button" class="icon-button" data-files-refresh title="${esc(t('Yenile'))}" aria-label="${esc(t('Dosyaları yenile'))}">${refreshIcon}</button><button type="button" class="icon-button" data-files-collapse title="${esc(t('Tüm klasörleri daralt'))}" aria-label="${esc(t('Tüm klasörleri daralt'))}">${collapseIcon}</button>${onClose ? `<button type="button" class="icon-button" data-files-close title="${esc(t('Dosyaları kapat'))}" aria-label="${esc(t('Dosyaları kapat'))}">${icon('x')}</button>` : ''}</div></header><div class="project-files-search"><input type="search" data-files-search placeholder="${esc(t('Dosya ara'))}" aria-label="${esc(t('Dosyaları ada göre ara'))}" spellcheck="false" autocomplete="off"></div><div class="project-files-tree" role="tree" aria-label="${esc(t('Proje dosyaları'))}"></div><p class="project-files-hint">${esc(t('Bir dosyayı görev açıklamasına, terminale veya bir kartın üstüne sürükleyip bırak.'))}</p>`;
+    element.innerHTML = `<header class="project-files-header"><span class="project-files-title" title=""></span><div class="project-files-actions">${onCreateFile ? `<button type="button" class="icon-button" data-files-new title="${esc(t('Yeni dosya'))}" aria-label="${esc(t('Yeni dosya'))}">${newFileIcon}</button>` : ''}<button type="button" class="icon-button" data-files-refresh title="${esc(t('Yenile'))}" aria-label="${esc(t('Dosyaları yenile'))}">${refreshIcon}</button><button type="button" class="icon-button" data-files-collapse title="${esc(t('Tüm klasörleri daralt'))}" aria-label="${esc(t('Tüm klasörleri daralt'))}">${collapseIcon}</button>${onClose ? `<button type="button" class="icon-button" data-files-close title="${esc(t('Dosyaları kapat'))}" aria-label="${esc(t('Dosyaları kapat'))}">${icon('x')}</button>` : ''}</div></header><div class="project-files-search"><input type="search" data-files-search placeholder="${esc(t('Dosya ara'))}" aria-label="${esc(t('Dosyaları ada göre ara'))}" spellcheck="false" autocomplete="off"></div><div class="project-files-tree" role="tree" aria-label="${esc(t('Proje dosyaları'))}"></div><p class="project-files-hint">${esc(t('Bir dosyayı görev açıklamasına, terminale veya bir kartın üstüne sürükleyip bırak.'))}</p>`;
     const tree = element.querySelector('.project-files-tree'), title = element.querySelector('.project-files-title'), searchInput = element.querySelector('[data-files-search]');
     const folders = new Map(); const expanded = new Set(['']);
     let root = '', selected = '', loaded = false, turned = { path: null, at: 0 }, changes = changeIndex([]);
+    // The name box of a file being created: { folder, row, input, error, busy }. The same element is put back on every redraw, so typing is kept.
+    let pending = null, placing = false;
     // Search: the typed text, its matches (null while they load) and a counter that drops answers to older keystrokes.
     let query = '', matches = null, searchError = '', searchRound = 0, searchTimer = 0;
     // Watching: when the server's lease ends, its renewal, and whether the open folders reload on a timer instead.
@@ -29,7 +32,9 @@
 
     async function loadChanges() {
       try { changes = changeIndex((await api(`/projects/${encodeURIComponent(projectId)}/git/changes`)).files); }
-      catch { changes = changeIndex([]); }
+      catch { changes = changeIndex([]);
+    // The name box of a file being created: { folder, row, input, error, busy }. The same element is put back on every redraw, so typing is kept.
+    let pending = null, placing = false; }
       draw();
     }
 
@@ -58,31 +63,43 @@
         if (!folder) return;
         if (folder.error && !folder.items) { list.push({ kind: 'message', depth, text: folder.error, error: true }); return; }
         if (!folder.items) { list.push({ kind: 'message', depth, text: t('Yükleniyor…') }); return; }
-        if (!folder.items.length && path) list.push({ kind: 'message', depth, text: t('Boş klasör') });
+        const adding = pending?.folder === path;
+        if (!folder.items.length && path && !adding) list.push({ kind: 'message', depth, text: t('Boş klasör') });
+        // Like VS Code, the name box sits after the subfolders, where the new file will be listed.
+        let boxed = !adding;
         for (const item of folder.items) {
+          if (!boxed && item.type !== 'directory') { list.push({ kind: 'input', depth }); boxed = true; }
           list.push({ kind: 'item', depth, item });
           if (item.type === 'directory' && expanded.has(item.path)) visit(item.path, depth + 1);
         }
+        if (!boxed) list.push({ kind: 'input', depth });
         if (folder.truncated) list.push({ kind: 'message', depth, text: t('İlk 5000 öğe gösteriliyor') });
       };
       visit('', 0);
       return list;
     }
     function draw() {
-      const focused = element.contains(document.activeElement);
+      const typing = Boolean(pending) && document.activeElement === pending.input, focused = !typing && element.contains(document.activeElement);
       const name = root ? root.split(/[\\/]/).filter(Boolean).pop() || root : '';
       title.textContent = name; title.title = root;
       const list = rows(), turning = performance.now() - turned.at < turnMs ? turned.path : null, turnDelay = Math.round(turned.at - performance.now());
       if (!selected || !list.some(row => row.item?.path === selected)) selected = list.find(row => row.item)?.item.path || '';
+      placing = true;
       tree.innerHTML = list.map(row => {
         const indent = `style="--depth:${row.depth}"`;
+        if (row.kind === 'input') { pending.row.style.setProperty('--depth', String(row.depth)); return '<div data-file-input-slot></div>'; }
         if (row.kind === 'message') return `<div class="file-row file-message${row.error ? ' error' : ''}" role="none" ${indent}>${esc(row.text)}</div>`;
         const item = row.item, directory = item.type === 'directory', change = directory ? changes.folders.get(item.path) : changes.paths.get(item.path), open = directory && expanded.has(item.path), turn = directory && item.path === turning;
         return `<div class="file-row${item.ignored ? ' ignored' : ''}${change ? ' changed' : ''}${item.path === selected ? ' selected' : ''}"${change ? ` data-change="${esc(change)}"` : ''} role="treeitem" ${indent} tabindex="${item.path === selected ? 0 : -1}" aria-level="${row.depth + 1}" aria-selected="${item.path === selected}"${directory ? ` aria-expanded="${open}"` : ''} draggable="true" data-file-path="${esc(item.path)}" data-file-type="${esc(item.type)}" title="${esc(item.absolutePath)}"><span class="file-twisty${directory ? '' : ' leaf'}${open ? ' open' : ''}${turn ? ' turning' : ''}"${turn ? ` style="--turn-delay:${turnDelay}ms"` : ''}>${directory ? chevron : ''}</span><span class="file-icon ${directory ? 'folder' : 'file'}">${directory ? folderIcon(open) : fileIcon}</span><span class="file-name">${esc(item.name)}</span>${row.location ? `<small class="file-location">${esc(row.location)}</small>` : ''}${directory ? (changes.folders.has(item.path) ? changeDot(changes.folders.get(item.path)) : '') : changes.paths.has(item.path) ? changeBadge(changes.paths.get(item.path)) : ''}</div>`;
       }).join('') || `<div class="file-row file-message" role="none">${esc(t('Bu klasör boş.'))}</div>`;
       // Rows that just appeared (an opened folder's children) fade in; rows already on screen stay still.
       motion.enter(tree, '[role=treeitem]', 'data-file-path', { stagger: 14, max: 12, className: 'ui-enter-fade' });
-      if (focused && selected) tree.querySelector(`[data-file-path="${CSS.escape(selected)}"]`)?.focus();
+      const slot = tree.querySelector('[data-file-input-slot]');
+      const boxFocus = Boolean(slot) && (typing || pending.focus);
+      if (slot) slot.replaceWith(pending.row);
+      placing = false;
+      if (boxFocus) { pending.focus = false; pending.input.focus(); pending.row.scrollIntoView?.({ block: 'nearest' }); }
+      else if (focused && selected) tree.querySelector(`[data-file-path="${CSS.escape(selected)}"]`)?.focus();
     }
     const entryOf = row => {
       const path = row.dataset.filePath;
@@ -115,6 +132,47 @@
       selected = path; draw();
       void loadChanges();
     }
+    /** "New file": a name box inside `folder` (opened if collapsed); Enter creates the file, Escape cancels, leaving the box creates a named file. */
+    function startNewFile(folder) {
+      if (pending) cancelNewFile();
+      // The name box goes into the tree, which a search replaces.
+      if (query) clearSearch();
+      const row = document.createElement('div');
+      row.className = 'file-row file-new';
+      row.innerHTML = `<span class="file-twisty leaf"></span><span class="file-icon file">${fileIcon}</span><input class="file-new-input" type="text" maxlength="255" spellcheck="false" autocomplete="off" aria-label="${esc(t('Dosya adı'))}"><div class="file-new-error" role="alert" hidden></div>`;
+      const p = pending = { folder, row, input: row.querySelector('input'), error: row.querySelector('.file-new-error'), busy: false, focus: true };
+      p.input.addEventListener('keydown', event => {
+        event.stopPropagation();
+        if (event.key === 'Enter') { event.preventDefault(); void commitNewFile(p, false); }
+        else if (event.key === 'Escape') { event.preventDefault(); cancelNewFile(true); }
+      });
+      p.input.addEventListener('input', () => { p.error.hidden = true; row.classList.remove('invalid'); });
+      p.input.addEventListener('blur', () => { if (!placing && pending === p && !p.busy) { if (p.input.value.trim()) void commitNewFile(p, true); else cancelNewFile(); } });
+      for (let end = folder.indexOf('/'); end > 0; end = folder.indexOf('/', end + 1)) expanded.add(folder.slice(0, end));
+      // The box takes the focus once it is on screen, which waits for a collapsed folder to load.
+      if (folder && !expanded.has(folder)) toggle(folder, true); else draw();
+    }
+    function cancelNewFile(refocus = false) {
+      pending = null; draw();
+      if (refocus && selected) tree.querySelector(`[data-file-path="${CSS.escape(selected)}"]`)?.focus();
+    }
+    /** Creates the named file, shows it in its folder and opens it; a refused name stays in the box with the reason (on blur it is dropped). */
+    async function commitNewFile(p, leaving) {
+      const name = p.input.value.trim();
+      if (!name) { cancelNewFile(true); return; }
+      p.busy = true; p.input.readOnly = true;
+      try {
+        const path = await onCreateFile(p.folder, name);
+        if (pending === p) pending = null;
+        await reveal(path);
+        onOpen?.(path);
+      } catch (error) {
+        p.busy = false; p.input.readOnly = false;
+        if (pending !== p) return;
+        if (leaving) { toast(error.message); cancelNewFile(); return; }
+        p.error.textContent = error.message; p.error.hidden = false; p.row.classList.add('invalid'); p.input.focus();
+      }
+    }
     async function launch(item, action) {
       try { await api(`/projects/${encodeURIComponent(projectId)}/files/open`, 'POST', { path: item.path, action }); }
       catch (error) { toast(error.message); }
@@ -127,7 +185,7 @@
       showMenu(x, y, [
         directory ? { label: revealLabel(), run: () => launch(item, 'reveal') } : { label: t('Varsayılan programla aç'), run: () => launch(item, 'open') },
         ...(directory ? [] : [{ label: revealLabel(), run: () => launch(item, 'reveal') }]),
-        ...(onNewFile ? [{ label: t('Yeni dosya…'), run: () => onNewFile(folderOf(item)) }] : []),
+        ...(onCreateFile ? [{ label: t('Yeni dosya…'), run: () => startNewFile(folderOf(item)) }] : []),
         { label: t('Yolu kopyala'), run: () => copy(item.absolutePath) },
         { label: t('Göreli yolu kopyala'), run: () => copy(item.path) },
       ], row);
@@ -178,7 +236,7 @@
         event.preventDefault(); const box = row.getBoundingClientRect(); openMenu(row, box.left + 24, box.bottom);
       }
     });
-    element.querySelector('[data-files-new]')?.addEventListener('click', () => onNewFile(folderOf(selectedItem())));
+    element.querySelector('[data-files-new]')?.addEventListener('click', () => startNewFile(folderOf(selectedItem())));
     element.querySelector('[data-files-refresh]').addEventListener('click', () => refresh());
     element.querySelector('[data-files-collapse]').addEventListener('click', () => { expanded.clear(); expanded.add(''); draw(); });
     element.querySelector('[data-files-close]')?.addEventListener('click', () => onClose());

@@ -2208,8 +2208,4 @@ window.AIWSTranslationsEn = {
   "Kaydetme": "Don't save",
   "Yeni dosya…": "New file…",
   "Dosya adı": "File name",
-  "Örn. notlar.md": "e.g. notes.md",
-  "Proje kök klasörü": "Project root folder",
-  "Uzantıyı da yaz. Klasör proje klasörüne göredir; boş bırakırsan dosya proje kök klasörüne eklenir.": "Include the extension. The folder is relative to the project folder; leave it empty to add the file to the project root.",
-  "Dosya oluşturuldu": "File created",
 };
