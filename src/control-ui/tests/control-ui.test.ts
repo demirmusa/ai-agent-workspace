@@ -338,6 +338,15 @@ describe('control center renderer with the real local API', () => {
     edit('[data-files-search]','report');
     await wait(()=>expect([...window.document.querySelectorAll('.project-files-tree [role=treeitem]')].map(row=>row.getAttribute('data-file-path'))).toEqual(['src/nested/deep-report.txt']));
     expect(element('[data-file-path="src/nested/deep-report.txt"] .file-location').textContent).toBe('src/nested');
+    // The results never take the focus from the search field, so typing goes on.
+    element<HTMLInputElement>('[data-files-search]').focus();edit('[data-files-search]','repor');
+    await wait(()=>expect(element('[data-file-path="src/nested/deep-report.txt"]')).toBeTruthy());
+    expect(window.document.activeElement).toBe(element('[data-files-search]'));
+    // Keystrokes in quick succession make one search, and the newest text decides the results.
+    edit('[data-files-search]','READ');edit('[data-files-search]','report');
+    await new Promise(resolve=>setTimeout(resolve,300));
+    expect([...window.document.querySelectorAll('.project-files-tree [role=treeitem]')].map(row=>row.getAttribute('data-file-path'))).toEqual(['src/nested/deep-report.txt']);
+    expect(window.document.activeElement).toBe(element('[data-files-search]'));
     // A file created while searching appears in the results.
     await writeFile(join(directory,'weekly-report.md'),'x');
     await wait(()=>expect(element('[data-file-path="weekly-report.md"]')).toBeTruthy());
