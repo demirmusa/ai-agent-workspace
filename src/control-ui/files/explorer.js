@@ -15,7 +15,7 @@
   // A folder's chevron turns over this long; a redraw during the turn continues it instead of jumping (styles/file-tree.css, .file-twisty.turning).
   const turnMs = 180;
   // Keystrokes closer than this make one search; without a file system watcher, open folders reload this often.
-  const searchDelayMs = 80, pollMs = 5000, searchLimit = 200;
+  const searchDelayMs = 100, pollMs = 5000, searchLimit = 200;
   function create({ projectId, api, toast, onClose, onOpen, onCreateFile }) {
     const element = document.createElement('section');
     element.className = 'project-files'; element.setAttribute('aria-label', t('Proje dosyaları'));
@@ -79,7 +79,7 @@
       return list;
     }
     function draw() {
-      const typing = Boolean(pending) && document.activeElement === pending.input, focused = !typing && element.contains(document.activeElement);
+      const typing = Boolean(pending) && document.activeElement === pending.input, focused = !typing && tree.contains(document.activeElement);
       const name = root ? root.split(/[\\/]/).filter(Boolean).pop() || root : '';
       title.textContent = name; title.title = root;
       const list = rows(), turning = performance.now() - turned.at < turnMs ? turned.path : null, turnDelay = Math.round(turned.at - performance.now());
