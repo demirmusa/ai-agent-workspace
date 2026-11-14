@@ -93,6 +93,8 @@ export class RunControls {
       this.ctx.event(runId, run.taskId, 'command', message); this.ctx.changed(); return structuredClone(run);
     }
     run.pendingCommands.push(message); this.ctx.event(runId, run.taskId, 'command', message);
+    // The instruction is the user's reply; questions left pending would keep the run in "needs you" after it resumes.
+    if (this.deps.questions.cancel(runId, 'agent') && run.status === 'waiting' && this.ctx.handles.has(runId) && !this.deps.usageLimitWaiting(runId)) { run.status = 'running'; this.ctx.task(run.taskId).status = 'running'; }
     if (this.deps.signals.idle.delete(runId) || (!this.ctx.handles.has(runId) && run.status === 'waiting')) {
       run.status = 'running'; this.ctx.task(run.taskId).status = 'running'; run.continuation++; this.ctx.changed(); this.deps.launch(run); return structuredClone(run);
     }
@@ -150,7 +152,9 @@ export class RunControls {
     if (/[\r\n]/.test(data) || data === '\u001b') {
       // Every Enter would otherwise publish the whole state; only a cleared prompt changes it. Enter answers the dialog, Esc dismisses it.
       if (/[\r\n]/.test(data)) this.deps.clearUsageWait(runId);
-      let changed = data === '\u001b' ? this.deps.questions.cancel(runId, 'terminal') : this.deps.questions.answerInTerminal(runId);
+      // A reply typed into the terminal supersedes the agent's own questions too: the agent reads it there and moves on.
+      const settled = data === '\u001b' ? this.deps.questions.cancel(runId, 'terminal') : this.deps.questions.answerInTerminal(runId);
+      let changed = this.deps.questions.cancel(runId, 'agent') || settled;
       if (run.status === 'waiting' && !this.deps.questions.pending(runId) && !this.deps.usageLimitWaiting(runId)) { run.status = 'running'; this.ctx.task(run.taskId).status = 'running'; changed = true; }
       this.deps.clearPrompt(runId); if (changed) this.ctx.changed();
     }

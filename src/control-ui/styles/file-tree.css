@@ -33,6 +33,8 @@
 .file-message.error{font-style:normal;color:var(--danger)}
 .file-context-menu{position:fixed;z-index:1000;min-width:220px;display:flex;flex-direction:column}
 .file-context-menu button{border:0;background:none;text-align:left;padding:5px 12px;border-radius:4px;font-size:13px;color:var(--ink)}
+.file-context-menu button:disabled{color:var(--faint);cursor:default}
+.file-context-menu-separator{height:1px;margin:4px 6px;background:var(--line)}
 .file-mention-popup{position:fixed;z-index:1000;width:min(460px,calc(100vw - 16px));max-height:280px;overflow:auto;font-size:13px}
 .file-mention-option{display:flex;align-items:baseline;gap:8px;padding:4px 8px;border-radius:4px;cursor:pointer;white-space:nowrap;overflow:hidden}
 .file-mention-option small{color:var(--muted);overflow:hidden;text-overflow:ellipsis}

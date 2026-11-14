@@ -181,15 +181,15 @@ describe('control center renderer with the real local API', () => {
     expect(element(`[data-open-task="${visible.id}"]`).textContent).toContain('Tamamlandı');
     click('.swimlane-head-cell:last-child [data-select-column]');expect(element('#task-selection-count').textContent).toBe('1 görev seçili');
   });
+  /** Monaco itself is not loaded in tests: a stand-in with the same calls records the model the editor shows. */
+  const installMonacoStub=():void=>{window.eval(`(()=>{const models=new Map(),stub=window.monacoStub={themes:[],editor:null};
+      class Model{constructor(value,uri){this.value=value;this.uri=uri;this.id=1;this.listeners=[];}getValue(){return this.value;}setValue(value){this.value=value;this.id++;for(const listener of this.listeners)listener();}getAlternativeVersionId(){return this.id;}onDidChangeContent(listener){this.listeners.push(listener);}dispose(){models.delete(this.uri);}}
+      window.monaco={Uri:{file:path=>path},languages:{},editor:{defineTheme:(name,data)=>stub.themes.push({name,...data}),setTheme(){},getModel:uri=>models.get(uri),createModel(value,language,uri){const model=new Model(value,uri);models.set(uri,model);return model;},
+        create(host,options){stub.options=options;return stub.editor={model:null,setModel(model){this.model=model;},getModel(){return this.model;},saveViewState(){return {};},restoreViewState(){},focus(){}};}}};})()`);};
   it('opens a file from the files panel in the Monaco editor tab and saves, keeps or reconciles its changes', async () => {
     const notes=join(directory,'notes.md'),onDisk=()=>readFile(notes,'utf8');
     await writeFile(notes,'first\n');await writeFile(join(directory,'other.txt'),'other');await writeFile(join(directory,'image.bin'),Buffer.from([0,1,2,3]));await mkdir(join(directory,'docs'));await writeFile(join(directory,'photo.png'),Buffer.from([0x89,0x50,0x4e,0x47]));
-    await createProject();
-    // Monaco itself is not loaded in tests: a stand-in with the same calls records the model the editor shows.
-    window.eval(`(()=>{const models=new Map(),stub=window.monacoStub={themes:[],editor:null};
-      class Model{constructor(value,uri){this.value=value;this.uri=uri;this.id=1;this.listeners=[];}getValue(){return this.value;}setValue(value){this.value=value;this.id++;for(const listener of this.listeners)listener();}getAlternativeVersionId(){return this.id;}onDidChangeContent(listener){this.listeners.push(listener);}dispose(){models.delete(this.uri);}}
-      window.monaco={Uri:{file:path=>path},languages:{},editor:{defineTheme:(name,data)=>stub.themes.push({name,...data}),setTheme(){},getModel:uri=>models.get(uri),createModel(value,language,uri){const model=new Model(value,uri);models.set(uri,model);return model;},
-        create(host,options){stub.options=options;return stub.editor={model:null,setModel(model){this.model=model;},getModel(){return this.model;},saveViewState(){return {};},restoreViewState(){},focus(){}};}}};})()`);
+    await createProject();installMonacoStub();
     const shown=():string|undefined=>window.eval('monacoStub.editor?.model?.getValue()') as string|undefined;
     const type=(value:string):void=>{window.eval(`monacoStub.editor.model.setValue(${JSON.stringify(value)})`);};
     const openTabs=()=>[...window.document.querySelectorAll('.file-editor [data-editor-file]')].map(tab=>tab.getAttribute('data-editor-file'));
@@ -252,6 +252,38 @@ describe('control center renderer with the real local API', () => {
     click('[data-editor-close="docs/todo.ts"]');click('[data-editor-close="photo.png"]');
     click('[data-editor-close="image.bin"]');click('[data-editor-close="other.txt"]');
     await wait(()=>expect(element('#project-tab-editor').hidden).toBe(true));expect(element('#project-tab-board').getAttribute('aria-selected')).toBe('true');
+  });
+  it('closes, copies, reveals and pins editor tabs from their context menu', async () => {
+    for(const name of ['a.txt','b.txt','c.txt','d.txt'])await writeFile(join(directory,name),name);
+    await createProject();installMonacoStub();
+    const writeText=vi.fn().mockResolvedValue(undefined);Object.defineProperty(window.navigator,'clipboard',{configurable:true,value:{writeText}});
+    const openTabs=()=>[...window.document.querySelectorAll('.file-editor [data-editor-file]')].map(tab=>tab.getAttribute('data-editor-file'));
+    const menu=(path:string)=>{element(`[data-editor-file="${path}"]`).dispatchEvent(new window.MouseEvent('contextmenu',{bubbles:true,cancelable:true,clientX:20,clientY:20}) as unknown as Event);
+      return [...window.document.querySelectorAll<HTMLButtonElement>('.file-context-menu button')].map(button=>({label:button.textContent,disabled:button.disabled}));};
+    const choose=(label:string)=>{const button=[...window.document.querySelectorAll<HTMLButtonElement>('.file-context-menu button')].find(item=>item.textContent===label);expect(button).toBeTruthy();button!.click();};
+    click('#files-toggle');await wait(()=>expect(element('[data-file-path="d.txt"]')).toBeTruthy());
+    for(const name of ['a.txt','b.txt','c.txt','d.txt']){click(`[data-file-path="${name}"]`);await wait(()=>expect(window.eval('monacoStub.editor?.model?.getValue()')).toBe(name));}
+    expect(menu('d.txt')).toEqual([{label:'Kapat',disabled:false},{label:'Diğerlerini kapat',disabled:false},{label:'Sağdakileri kapat',disabled:true},{label:'Kaydedilenleri kapat',disabled:false},{label:'Tümünü kapat',disabled:false},
+      {label:'Yolu kopyala',disabled:false},{label:'Göreli yolu kopyala',disabled:false},{label:"Dosya Gezgini'nde göster",disabled:false},{label:'Gezgin görünümünde göster',disabled:false},{label:'Sabitle',disabled:false}]);
+    expect(window.document.querySelectorAll('.file-context-menu [role=separator]')).toHaveLength(3);
+    choose('Göreli yolu kopyala');await wait(()=>expect(writeText).toHaveBeenLastCalledWith('d.txt'));expect(window.document.querySelector('.file-context-menu')).toBeNull();
+    menu('d.txt');choose('Yolu kopyala');await wait(()=>expect(writeText).toHaveBeenLastCalledWith(join(directory,'d.txt')));
+    // A pinned tab moves to the front, keeps a pin button instead of close, and survives bulk closes.
+    menu('c.txt');choose('Sabitle');expect(openTabs()).toEqual(['c.txt','a.txt','b.txt','d.txt']);
+    expect(element('[data-editor-unpin="c.txt"]')).toBeTruthy();expect(window.document.querySelector('[data-editor-close="c.txt"]')).toBeNull();
+    menu('a.txt');choose('Sağdakileri kapat');await wait(()=>expect(openTabs()).toEqual(['c.txt','a.txt']));
+    menu('a.txt');choose('Diğerlerini kapat');expect(openTabs()).toEqual(['c.txt','a.txt']);
+    // An unsaved tab is kept by "Close saved".
+    click('[data-file-path="b.txt"]');await wait(()=>expect(openTabs()).toEqual(['c.txt','a.txt','b.txt']));await wait(()=>expect(window.eval('monacoStub.editor?.model?.getValue()')).toBe('b.txt'));
+    window.eval('monacoStub.editor.model.setValue("changed")');await wait(()=>expect(window.document.querySelectorAll('.file-editor-tab .ui-dot')).toHaveLength(1));
+    menu('a.txt');choose('Kaydedilenleri kapat');await wait(()=>expect(openTabs()).toEqual(['c.txt','b.txt']));
+    // "Reveal in explorer view" selects the file in the files panel, opening the panel if needed.
+    click('[data-files-close]');await wait(()=>expect(element('#files-panel').hidden).toBe(true));
+    menu('c.txt');choose('Gezgin görünümünde göster');await wait(()=>expect(element('[data-file-path="c.txt"]').classList.contains('selected')).toBe(true));expect(element('#files-panel').hidden).toBe(false);
+    menu('c.txt');choose('Sabitlemeyi kaldır');expect(element('[data-editor-close="c.txt"]')).toBeTruthy();
+    // "Close all" still asks about unsaved changes; cancelling keeps the file open.
+    menu('c.txt');choose('Tümünü kapat');await wait(()=>expect(element('#modal-title').textContent).toBe('Değişiklikler kaydedilmedi'));
+    click('#close-modal');await wait(()=>expect(openTabs()).toEqual(['b.txt']));expect(await readFile(join(directory,'b.txt'),'utf8')).toBe('b.txt');
   });
   it('shows project files in a right-hand panel as a tree with path and open actions in the context menu', async () => {
     await mkdir(join(directory,'src','nested'),{recursive:true});await writeFile(join(directory,'src','nested','deep.txt'),'x');await writeFile(join(directory,'README.md'),'x');
@@ -1108,7 +1140,9 @@ describe('control center renderer with the real local API', () => {
 
   let requestsInFlight = 0;
   const pageIdle = (): boolean => requestsInFlight === 0;
-  async function mountRenderer(preferences: Record<string,string> = {}): Promise<void> {
+  // The app starts in English; these tests read the Turkish source texts unless a test asks for English.
+  async function mountRenderer(options: Record<string,string> = {}): Promise<void> {
+    const preferences={'aiws.language':'tr',...options};
     window = new Window({ url: server.url, settings: { disableCSSFileLoading: true, disableJavaScriptFileLoading: true } });
     // Node's fetch accepts only its own AbortSignal, so the page's happy-dom signal is relayed to a native one.
     // Requests are counted until their body is read, so closeWindow can let the page finish before closing it.
@@ -2158,7 +2192,7 @@ describe('control center renderer with the real local API', () => {
     click('#list-view'); expect(element('.task-list').textContent).toContain('Updated task');
     click('#board-view'); expect(element('.task-card').textContent).toContain('Updated task');
     expect(server.service.snapshot().projects[0]?.name).toBe('Renderer QA');
-    expect(server.service.snapshot().tasks[0]?.title).toBe('Updated task');
+    await wait(() => expect(server.service.snapshot().tasks[0]?.title).toBe('Updated task'));
     click('#project-tab-settings'); input('#settings-field-description', 'Project settings edited in UI'); submit('#project-settings-form');
     await wait(() => expect(server.service.snapshot().projects[0]?.description).toBe('Project settings edited in UI'));
     await wait(() => expect(element('#project-settings-save-state').textContent).toBe('Tüm değişiklikler kaydedildi'));
