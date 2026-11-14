@@ -43,7 +43,7 @@
         { name: 'link', action: window.EasyMDE.drawLink, text: '↗', title: globalThis.AIWSI18n.text('Bağlantı') },
         { name: 'upload-file', action: () => picker.click(), text: globalThis.AIWSI18n.text('Dosya'), title: globalThis.AIWSI18n.text('Dosya yükle') },
         { name: 'upload-image', action: window.EasyMDE.drawUploadedImage, text: globalThis.AIWSI18n.text('Resim'), title: globalThis.AIWSI18n.text('Görsel yükle') },
-        '|', { name: 'preview', action: window.EasyMDE.togglePreview, text: globalThis.AIWSI18n.text('Önizle'), title: globalThis.AIWSI18n.text('Önizleme') },
+        '|', { name: 'preview', action: window.EasyMDE.togglePreview, text: globalThis.AIWSI18n.text('Önizle'), title: globalThis.AIWSI18n.text('Önizleme'), noDisable: true },
       ],
       imageUploadFunction(file, success, failure) {
         pending++; lastError = ''; status.textContent = globalThis.AIWSI18n.text('Görsel yükleniyor…'); warnLarge([file], status);
