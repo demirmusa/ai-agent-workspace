@@ -124,9 +124,10 @@ If a running agent's provider reports a usage limit (for example "usage limit re
 2. Choose the method:
    - **New clean agent** (default): the new agent gets the task prompt, the previous agent's last messages and a summary of `git status`, commits and the diff at handoff time. It is told to inspect the Git changes first and finish what is missing.
    - **Copy the whole session**: the previous agent's accessible conversation is transferred into the new agent's context.
+   - **Compact and transfer history**: a smaller, cheaper summary model (for example `claude-haiku-5-5`, typed in the **Summary model** field; empty uses the provider's default model) first reads the whole conversation in pieces and writes a compact summary of the goal, decisions, completed work, open problems and next steps. The new agent (for example Opus) starts with that summary and the Git brief instead of the full conversation, so the expensive model does not reload old tokens.
 3. Continue. The open process is stopped and the new agent starts on the **same task, worktree and branch**.
 
-**Continue with another agent** in the task menu opens the same choice at any time. The default method is set under **Project settings → Git and worktree → Handoff when an agent runs out of tokens**. When several agents have worked on a task, the Agent Console lists them; earlier ones open read-only.
+**Continue with another agent** in the task menu opens the same choice at any time. A past provider session that is not a task can be compacted the same way: in **Project → Sessions**, open the session's **Continue** menu and choose **Compact history and continue in a new session**, then pick the summary model and the agent that continues. The default method is set under **Project settings → Git and worktree → Handoff when an agent runs out of tokens**. When several agents have worked on a task, the Agent Console lists them; earlier ones open read-only.
 
 ## When the connection drops
 

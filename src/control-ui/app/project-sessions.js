@@ -55,12 +55,18 @@ function bindProjectSessions(root){
     if(target.closest('[data-history-import-board]')){localStorage.setItem(`aiws.project-tab.${value.id}`,'board');render();return;}
     if(target.closest('#more-project-sessions')){ensureProjectSessions(value,{more:true});renderProjectSessions();return;}
     const card=target.closest('[data-history-session]');if(!card)return;const session=entry.items.find(item=>item.id===card.dataset.historySession);if(!session)return;const action=target.closest('[data-history-action]');
+    for(const menu of root.querySelectorAll('.history-session-actions[open]'))if(!menu.contains(target))menu.open=false;
+    if(target.closest('.history-session-actions>summary')||target.closest('.history-session-menu')&&!target.closest('[data-history-action]'))return;
+    if(action)action.closest('details').open=false;
     if(action?.dataset.historyAction==='resume'){resumeHistoryModal(value.id,session);return;}
+    if(action?.dataset.historyAction==='compact'){compactHistoryModal(value.id,session);return;}
     if(action?.dataset.historyAction==='task'){openTask(action.dataset.taskId);if(task()?.sessionContinuation&&state.runs.find(run=>run.id===task().currentRunId)?.terminalMode==='pty'){detailTab='terminal';render();}return;}
     if(action?.dataset.historyAction==='convert'){void convertHistorySession(value,session);return;}
     openHistorySession(value.id,session.id);
   });
   root.addEventListener('keydown',event=>{
+    const sessionMenu=event.target.closest('.history-session-actions[open]');
+    if(sessionMenu){if(event.key==='Escape'){event.preventDefault();sessionMenu.open=false;sessionMenu.querySelector('summary').focus();return;}const list=sessionMenu.querySelector('.history-session-menu');if(event.target.closest('.history-session-menu')&&window.AIWSUI.menuNavigate(event,list))return;if(event.target.matches('summary')&&event.key==='ArrowDown'){event.preventDefault();list.querySelector('[role=menuitem]:not(:disabled)')?.focus();return;}}
     if(event.target.id==='history-search'){
       if(event.key==='Enter'){event.preventDefault();applySearch();}
       else if(event.key==='Escape'&&event.target.value&&current()){event.preventDefault();event.target.value='';projectSessionEntry(current()).draft='';applySearch();}

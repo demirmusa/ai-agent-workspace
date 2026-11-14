@@ -1,7 +1,8 @@
-import { handoffBrief, handoffTranscript, validateHandoffMode } from '../agent-handoff.js';
+import { compactedContext, handoffBrief, handoffTranscript, validateHandoffMode } from '../agent-handoff.js';
 import { aiProviders } from '../ai-providers/index.js';
 import type { ControlCatalog } from '../catalog.js';
 import type { HistoryPointer, SessionHistory } from '../history.js';
+import { compactConversation } from '../history-compact.js';
 import { transferTranscript } from '../history-transfer.js';
 import type { LiveSessions } from '../live-sessions.js';
 import { ControlError, type AgentHandoffMode, type ControlEvent, type DefaultProvider, type Run, type Task, type TaskMessage, type TaskSession } from '../types.js';
@@ -9,7 +10,7 @@ import { jsonObject } from '../validation.js';
 import { discardRestoredWorktree, prepareTaskWorktree, worktreeNeedsRestore } from '../worktrees.js';
 import { continuationQueuedAt, delay, now, restoreTask, runEnded, terminalTranscript, text } from './common.js';
 import type { ControlContext } from './context.js';
-import { bootstrapPointer, readSessionPages, runSessionPointer } from './provider-history.js';
+import { bootstrapPointer, readSessionPages, readSessionTranscript, runSessionPointer } from './provider-history.js';
 import { CONTINUE_MESSAGE } from './run-prompt.js';
 import type { RunSignals } from './run-controls.js';
 
@@ -278,7 +279,8 @@ export class Conversations {
   /**
    * Continues a task with another agent on the same branch and workspace, after the
    * current one ran out of tokens. 'transcript' copies the whole conversation into the
-   * new agent; 'fresh' gives a clean agent the task and a brief to inspect the Git changes.
+   * new agent; 'fresh' gives a clean agent the task and a brief to inspect the Git changes;
+   * 'summary' has a (smaller) summary model compact the conversation first and gives the brief and that summary.
    */
   async handoffTask(taskId: string, input: unknown): Promise<{ task: Task; run: Run }> {
     const { ctx, deps } = this;
@@ -300,12 +302,18 @@ export class Conversations {
     const reasoningEffort = value.reasoningEffort === undefined || value.reasoningEffort === null || value.reasoningEffort === '' ? undefined : String(value.reasoningEffort);
     if (reasoningEffort !== undefined && !efforts.includes(reasoningEffort)) throw new ControlError(efforts.length ? `reasoningEffort must be one of ${efforts.join(', ')}.` : 'The selected provider has no reasoning levels.');
     if (ctx.closing || this.continuingTasks.has(taskId)) throw new ControlError('A session operation is already in progress or the service is shutting down.', 409);
+    const summaryModel = value.summaryModel === undefined || value.summaryModel === null || value.summaryModel === '' ? undefined : text(value.summaryModel, 'summaryModel', 200).trim() || undefined;
+    const summaryProvider = String(agent?.provider ?? provider);
+    if (mode === 'summary' && summaryProvider === 'command') throw new ControlError('Summary handoff needs an AI provider to write the summary.');
     const reason = task.handoffRequest?.runId === previous.id ? task.handoffRequest.reason : undefined;
     const previousAgent = previous.executionSnapshot?.agent?.name ?? previous.provider;
     const target = agent?.name ?? String(provider);
     const before = structuredClone(task);
     this.continuingTasks.add(taskId);
     try {
+      // Compacting only reads the history, so it runs before the previous agent is stopped; a failure leaves it untouched.
+      const summarizer = `${summaryProvider}${summaryModel ? ` (${summaryModel})` : ''}`;
+      const summary = mode === 'summary' ? await compactConversation({ provider: summaryProvider, ...(summaryModel ? { model: summaryModel } : {}), workspacePath: task.worktree?.path ?? previous.workspacePath ?? project.repositoryPath, transcript: await this.conversationHistory(task) }) : '';
       if (!runEnded(previous)) {
         deps.signals.ending(previous.id);
         deps.finish(previous, 'cancelled', 130, `Handed off to ${target}.`);
@@ -317,9 +325,9 @@ export class Conversations {
       if (worktreeNeedsRestore(task)) task.worktree = prepareTaskWorktree(project, task, ctx.store.directory, task.worktree.mainBranch);
       const workspacePath = task.worktree?.path ?? previous.workspacePath ?? project.repositoryPath;
       const mainBranch = task.worktree?.mainBranch ?? project.mainBranch ?? project.defaultBranch;
-      const context = mode === 'transcript'
-        ? handoffTranscript(previousAgent, previous.provider, reason, await this.conversationHistory(task))
-        : await handoffBrief({ previousAgent, previousProvider: previous.provider, previousRunId: previous.id, ...(reason ? { reason } : {}), workspacePath, ...(mainBranch ? { mainBranch } : {}), messages: ctx.state.messages.filter((message) => message.taskId === taskId) });
+      const brief = mode === 'transcript' ? '' : await handoffBrief({ previousAgent, previousProvider: previous.provider, previousRunId: previous.id, ...(reason ? { reason } : {}), workspacePath, ...(mainBranch ? { mainBranch } : {}), messages: ctx.state.messages.filter((message) => message.taskId === taskId) });
+      const context = mode === 'transcript' ? handoffTranscript(previousAgent, previous.provider, reason, await this.conversationHistory(task))
+        : mode === 'summary' ? compactedContext(brief, summarizer, summary) : brief;
       if (!ctx.state.tasks.includes(task) || (task.currentRunId && task.currentRunId !== previous.id)) throw new ControlError('Task changed while the handoff was being prepared.', 409);
       delete task.historyResume; delete task.externalHistory; delete task.workflowProgress; delete task.queuedContinuation; delete task.handoffRequest; delete task.historyTransfer;
       delete task.command; delete task.model; delete task.providerOverride; delete task.modelOverride; delete task.reasoningEffort;
@@ -328,8 +336,8 @@ export class Conversations {
       if (reasoningEffort) task.reasoningEffort = reasoningEffort;
       task.conversationContext = context;
       const run = deps.startTask(taskId);
-      const stored = ctx.run(run.id); stored.handoff = { fromRunId: previous.id, fromProvider: previous.provider, fromAgentName: previousAgent, mode, ...(reason ? { reason } : {}) };
-      ctx.event(run.id, taskId, 'handoff', `Continuing with ${target} after ${previousAgent} (${mode === 'transcript' ? 'full conversation copied' : 'clean agent reviewing the Git changes'}).`);
+      const stored = ctx.run(run.id); stored.handoff = { fromRunId: previous.id, fromProvider: previous.provider, fromAgentName: previousAgent, mode, ...(reason ? { reason } : {}), ...(mode === 'summary' && summaryModel ? { summaryModel } : {}) };
+      ctx.event(run.id, taskId, 'handoff', `Continuing with ${target} after ${previousAgent} (${mode === 'transcript' ? 'full conversation copied' : mode === 'summary' ? `conversation compacted by ${summarizer}` : 'clean agent reviewing the Git changes'}).`);
       ctx.addMessage(taskId, 'system', `Handed off from ${previousAgent} to ${target}.`, stored);
       ctx.changed(); return { task: structuredClone(task), run: structuredClone(stored) };
     } catch (error) {
@@ -376,16 +384,7 @@ export class Conversations {
       if (pointer) { pointers.set(pointer.session.id, pointer); runsWithTranscript.add(run.id); }
     }
     for (const pointer of pointers.values()) {
-      const complete = await readSessionPages(deps.history, pointer, (page) => {
-        for (const message of page.messages) append(`[${message.authorType}] ${message.text}`);
-        for (const event of page.events) {
-          const formatted = event.type === 'stdout' ? transferTranscript([], [{ ...event, id: event.id ?? 'event', createdAt: event.createdAt ?? '' }]) : '';
-          append(formatted || `[${event.type}] ${event.message}`);
-        }
-        for (const warning of page.warnings) append(`[History warning] ${warning}`);
-        if (page.truncated && !page.nextCursor) append('[History warning] Provider history contains shortened or omitted records.');
-      });
-      if (!complete) throw tooLong();
+      if (!await readSessionTranscript(deps.history, pointer, append)) throw tooLong();
     }
     for (const run of state.runs.filter((item) => item.taskId === task.id && !runsWithTranscript.has(item.id) && item.provider !== 'command')) {
       const sessionId = run.sessionId ?? task.sessions?.filter((entry) => entry.runId === run.id || entry.provider === run.provider).at(-1)?.sessionId;

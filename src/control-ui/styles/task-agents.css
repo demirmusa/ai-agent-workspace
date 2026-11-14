@@ -21,7 +21,7 @@
 .handoff-notice-text strong{font-weight:600;color:var(--ink-strong)}
 .handoff-notice-text small{color:var(--muted);overflow-wrap:anywhere}
 .handoff-notice-controls{display:flex;flex-wrap:wrap;align-items:center;gap:8px}
-.handoff-notice-controls>select{min-width:0;flex:0 1 170px}
+.handoff-notice-controls>select,.handoff-notice-controls>input{min-width:0;flex:0 1 170px}
 .handoff-notice-controls>.model-trigger{flex:1 1 200px;width:auto}
 .handoff-notice-actions{display:flex;gap:8px;flex:none}
 .handoff-notice-error{color:var(--danger);margin:0}

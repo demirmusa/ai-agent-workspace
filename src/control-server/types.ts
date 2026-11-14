@@ -160,7 +160,7 @@ export interface TaskSchedule {
   revision: number; createdAt: string; updatedAt: string;
 }
 /** 'transcript' copies the whole previous conversation into the new agent; 'fresh' starts a clean agent that inspects the Git changes. */
-export type AgentHandoffMode = 'fresh' | 'transcript';
+export type AgentHandoffMode = 'fresh' | 'transcript' | 'summary';
 /** An agent of the task hit its provider's usage limit; AIWS waits until `resumeAt` (`resetsAt` + 1 minute) to continue or lets the user hand off earlier. */
 export interface HandoffRequest { runId: string; provider: Provider; agentName: string; reason: string; detectedAt: string; resetsAt?: string; resumeAt?: string }
 export interface Task {
@@ -259,7 +259,7 @@ export interface Run {
   /** The pull request this run's work was delivered through; `Task.pullRequest` only holds the latest one. */
   pullRequest?: { number: number; url?: string };
   /** This run continues the task after another agent's run was handed off. */
-  handoff?: { fromRunId: string; fromProvider: Provider; fromAgentName: string; mode: AgentHandoffMode; reason?: string };
+  handoff?: { fromRunId: string; fromProvider: Provider; fromAgentName: string; mode: AgentHandoffMode; reason?: string; summaryModel?: string };
 }
 /** A native CLI dialog read from the terminal screen: what it asks, about which command, and its choices. */
 export interface TerminalPrompt {

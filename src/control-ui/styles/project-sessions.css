@@ -69,7 +69,12 @@
 .history-session-side{display:flex;flex-direction:column;align-items:flex-end;gap:2px;flex:none;font-size:12px;color:var(--muted)}
 .history-session-side time{color:var(--ink)}
 .history-session-side small{font-size:11px}
-.history-session-actions{display:flex;gap:4px;margin-top:8px;opacity:.75;transition:opacity var(--dur-fast) var(--ease-out)}
+.history-session-actions{position:relative;margin-top:8px;opacity:.75;transition:opacity var(--dur-fast) var(--ease-out)}
+.history-session-actions>summary{list-style:none;gap:4px}
+.history-session-actions>summary::-webkit-details-marker{display:none}
+.history-session-menu{position:absolute;right:0;top:100%;z-index:60;display:flex;flex-direction:column;gap:2px;min-width:220px;margin-top:4px;transform-origin:top right}
+.history-session-menu-item{display:flex;align-items:center;width:100%;padding:6px 10px;border:0;border-radius:var(--radius);background:none;color:var(--ink);font:inherit;font-size:13px;text-align:left;white-space:nowrap;cursor:pointer}
+.history-session-menu-item:disabled{color:var(--muted);cursor:default}
 .history-session-card:hover .history-session-actions,.history-session-card:focus-within .history-session-actions,.history-session-card.selected .history-session-actions{opacity:1}
 .history-import-status{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin:0 0 12px;padding:10px 12px;border:1px solid var(--line);border-left:3px solid var(--accent);border-radius:4px;background:var(--surface);color:var(--ink);font-size:13px;line-height:1.8}
 .history-import-status p{margin:0}
