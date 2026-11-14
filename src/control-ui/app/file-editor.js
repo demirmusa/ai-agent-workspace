@@ -14,9 +14,11 @@ function renderProjectEditor(){
 function openProjectFile(path){
   const current=project();if(!current||$('#modal').open)return;
   let view=projectEditor(current);
-  if(!view){view=window.AIWSFiles.createEditor({projectId:current.id,api,toast,error,confirm:confirmModal,onChange:scheduleRender});projectEditors.set(projectFolderKey(current),view);}
+  if(!view){view=window.AIWSFiles.createEditor({projectId:current.id,api,toast,error,confirm:confirmModal,onChange:scheduleRender,onReveal:path=>revealProjectFile(current,path)});projectEditors.set(projectFolderKey(current),view);}
   void view.open(path);
   localStorage.setItem(`aiws.project-tab.${current.id}`,'editor');selectedTaskId=null;selectedHistory=null;render();
 }
+/** Opens the files panel on the project's file and selects it there. */
+function revealProjectFile(current,path){if(!filesPanelOpen())setFilesPanel(true);void projectFileViews.get(projectFolderKey(current))?.reveal(path);}
 // Leaving the page would drop unsaved editor changes, so the browser asks first.
 window.addEventListener('beforeunload',event=>{if([...projectEditors.values()].some(view=>view.hasUnsaved()))event.preventDefault();});

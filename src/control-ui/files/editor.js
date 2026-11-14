@@ -5,7 +5,8 @@
 (function () {
   'use strict';
   const t = value => globalThis.AIWSI18n.text(value);
-  const { esc, icon, tabStep } = window.AIWSUI;
+  const { esc, icon, tabStep, copyText } = window.AIWSUI;
+  const { showMenu, revealLabel } = window.AIWSFiles;
   const monacoBase = '/vendor/monaco/vs';
   // Monaco colour → the AIWS token it takes its value from (styles.css). Syntax colours come from Monaco's own light or dark base.
   const themeTokens = {
@@ -70,9 +71,10 @@
 
   /**
    * `confirm(title, message, { confirmLabel, danger, alternativeLabel })` asks in the app's dialog and resolves true, 'alternative'
-   * or false; `onChange` runs when the set of open files or whether any of them is unsaved changes.
+   * or false; `onChange` runs when the set of open files or whether any of them is unsaved changes; `onReveal(path)` shows a file
+   * in the files panel.
    */
-  function createEditor({ projectId, api, toast, error, confirm, onChange }) {
+  function createEditor({ projectId, api, toast, error, confirm, onChange, onReveal }) {
     const element = document.createElement('section');
     element.className = 'file-editor'; element.setAttribute('aria-label', t('Dosya editörü'));
     element.innerHTML = `<header class="file-editor-bar"><div class="file-editor-tabs" role="tablist" aria-label="${esc(t('Açık dosyalar'))}"></div><button type="button" class="button small primary" data-editor-save title="Ctrl+S" disabled>${esc(t('Kaydet'))}</button></header><div class="file-editor-body"><div class="file-editor-host" hidden></div><div class="file-editor-message" hidden></div><div class="file-editor-preview" hidden></div></div>`;
@@ -83,12 +85,16 @@
     const dirty = file => Boolean(file.model) && file.model.getAlternativeVersionId() !== file.savedId;
     const hasUnsaved = () => [...files.values()].some(dirty);
     const read = path => api(`${url}/content?${new URLSearchParams({ path })}`);
+    /** The open files in tab order: pinned tabs first, each group in the order it was opened. */
+    const ordered = () => { const all = [...files.values()]; return [...all.filter(file => file.pinned), ...all.filter(file => !file.pinned)]; };
 
     function drawTabs() {
       const focused = tabs.contains(document.activeElement);
-      tabs.innerHTML = [...files.values()].map(file => {
+      tabs.innerHTML = ordered().map(file => {
         const on = file.path === active, changed = dirty(file); file.shownDirty = changed;
-        return `<div class="file-editor-tab${on ? ' active' : ''}"><button type="button" class="file-editor-tab-name" role="tab" aria-selected="${on}" tabindex="${on ? 0 : -1}" data-editor-file="${esc(file.path)}" title="${esc(file.path)}"><span>${esc(file.name)}</span>${changed ? `<span class="ui-dot" data-tone="needs" role="img" aria-label="${esc(t('Kaydedilmemiş değişiklikler'))}"></span>` : ''}</button><button type="button" class="icon-button" data-editor-close="${esc(file.path)}" title="${esc(t('Dosyayı kapat'))}" aria-label="${esc(t('Dosyayı kapat'))}: ${esc(file.name)}">${icon('x')}</button></div>`;
+        return `<div class="file-editor-tab${on ? ' active' : ''}${file.pinned ? ' pinned' : ''}"><button type="button" class="file-editor-tab-name" role="tab" aria-selected="${on}" tabindex="${on ? 0 : -1}" data-editor-file="${esc(file.path)}" title="${esc(file.path)}"><span>${esc(file.name)}</span>${changed ? `<span class="ui-dot" data-tone="needs" role="img" aria-label="${esc(t('Kaydedilmemiş değişiklikler'))}"></span>` : ''}</button>${file.pinned
+          ? `<button type="button" class="icon-button" data-editor-unpin="${esc(file.path)}" title="${esc(t('Sabitlemeyi kaldır'))}" aria-label="${esc(t('Sabitlemeyi kaldır'))}: ${esc(file.name)}">${icon('pin')}</button>`
+          : `<button type="button" class="icon-button" data-editor-close="${esc(file.path)}" title="${esc(t('Dosyayı kapat'))}" aria-label="${esc(t('Dosyayı kapat'))}: ${esc(file.name)}">${icon('x')}</button>`}</div>`;
       }).join('');
       if (focused) tabs.querySelector('[aria-selected=true]')?.focus();
       const current = files.get(active);
@@ -132,6 +138,7 @@
       if (result.unavailable) { file.model?.dispose(); Object.assign(file, { status: result.unavailable, size: result.size, limit: result.limit, model: null }); return; }
       // A picture is shown, not edited; its version lets revalidate pick up a new picture on disk.
       if (result.image) { file.model?.dispose(); Object.assign(file, { status: 'image', image: result.image, size: result.size, version: result.version, model: null }); return; }
+      file.absolutePath = result.absolutePath;
       if (file.model) file.model.setValue(result.content);
       else {
         const uri = monaco.Uri.file(result.absolutePath);
@@ -201,24 +208,59 @@
       if (dirty(file)) {
         select(path);
         const answer = await confirm(t('Değişiklikler kaydedilmedi'), `${file.name}: ${t('Bu dosyadaki değişiklikler kaydedilsin mi?')}`, { confirmLabel: t('Kaydet'), alternativeLabel: t('Kaydetme') });
-        if (answer === false || files.get(path) !== file || answer === true && !await save(path)) return;
+        if (answer === false || files.get(path) !== file || answer === true && !await save(path)) return false;
       }
-      if (files.get(path) !== file) return;
-      const order = [...files.keys()], index = order.indexOf(path);
+      if (files.get(path) !== file) return false;
+      const order = ordered().map(entry => entry.path), index = order.indexOf(path);
       files.delete(path);
       if (editor?.getModel() === file.model) editor.setModel(null);
       file.model?.dispose();
       if (active === path) select(order[index + 1] ?? order[index - 1] ?? '', true); else drawTabs();
+      return true;
+    }
+    /** Closes several tabs one after another; a cancelled unsaved-changes question stops the rest. */
+    async function closeAll(paths) { for (const path of paths) if (files.has(path) && await close(path) === false) return; }
+    async function copy(value) { toast(value && await copyText(value) ? t('Yol kopyalandı') : t('Kopyalanamadı')); }
+    function launch(path, action) { void api(`${url}/open`, 'POST', { path, action }).catch(problem => error(problem.message)); }
+    function setPinned(path, pinned) { const file = files.get(path); if (file) { file.pinned = pinned; drawTabs(); } }
+    /** The tab's context menu, like VS Code's: closing tabs, copying its path, revealing and pinning it. Pinned tabs stay open on bulk closes. */
+    function openTabMenu(path, x, y, restore) {
+      const file = files.get(path); if (!file) return;
+      const order = ordered(), index = order.indexOf(file), loose = entry => entry !== file && !entry.pinned;
+      const others = order.filter(loose).map(entry => entry.path), right = order.slice(index + 1).filter(loose).map(entry => entry.path);
+      const saved = order.filter(entry => !entry.pinned && !dirty(entry)).map(entry => entry.path), all = order.filter(entry => !entry.pinned).map(entry => entry.path);
+      showMenu(x, y, [
+        { label: t('Kapat'), run: () => close(path) },
+        { label: t('Diğerlerini kapat'), disabled: !others.length, run: () => closeAll(others) },
+        { label: t('Sağdakileri kapat'), disabled: !right.length, run: () => closeAll(right) },
+        { label: t('Kaydedilenleri kapat'), disabled: !saved.length, run: () => closeAll(saved) },
+        { label: t('Tümünü kapat'), disabled: !all.length, run: () => closeAll(all) },
+        '-',
+        { label: t('Yolu kopyala'), run: async () => copy(file.absolutePath || (await read(path).catch(() => ({}))).absolutePath) },
+        { label: t('Göreli yolu kopyala'), run: () => copy(path) },
+        '-',
+        { label: revealLabel(), run: () => launch(path, 'reveal') },
+        ...(onReveal ? [{ label: t('Gezgin görünümünde göster'), run: () => onReveal(path) }] : []),
+        '-',
+        file.pinned ? { label: t('Sabitlemeyi kaldır'), run: () => setPinned(path, false) } : { label: t('Sabitle'), run: () => setPinned(path, true) },
+      ], restore);
     }
 
     tabs.addEventListener('click', event => {
-      const closing = event.target.closest('[data-editor-close]'), tab = event.target.closest('[data-editor-file]');
-      if (closing) void close(closing.dataset.editorClose); else if (tab) select(tab.dataset.editorFile, true);
+      const closing = event.target.closest('[data-editor-close]'), unpin = event.target.closest('[data-editor-unpin]'), tab = event.target.closest('[data-editor-file]');
+      if (closing) void close(closing.dataset.editorClose); else if (unpin) setPinned(unpin.dataset.editorUnpin, false); else if (tab) select(tab.dataset.editorFile, true);
+    });
+    tabs.addEventListener('contextmenu', event => {
+      const tab = event.target.closest('.file-editor-tab')?.querySelector('[data-editor-file]'); if (!tab) return;
+      event.preventDefault(); openTabMenu(tab.dataset.editorFile, event.clientX, event.clientY, tab);
     });
     tabs.addEventListener('auxclick', event => { const tab = event.button === 1 && event.target.closest('.file-editor-tab')?.querySelector('[data-editor-file]'); if (tab) { event.preventDefault(); void close(tab.dataset.editorFile); } });
     tabs.addEventListener('keydown', event => {
-      if (!event.target.closest('[data-editor-file]')) return;
-      const next = tabStep(event, [...files.keys()], active);
+      const tab = event.target.closest('[data-editor-file]'); if (!tab) return;
+      if (event.key === 'ContextMenu' || event.key === 'F10' && event.shiftKey) {
+        event.preventDefault(); const box = tab.getBoundingClientRect(); openTabMenu(tab.dataset.editorFile, box.left + 12, box.bottom, tab); return;
+      }
+      const next = tabStep(event, ordered().map(file => file.path), active);
       if (next) { select(next); tabs.querySelector('[aria-selected=true]')?.focus(); }
     });
     saveButton.addEventListener('click', () => void save());
