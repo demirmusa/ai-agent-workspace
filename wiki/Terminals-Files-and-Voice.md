@@ -54,13 +54,14 @@ node-pty creates the operating system pseudo-terminal and xterm.js renders it. I
 
 ## Files panel
 
-The files button on the right of the header toggles the **Files** panel. It shows the project folder as a tree, folders first. `.git` is hidden, files ignored by Git are dimmed, and changed files carry Git status badges. Drag the panel's left edge to resize it.
+The files button on the right of the header toggles the **Files** panel. It shows the project folder as a tree, folders first. `.git` is hidden, files ignored by Git are dimmed, and changed files carry Git status badges. Drag the panel's left edge to resize it. The tree follows the file system: files and folders that are created, deleted or renamed, by you or an agent, appear in the open folders without pressing **Refresh**.
 
 | You want to | Do this |
 |---|---|
 | Reference a file in a task | Drag the file or folder into the task window. Its project-relative path is inserted where you drop it. |
 | Attach files to an existing task | Drop them on the task's card. Attached paths show as chips on the card; up to 50 per task. The agent gets the list as context, the contents are not copied. |
 | Mention a file while typing | In a task description, type `@` after a space. Search matches file and folder names in all subfolders. Use the arrow keys and Enter to insert the path, Tab to step into a folder, Esc to close. |
+| Find a file by name | Type part of its name in the search field at the top of the panel. The tree shows the matching files and folders of all subfolders as you type, each with the folder that holds it. Arrow down or Enter moves to the results; Esc clears the search. |
 | Open a file outside AIWS | Right-click → **Open with default program** |
 | Find a folder on disk | Right-click → **Reveal in File Explorer** (**Reveal in Finder** on macOS) |
 | Copy a path | Right-click → **Copy path** or **Copy relative path** |

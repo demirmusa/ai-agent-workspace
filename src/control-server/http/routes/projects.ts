@@ -38,8 +38,10 @@ function filesRoot(c: RouteContext, projectId: string): string {
   return task.worktree.path;
 }
 
-async function files(c: RouteContext, repositoryPath: string): Promise<boolean> {
+async function files(c: RouteContext, projectId: string, repositoryPath: string): Promise<boolean> {
   const step = c.parts[4];
+  // An open files panel renews this lease; changes arrive as `files` events on the event stream.
+  if (step === 'watch' && !c.parts[5] && c.method === 'POST') return c.send(200, await c.service.fileWatches.lease(projectId, repositoryPath));
   if (step === 'content' && !c.parts[5]) {
     if (c.method === 'GET') return c.send(200, await readProjectFile(repositoryPath, c.query.get('path') ?? ''));
     // JSON escaping makes the body larger than the file it carries.
@@ -108,7 +110,7 @@ export const projectRoutes: Record<string, RouteHandler> = {
         if (c.method === 'PUT') return c.send(200, { history: service.runScriptMemory.save(id, step, (await c.body() as { history?: unknown }).history) });
         return false;
       case 'terminals': return terminals(c, id);
-      case 'files': return files(c, filesRoot(c, id));
+      case 'files': return files(c, id, filesRoot(c, id));
       case 'branches': return c.method === 'GET' && c.send(200, await service.branches(id));
       case 'git': return git(c, id);
       case 'sessions': return sessions(c, id);

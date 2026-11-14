@@ -69,6 +69,7 @@ function handleStreamEvent(event){
   else if(event.type==='organize')organizeProgress(event);
   else if(event.type==='terminal')window.AIWSTerminal?.receive(event.runId,event.offset,event.data);
   else if(event.type==='shells')void loadProjectShells(event.projectId);
+  else if(event.type==='files')projectFilesChanged(event);
   else if(event.type==='plugins')void window.AIWSPlugins?.reload();
 }
 window.addEventListener('pagehide',()=>streamController?.abort());

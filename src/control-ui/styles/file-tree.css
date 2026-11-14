@@ -5,6 +5,8 @@
 .project-files-title{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .project-files-actions{display:flex;gap:2px}
 .project-files-actions .icon-button{width:26px;height:26px;font-size:14px}
+.project-files-search{flex:none;padding:6px 8px;border-bottom:1px solid var(--line)}
+.project-files-search input{width:100%;height:28px;font-size:12.5px}
 .project-files-hint{flex:none;margin:0;padding:8px 14px;border-top:1px solid var(--line);font-size:11.5px;line-height:1.5;color:var(--faint)}
 .project-files-tree{flex:1 1 auto;min-height:0;overflow:auto;padding:4px 6px;font-size:13px;user-select:none}
 .file-row{--indent:calc(var(--depth,0) * 14px);display:flex;align-items:center;gap:4px;height:26px;padding:0 8px 0 calc(4px + var(--indent));border:1px solid transparent;border-radius:var(--radius-sm);white-space:nowrap;cursor:default;outline:none;color:var(--ink);transition:background-color var(--dur-fast) var(--ease-out)}
@@ -22,6 +24,8 @@
 .file-icon.folder{color:var(--muted)}
 .file-row.selected .file-icon{color:var(--ink)}
 .file-name{overflow:hidden;text-overflow:ellipsis}
+/* A search result names the folder that holds it. */
+.file-location{flex:0 1 auto;min-width:0;margin-left:6px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:11.5px;color:var(--faint)}
 /* Git change markers: a status letter on changed files, a dot on folders holding them; the name takes the same tone. */
 :is(.file-row,.change-row,.file-change,.file-change-dot):is([data-change=modified],[data-change=renamed]){--change-tone:var(--tone-needs)}
 :is(.file-row,.change-row,.file-change,.file-change-dot):is([data-change=added],[data-change=untracked]){--change-tone:var(--tone-done)}

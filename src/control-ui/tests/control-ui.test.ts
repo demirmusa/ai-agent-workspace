@@ -1,7 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { execFileSync } from 'node:child_process';
 import { Window } from 'happy-dom';
-import { readFile, mkdtemp, mkdir, writeFile, rm, utimes, appendFile } from 'node:fs/promises';
+import { readFile, mkdtemp, mkdir, writeFile, rm, rename, utimes, appendFile } from 'node:fs/promises';
 import { closeWindow, runUiScripts, uiScriptSource, uiStyleSource, isAppScript } from './ui-sources.js';
 import { tmpdir } from 'node:os';
 import { join, delimiter } from 'node:path';
@@ -328,6 +328,32 @@ describe('control center renderer with the real local API', () => {
     element<HTMLButtonElement>('#close-modal').click();
     await wait(()=>expect(element('#files-panel').parentElement?.classList.contains('app-shell')).toBe(true));
     click('[data-files-close]');expect(element('#files-panel').hidden).toBe(true);expect(element('.app-shell').classList.contains('files-open')).toBe(false);
+  });
+  it('filters project files by part of their name and shows created, renamed and deleted files without a refresh', async () => {
+    await mkdir(join(directory,'src','nested'),{recursive:true});await writeFile(join(directory,'src','nested','deep-report.txt'),'x');await writeFile(join(directory,'README.md'),'x');
+    await createProject();click('#files-toggle');
+    await wait(()=>expect(element('[data-file-path="src"]')).toBeTruthy());
+    expect(element<HTMLInputElement>('[data-files-search]').getAttribute('aria-label')).toBe('Dosyaları ada göre ara');
+    // A partial name lists the matching files of every folder, each with the folder that holds it.
+    edit('[data-files-search]','report');
+    await wait(()=>expect([...window.document.querySelectorAll('.project-files-tree [role=treeitem]')].map(row=>row.getAttribute('data-file-path'))).toEqual(['src/nested/deep-report.txt']));
+    expect(element('[data-file-path="src/nested/deep-report.txt"] .file-location').textContent).toBe('src/nested');
+    // A file created while searching appears in the results.
+    await writeFile(join(directory,'weekly-report.md'),'x');
+    await wait(()=>expect(element('[data-file-path="weekly-report.md"]')).toBeTruthy());
+    edit('[data-files-search]','nothing-matches-this');
+    await wait(()=>expect(element('.project-files-tree .file-message').textContent).toBe('Eşleşen dosya yok'));
+    // Escape clears the search and brings the tree back.
+    edit('[data-files-search]','repo');element('[data-files-search]').dispatchEvent(new window.KeyboardEvent('keydown',{key:'Escape',bubbles:true,cancelable:true}) as unknown as Event);
+    await wait(()=>expect(element('[data-file-path="src"]').getAttribute('aria-expanded')).toBe('false'));expect(element<HTMLInputElement>('[data-files-search]').value).toBe('');
+    // The open folders follow the file system: creating, renaming and deleting needs no refresh.
+    click('[data-file-path="src"]');await wait(()=>expect(element('[data-file-path="src/nested"]')).toBeTruthy());
+    await writeFile(join(directory,'src','added.ts'),'x');
+    await wait(()=>expect(element('[data-file-path="src/added.ts"]')).toBeTruthy());
+    await rename(join(directory,'README.md'),join(directory,'GUIDE.md'));
+    await wait(()=>{expect(element('[data-file-path="GUIDE.md"]')).toBeTruthy();expect(window.document.querySelector('[data-file-path="README.md"]')).toBeNull();});
+    await rm(join(directory,'src','added.ts'));
+    await wait(()=>expect(window.document.querySelector('[data-file-path="src/added.ts"]')).toBeNull());
   });
   it('updates Git merge badges from live tasks despite a stale Git snapshot', async () => {
     await createProject(); await createTask('Merge work');

@@ -12,6 +12,7 @@ import { HistoryTaskImporter } from './history-import.js';
 import { SessionHistory, type HistoryOptions } from './history.js';
 import { LiveSessions, type LiveSessionOptions } from './live-sessions.js';
 import { openAbsolutePath, openProjectPath } from './project-files.js';
+import { ProjectFileWatches } from './project-file-watch.js';
 import { ProjectTerminals, type ProjectTerminal } from './project-terminals.js';
 import { ProviderModels, type ProviderModelOptions } from './provider-models.js';
 import type { GitChanges, GitMergeResult, GitOverview } from './repository-git.js';
@@ -66,6 +67,8 @@ export interface ControlServiceOptions { dataDir?: string; githubToken?: string;
  */
 export class ControlService extends EventEmitter {
   readonly projectTerminals: ProjectTerminals;
+  /** Project folders shown in an open files panel; their changes are emitted as `files` events. */
+  readonly fileWatches = new ProjectFileWatches((change) => this.emit('files', change));
   readonly store: ControlStore;
   readonly runScriptMemory: RunScriptMemory;
   readonly taskDraft: TaskDraftMemory;
@@ -429,6 +432,7 @@ export class ControlService extends EventEmitter {
   async close(): Promise<void> {
     const ctx = this.ctx;
     ctx.closing = true; clearInterval(this.timer); this.broadcaster.close();
+    this.fileWatches.close();
     await this.projectTerminals.close();
     this.assistant.close(); this.completion.close();
     for (const run of this.store.state.runs.filter((item) => !runEnded(item))) this.completion.finish(run, 'interrupted', 130, 'Control service stopped. Start a new run to continue.');
