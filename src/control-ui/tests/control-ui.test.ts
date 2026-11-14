@@ -3113,6 +3113,24 @@ describe('control center renderer with the real local API', () => {
     const css=await uiStyleSource();expect(css).toContain('.provider-account-list{');
   },20000);
 
+  it('uninstalls claude-swap from work settings after confirming and drops its accounts everywhere', async () => {
+    const accounts=aiProviders.require('claude').accounts!,usage=(windowMinutes:number)=>({usedPercent:10,resetsAt:null,windowMinutes});
+    const tool={name:'claude-swap',command:'cswap',url:'https://github.com/realiti4/claude-swap',installed:true,installer:'uv'};
+    const listed:ProviderAccountsStatus={tool,checkedAt:new Date().toISOString(),accounts:['1','2'].map(id=>({id,email:`${id}@example.com`,label:`${id}@example.com`,active:id==='1',disabled:false,status:'ok',short:usage(300),weekly:usage(10080),updatedAt:null}))};
+    const removed:ProviderAccountsStatus={tool:{...tool,installed:false},checkedAt:listed.checkedAt,accounts:[]};
+    vi.spyOn(accounts,'status').mockResolvedValue(listed);const uninstall=vi.spyOn(accounts,'uninstall').mockResolvedValue(removed);
+    click('#settings-button');click('#settings-tab-providers');
+    await wait(()=>expect(element('[data-accounts-uninstall="claude"]').textContent).toContain('claude-swap kaldır'));
+    // Cancelling the confirmation changes nothing.
+    click('[data-accounts-uninstall="claude"]');await wait(()=>expect(element('#modal').hasAttribute('open')).toBe(true));
+    click('#modal button[data-action="close-modal"]');await wait(()=>expect(element('#modal').hasAttribute('open')).toBe(false));
+    expect(uninstall).not.toHaveBeenCalled();expect(element('[data-account="2"]')).not.toBeNull();
+    click('[data-accounts-uninstall="claude"]');await confirmDialog();await wait(()=>expect(uninstall).toHaveBeenCalledTimes(1));
+    await wait(()=>expect(element('[data-accounts-install="claude"]')).not.toBeNull());
+    expect(window.document.querySelector('[data-accounts-uninstall]')).toBeNull();expect(window.document.querySelector('[data-account]')).toBeNull();
+    expect((window as any).providerAccountList('claude')).toEqual([]);
+  },20000);
+
   it('imports browser SKILL.md and binary resources, edits them, and imports a server folder', async () => {
     click('#skills-nav'); click('#create-task'); input('#field-name', 'Uploaded skill');
     const markdown = new window.File(['# Uploaded instructions\nUse this skill.'], 'SKILL.md', { type: 'text/markdown' });

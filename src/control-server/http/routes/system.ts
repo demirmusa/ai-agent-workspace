@@ -8,13 +8,14 @@ import type { RouteContext, RouteHandler } from './context.js';
 /** Control-center wide API: state, settings, providers, attachments, live sessions, GitHub, repository and questions. */
 const refresh = (c: RouteContext): boolean => c.query.get('refresh') === '1';
 
-/** /api/providers/:id/accounts: the provider's accounts, installing their account manager, adding the current login and removing one. */
+/** /api/providers/:id/accounts: the provider's accounts, installing and uninstalling their account manager, adding the current login and removing one. */
 async function providerAccounts(c: RouteContext, providerId: string): Promise<boolean> {
   const provider = aiProviders.require(providerId), accounts = provider.accounts, account = c.parts[4];
   if (!accounts) throw new ControlError(`${provider.name} has no accounts to manage.`, 404);
   if (c.parts[5]) return false;
   if (!account && c.method === 'GET') return c.send(200, await accounts.status(refresh(c) ? 0 : 60_000));
   if (account === 'install' && c.method === 'POST') { await c.body(); return c.send(200, await accounts.install()); }
+  if (account === 'uninstall' && c.method === 'POST') { await c.body(); return c.send(200, await accounts.uninstall()); }
   if (account === 'current' && c.method === 'POST') { await c.body(); return c.send(200, await accounts.addCurrent()); }
   if (account && c.method === 'DELETE') return c.send(200, await accounts.remove(account));
   return false;

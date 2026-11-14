@@ -96,6 +96,7 @@ A provider that was never refreshed shows a short suggested list. **Custom model
 2. **Add account** opens a terminal where Claude Code starts in a separate, empty profile. Log in there with `/login`; AIWS then registers the account and closes the terminal. Your existing default login is not changed. **Add current login** registers the login Claude Code already has.
 3. Pick the account per task in the **Account** field of the task form or task details. Leave it empty to use the default login.
 4. In the project terminal's **+** menu each account appears as its own Claude Code entry.
+5. **Uninstall Claude-Swap** (shown while it is installed) asks for confirmation, then runs `uv tool uninstall claude-swap` (or `pipx uninstall claude-swap`). The accounts disappear from Settings, task forms and the terminal menu right away; Claude Code, its default login and other agents are not touched.
 
 Notes:
 

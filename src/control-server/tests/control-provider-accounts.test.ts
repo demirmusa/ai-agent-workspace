@@ -74,6 +74,32 @@ describe('Claude Code accounts through claude-swap', () => {
     await expect(accounts.remove('2; rm -rf /')).rejects.toThrow('account number');
   });
 
+  it('uninstalls claude-swap with the installer that holds it and leaves Claude Code alone', async () => {
+    const root = temp(), tools: Record<string, string> = { cswap: 'cswap.exe', uv: 'uv.exe', pipx: 'pipx.exe', claude: 'claude.exe' }, tool = fakeCswap(root, tools);
+    // uv did not install it here, so it fails and pipx removes it.
+    const run = async (command: string, args: string[], options: CommandOptions): Promise<CommandResult> => {
+      if (command.endsWith('uv.exe') && args[1] === 'uninstall') { tool.calls.push({ command, args, options }); throw new Error('claude-swap is not installed'); }
+      if (args[0] === 'uninstall') delete tools.cswap;
+      return tool.run(command, args, options);
+    };
+    const accounts = new ClaudeAccounts({ home: root, env: {}, run, find: tool.find });
+    expect((await accounts.status()).accounts).toHaveLength(2);
+    const after = await accounts.uninstall();
+    expect(after.tool.installed).toBe(false); expect(after.accounts).toEqual([]);
+    const removals = tool.calls.filter((call) => call.args.includes('uninstall'));
+    expect(removals.map((call) => [call.command, call.args])).toEqual([[join(root, 'bin', 'uv.exe'), ['tool', 'uninstall', 'claude-swap']], [join(root, 'bin', 'pipx.exe'), ['uninstall', 'claude-swap']]]);
+    expect(tool.calls.some((call) => call.command.endsWith('claude.exe') || call.args.includes('claude-code'))).toBe(false);
+    await expect(accounts.uninstall()).rejects.toThrow('not installed');
+  });
+
+  it('reports a failed uninstall and a cswap that is still on PATH', async () => {
+    const root = temp(), failing = fakeCswap(root);
+    const broken = new ClaudeAccounts({ home: root, env: {}, run: async (command, args, options) => { if (args[1] === 'uninstall') throw new Error('locked'); return failing.run(command, args, options); }, find: failing.find });
+    await expect(broken.uninstall()).rejects.toThrow('could not be uninstalled: locked');
+    const stays = fakeCswap(root);
+    await expect(new ClaudeAccounts({ home: root, env: {}, run: stays.run, find: stays.find }).uninstall()).rejects.toThrow('still found');
+  });
+
   it('prepares the cswap run profile of an account and shares history with the default folder', async () => {
     const root = temp(), tool = fakeCswap(root), history = join(root, 'claude-home');
     const accounts = new ClaudeAccounts({ home: root, env: {}, run: tool.run, find: tool.find, historyHome: () => history });
