@@ -84,7 +84,7 @@ export async function startControlServer(options: ControlServerOptions = {}): Pr
 
   // Broadcasts are patches against the previous one; a client applies them to the full state it received on connect.
   service.on('change', (state: Record<string, unknown>, delta?: unknown) => { if (streams.size) streams.send('state', { ...patches.next(state), revision: service.stateRevision(), ...(delta ? { delta } : {}) }); else patches.reset(); });
-  for (const type of ['terminal', 'shells', 'update', 'draft', 'organize'] as const) service.on(type, (value: object) => streams.send(type, value));
+  for (const type of ['terminal', 'shells', 'files', 'update', 'draft', 'organize'] as const) service.on(type, (value: object) => streams.send(type, value));
   plugins.on('plugins', (value: { id: string }) => streams.send('plugins', value));
   try {
     await new Promise<void>((resolve, reject) => { server.once('error', reject); server.listen(port, host, () => { server.off('error', reject); resolve(); }); });

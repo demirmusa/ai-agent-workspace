@@ -98,6 +98,8 @@ function withFolders(paths: string[]): string[] {
   }
   return [...entries];
 }
+/** Drops the cached search listing of a project folder, so the next search sees files created, deleted or renamed since. */
+export function invalidateProjectFileSearch(root: string): void { fileCache.delete(root); }
 async function projectFileList(root: string): Promise<string[]> {
   const cached = fileCache.get(root);
   if (cached && Date.now() - cached.at < cacheMs) return cached.files;
