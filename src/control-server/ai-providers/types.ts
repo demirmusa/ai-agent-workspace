@@ -69,6 +69,8 @@ export interface ProviderAccounts {
   /** The accounts, listed again when the last listing is older than `maxAgeMs`; with `background` an older listing is returned while the new one loads. */
   status(maxAgeMs?: number, background?: boolean): Promise<ProviderAccountsStatus>;
   install(): Promise<ProviderAccountsStatus>;
+  /** Removes the account manager itself; the provider CLI and its default login stay. */
+  uninstall(): Promise<ProviderAccountsStatus>;
   /** Adds the account the provider's default login uses. */
   addCurrent(): Promise<ProviderAccountsStatus>;
   remove(id: string): Promise<ProviderAccountsStatus>;

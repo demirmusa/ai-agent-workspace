@@ -119,6 +119,26 @@ export class ClaudeAccounts implements ProviderAccounts {
     return status;
   }
 
+  /**
+   * `uv tool uninstall claude-swap`, else `pipx uninstall claude-swap`: removes only the account manager, not Claude Code
+   * or its default login. The installer that does not hold the tool fails, so the other one is tried next.
+   */
+  async uninstall(): Promise<ProviderAccountsStatus> {
+    await this.cswap();
+    const [uv, pipx] = await Promise.all([this.locate('uv'), this.locate('pipx')]);
+    const attempts: Array<[string, string[]]> = [...uv ? [[uv, ['tool', 'uninstall', 'claude-swap']] as [string, string[]]] : [], ...pipx ? [[pipx, ['uninstall', 'claude-swap']] as [string, string[]]] : []];
+    if (!attempts.length) throw new ControlError('Uninstalling claude-swap needs uv or pipx, which installed it. Remove it with the tool that installed it.', 409);
+    let last: unknown;
+    for (const [command, args] of attempts) {
+      try { await this.exec(command, args, 300_000); last = undefined; break; } catch (error) { last = error; }
+    }
+    this.forget(); this.root = undefined;
+    if (last) throw new ControlError(`claude-swap could not be uninstalled: ${failure(last)}`, 502);
+    const status = await this.status(0);
+    if (status.tool.installed) throw new ControlError(`claude-swap was uninstalled, but cswap is still found at ${status.tool.path}. Remove it from there.`, 409);
+    return status;
+  }
+
   /** `cswap add` with the default environment: stores the account Claude Code is signed in with. */
   addCurrent(): Promise<ProviderAccountsStatus> { return this.change(['add'], 'add the current login'); }
   async remove(id: string): Promise<ProviderAccountsStatus> {
