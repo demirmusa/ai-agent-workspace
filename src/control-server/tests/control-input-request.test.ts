@@ -76,6 +76,36 @@ describe('AI input requests', () => {
     expect(service.run(run.id).status).toBe('running');
     expect(service.snapshot().questions[0]!.status).toBe('cancelled');
   });
+  it('clears an agent question once the user replies in the terminal, so the run no longer needs the user', async () => {
+    root = mkdtempSync(join(tmpdir(),'aiws-input-')); service = await ControlService.open({dataDir:join(root,'data')});
+    const project = service.createProject({name:'Input',repositoryPath:root});
+    const task = service.createTask({projectId:project.id,title:'Reply',terminalMode:'pty'});
+    const run = service.startTask(task.id);
+    const question = service.ask(run.id,{text:'Which env?'});
+    expect(service.run(run.id).status).toBe('waiting');
+    service.input(run.id,{data:'staging'});
+    expect(service.snapshot().questions[0]!.status).toBe('pending');
+    service.input(run.id,{data:'\r'});
+    expect(service.snapshot().questions.find(item=>item.id===question.id)!.status).toBe('cancelled');
+    expect(service.run(run.id).status).toBe('running');
+    expect(service.task(task.id).status).toBe('running');
+    // Esc interrupts the agent's wait as well.
+    service.ask(run.id,{text:'Next?'});
+    service.input(run.id,{data:'\u001b'});
+    expect(service.snapshot().questions.every(item=>item.status!=='pending')).toBe(true);
+    expect(service.run(run.id).status).toBe('running');
+  });
+  it('clears an agent question when the user sends a new instruction to a stream run', async () => {
+    root = mkdtempSync(join(tmpdir(),'aiws-input-')); service = await ControlService.open({dataDir:join(root,'data')});
+    const project = service.createProject({name:'Input',repositoryPath:root});
+    const task = service.createTask({projectId:project.id,title:'Instruction',terminalMode:'stream'});
+    const run = service.startTask(task.id);
+    service.ask(run.id,{text:'Which env?'});
+    expect(service.run(run.id).status).toBe('waiting');
+    service.command(run.id,{message:'Use staging'});
+    expect(service.snapshot().questions[0]!.status).toBe('cancelled');
+    expect(service.run(run.id).status).toBe('running');
+  });
   it('keeps a pending native request while the TUI repaints it after a resize', async () => {
     root = mkdtempSync(join(tmpdir(),'aiws-input-')); service = await ControlService.open({dataDir:join(root,'data')});
     const project = service.createProject({name:'Input',repositoryPath:root});
