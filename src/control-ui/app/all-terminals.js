@@ -31,7 +31,7 @@ function sessionTerminals(){
     const target=event.target.closest('button');if(!target||target.disabled)return;
     if(target.hasAttribute('data-terminal-menu'))setTerminalMenu(entry);
     else if(target.dataset.terminalOpen){setTerminalMenu(entry,false);const [kind,provider,account]=target.dataset.terminalOpen.split(':');if(kind==='session')openSessionTerminal(provider);else if(kind==='terminal')showAllProjectTerminal(provider);else void openAllProjectTerminal(kind==='agent'||kind==='login'?{kind,provider,...(account?{account}:{})}:{kind:'shell'});}
-    else if(target.hasAttribute('data-terminal-agents-refresh')){void loadTerminalAgents(true);updateSessionTerminals();}
+    else if(target.hasAttribute('data-terminal-agents-refresh')){void loadTerminalAgents(true);loadTerminalAccounts();updateSessionTerminals();}
     else if(target.dataset.terminalHide)hideAllProjectTerminal(target.dataset.terminalHide);
     else if(target.hasAttribute('data-shell-close'))void closeAllSessionTerminals();
   });

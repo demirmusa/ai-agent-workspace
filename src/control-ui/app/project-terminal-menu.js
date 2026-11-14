@@ -7,11 +7,14 @@ function loadTerminalAgents(refresh=false){
   const request=terminalAgents.loading=api(`/terminal-agents${refresh?'?refresh=1':''}`).then(items=>{if(terminalAgents.loading===request){terminalAgents.items=items;terminalAgents.error='';}}).catch(error=>{if(terminalAgents.loading===request)terminalAgents.error=error.message;}).finally(()=>{if(terminalAgents.loading===request)terminalAgents.loading=null;refreshTerminalMenus();});
   return request;
 }
+// claude-swap can gain or lose accounts outside AIWS, so every menu open and agent search reads them again past the server's cache;
+// the menu shows the last listing until the new one arrives.
+function loadTerminalAccounts(){for(const provider of accountProviders)void loadProviderAccounts(provider,true);}
 function refreshTerminalMenus(){for(const id of projectShells.keys())if(terminalVisible(id))updateShell(id);if(allTerminalsVisible())updateSessionTerminals();}
 const toggleTerminalMenu=(id,open)=>setTerminalMenu(shellEntry(id),open);
 function setTerminalMenu(entry,open){
   const menu=entry.element.querySelector('[data-terminal-menu-list]'),next=open??menu.hidden;
-  if(next&&!terminalAgents.items&&!terminalAgents.loading)void loadTerminalAgents();
+  if(next&&!terminalAgents.items&&!terminalAgents.loading)void loadTerminalAgents();if(next)loadTerminalAccounts();
   menu.hidden=!next;entry.element.querySelector('[data-terminal-menu]').setAttribute('aria-expanded',String(next));
   if(next){entry.update();menu.querySelector('[role="menuitem"]:not(:disabled)')?.focus();}
 }
@@ -42,11 +45,11 @@ function terminalSessionItems(runs,open,withProject=false){
   if(!runs.length)return `<p class="terminal-menu-empty">${esc(t('Şu an çalışan oturum yok.'))}</p>`;
   return runs.map(run=>{const item=state.tasks.find(task=>task.id===run.taskId),title=consoleTitle(run);return `<button type="button" role="menuitem" class="terminal-menu-item" data-terminal-open="session:${esc(run.id)}" aria-current="${open.includes(run.id)}" title="${esc(title)}">${terminalIcon(run.provider)}<span><strong>${esc(title)}</strong><small>${esc([withProject?state.projects.find(value=>value.id===item.projectId)?.name:'',runAgentName(run)].filter(Boolean).join(' · '))}</small></span>${window.AIWSUI.statusPill(item.status,statuses[item.status]||item.status)}</button>`;}).join('');
 }
-/** A provider's other accounts (the default login is the plain agent item) and signing a new one in, once its account manager is installed. */
+/** A provider's accounts as separate items once its account manager lists several; with one account the plain agent item is enough. The default login stays the plain item. */
 function terminalAccountItems(provider){
   if(!accountProviders.includes(provider))return '';
-  const t=globalThis.AIWSI18n.text,accounts=providerAccountList(provider),status=providerAccountState(provider).status;if(!status?.tool.installed)return '';
-  return `${accounts.filter(account=>!account.active).map(account=>`<button type="button" role="menuitem" class="terminal-menu-item" data-terminal-open="agent:${esc(provider)}:${esc(account.id)}" title="${esc(account.email)}">${terminalIcon(provider)}<span><strong>${esc(account.label)}</strong><small>${esc(providers[provider])} · ${esc(t('Hesap'))}</small></span></button>`).join('')}<button type="button" role="menuitem" class="terminal-menu-item" data-terminal-open="login:${esc(provider)}">${terminalIcon(provider)}<span><strong>${esc(t('Hesap ekle'))}</strong><small>${esc(t('Ayrı profilde giriş yap; hesap otomatik eklenir'))}</small></span></button>`;
+  const t=globalThis.AIWSI18n.text,accounts=providerAccountList(provider),status=providerAccountState(provider).status;if(!status?.tool.installed||accounts.length<2)return '';
+  return accounts.filter(account=>!account.active).map(account=>`<button type="button" role="menuitem" class="terminal-menu-item" data-terminal-open="agent:${esc(provider)}:${esc(account.id)}" title="${esc(account.email)}">${terminalIcon(provider)}<span><strong>${esc(account.label)}</strong><small>${esc(providers[provider])} · ${esc(t('Hesap'))}</small></span></button>`).join('');
 }
 function terminalEmptyHtml(){
   const agents=(terminalAgents.items||[]).filter(agent=>agent.available);
