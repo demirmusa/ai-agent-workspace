@@ -36,7 +36,7 @@ document.addEventListener('click',event=>{
   if(target.dataset.moveTask){const item=task();if(item&&!target.disabled)void moveBoardTasks([item.id],target.dataset.moveTask);return;}
   const tab=target.dataset.detailTab;
   if((['info','console','terminal'].includes(tab)||tab?.startsWith('plugin:'))&&!target.disabled){detailTab=tab;renderDetail();return;}
-  if(target.hasAttribute('data-history-continue')&&selectedHistory){resumeHistoryModal(selectedHistory.projectId,selectedHistory.session);return;}
+  if(target.hasAttribute('data-history-continue')&&selectedHistory){void resumeHistorySession(selectedHistory.projectId,selectedHistory.session);return;}
   const action=target.dataset.action;
   if(action==='fullscreen-session'){sessionFullscreen=!sessionFullscreen;render();}
   else if(action==='delete-task')confirmDeleteTask();

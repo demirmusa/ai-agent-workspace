@@ -39,7 +39,6 @@
 .history-error{font-size:12px;line-height:1.8;color:var(--danger);padding:14px 0}
 .history-warnings{font-size:11px;line-height:1.8;color:var(--muted);margin-bottom:16px}
 .history-warnings summary{cursor:pointer}
-#history-resume-message{width:100%}
 @media(max-width:760px){
 .history-heading{flex-direction:column;gap:12px}
 .history-heading>div:last-child{width:100%}
