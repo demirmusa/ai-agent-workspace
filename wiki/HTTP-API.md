@@ -66,6 +66,7 @@ A keepalive comment is sent every 15 seconds. A client that falls more than 4 MB
 | `/api/providers`, `/api/providers/detect` | GET | Registered providers and installed CLIs |
 | `/api/providers/:id/models/refresh` | POST | Refresh and store the provider's model list |
 | `/api/providers/:id/accounts` | GET | Provider accounts (Claude Code: claude-swap) |
+| `/api/providers/:id/accounts/install`, `/api/providers/:id/accounts/uninstall` | POST | Install or uninstall the account manager |
 | `/api/token-usage` | GET | Quota usage; `?refresh=1` forces a scan |
 | `/api/attachments`, `/api/attachments/:id` | POST / GET | Upload (base64 JSON) and download files |
 | `/api/directories` | GET | Folder browser under the allowed roots |
