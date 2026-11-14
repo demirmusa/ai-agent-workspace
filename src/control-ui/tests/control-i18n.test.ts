@@ -15,14 +15,15 @@ function mount(language?: string) {
 afterEach(async()=>{for(const window of windows.splice(0))await window.happyDOM.close();});
 
 describe('control center language preference',()=>{
-  it('defaults to Turkish and rejects unsupported saved languages',()=>{
+  it('defaults to English and rejects unsupported saved languages',()=>{
     for(const language of [undefined,'fr','en-US']) {
       const {window,i18n}=mount(language);
-      expect(i18n.language).toBe('tr'); expect(i18n.locale).toBe('tr-TR');
-      expect(window.document.documentElement.lang).toBe('tr');
-      expect(window.document.querySelector('#overview-nav')?.textContent).toContain('Tüm projeler');
-      expect(i18n.text('Yeni görev')).toBe('Yeni görev');
+      expect(i18n.language).toBe('en'); expect(i18n.locale).toBe('en-US');
+      expect(window.document.documentElement.lang).toBe('en');
+      expect(window.document.querySelector('#overview-nav')?.textContent).toContain('All projects');
+      expect(i18n.text('Yeni görev')).toBe('New task');
     }
+    const {i18n}=mount('tr'); expect(i18n.language).toBe('tr'); expect(i18n.text('Yeni görev')).toBe('Yeni görev');
   });
   it('loads English shell, accessibility copy, and locale without changing language names',()=>{
     const {window,i18n}=mount('en');

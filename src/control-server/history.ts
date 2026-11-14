@@ -109,15 +109,23 @@ export class SessionHistory {
     })().finally(() => { this.titleLoading = undefined; });
     return this.titleLoading;
   }
-  /** Canonical provider names, including a native /rename, never raw TUI escape sequences. */
+  /**
+   * Canonical provider names, never raw TUI escape sequences: a native /rename first, then the title the provider
+   * generated itself (Claude Code `ai-title`), and only then the first user message. Read fresh on every call so a
+   * rename made outside AIWS shows up the next time the list loads.
+   */
   async canonicalTitle(pointer: HistoryPointer): Promise<string> {
     await this.hydrateFirstUser(pointer);
     if (pointer.session.provider === 'codex') return (await this.codexTitles())?.get(pointer.session.sessionId) ?? pointer.session.title;
     try {
       return await this.withSource(pointer, async (file, size) => {
-        const length = Math.min(size, 2 * 1024 * 1024); let title = '';
-        for (const row of jsonRows((await readRange(file, size - length, length)).toString('utf8'), size > length)) if (row.type === 'custom-title' && row.sessionId === pointer.session.sessionId) title = titleText(row.customTitle) || title;
-        return title || pointer.session.title;
+        const length = Math.min(size, 2 * 1024 * 1024); let custom = '', generated = '';
+        for (const row of jsonRows((await readRange(file, size - length, length)).toString('utf8'), size > length)) {
+          if (row.sessionId !== pointer.session.sessionId) continue;
+          if (row.type === 'custom-title') custom = titleText(row.customTitle) || custom;
+          else if (row.type === 'ai-title') generated = titleText(row.aiTitle) || generated;
+        }
+        return custom || generated || pointer.session.title;
       });
     } catch { return pointer.session.title; }
   }
@@ -137,7 +145,7 @@ export class SessionHistory {
    * title (including native Codex names), the first public user message and the session ID.
    * Order is fixed at scan time so cursors stay stable while visible rows are hydrated.
    */
-  async list(project: Project, query: { provider?: unknown; limit?: unknown; cursor?: unknown; refresh?: unknown; q?: unknown; sort?: unknown } = {}): Promise<SessionHistoryPage> {
+  async list(project: Project, query: { provider?: unknown; limit?: unknown; cursor?: unknown; refresh?: unknown; q?: unknown; sort?: unknown } = {}, options: { subagents?: (pointer: HistoryPointer) => Promise<number> } = {}): Promise<SessionHistoryPage> {
     if (query.provider !== undefined && query.provider !== '' && !aiProviders.isHistoryProvider(query.provider)) throw new ControlError('History provider must be codex or claude.');
     const sort = query.sort === undefined || query.sort === '' ? 'recent' : String(query.sort) as SessionHistorySort;
     if (!SORTS.includes(sort)) throw new ControlError('History sort must be recent, oldest or created.');
@@ -146,7 +154,7 @@ export class SessionHistory {
     const counts: Record<HistoryProvider, number> = { codex: 0, claude: 0 }; for (const item of matched) counts[item.session.provider]++;
     const filtered = matched.filter((item) => !query.provider || item.session.provider === query.provider);
     const items = sort === 'oldest' ? [...filtered].reverse() : sort === 'created' ? [...filtered].sort((a, b) => b.session.createdAt.localeCompare(a.session.createdAt) || a.session.id.localeCompare(b.session.id)) : filtered;
-    const page = await Promise.all(items.slice(offset, offset + count).map(async (pointer) => { const status = await this.sourceStatus(pointer); const title = await this.canonicalTitle(pointer); return { ...pointer.session, title, status }; }));
+    const page = await Promise.all(items.slice(offset, offset + count).map(async (pointer) => { const status = await this.sourceStatus(pointer); const title = await this.canonicalTitle(pointer); const subagents = options.subagents ? await options.subagents(pointer).catch(() => 0) : 0; return { ...pointer.session, title, status, ...(subagents ? { subagentCount: subagents } : {}) }; }));
     return { items: structuredClone(page), nextCursor: offset + count < items.length ? String(offset + count) : null, total: items.length, counts, warnings: [...index.warnings] };
   }
   private async search(pointers: Pointer[], terms: string[]): Promise<Pointer[]> {

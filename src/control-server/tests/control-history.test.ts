@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { mkdtempSync, mkdirSync, writeFileSync, readFileSync, rmSync, symlinkSync, chmodSync, utimesSync } from 'node:fs';
+import { appendFileSync, mkdtempSync, mkdirSync, writeFileSync, readFileSync, rmSync, symlinkSync, chmodSync, utimesSync } from 'node:fs';
 import { homedir, tmpdir } from 'node:os';
 import { join, dirname, delimiter } from 'node:path';
 import { randomUUID } from 'node:crypto';
@@ -51,6 +51,28 @@ describe('read-only scoped provider session history', () => {
     expect(() => server.service.history.assertResume(project, historical.id, source.sessionId)).toThrow('Session source changed');
   });
 
+  it('lists the provider session title, picks up external renames on each load and counts subagent sessions', async () => {
+    const { project, workspace, codexHome, claude, codex, request } = await setup();
+    const own = claude(); const nested = join(dirname(own.path), own.sessionId, 'subagents');
+    mkdirSync(join(nested, 'workflows', 'wf_run_1'), { recursive: true });
+    for (const name of ['agent-a1.jsonl', 'agent-a2.jsonl', join('workflows', 'wf_run_1', 'agent-w1.jsonl')]) writeFileSync(join(nested, name), jsonl([{ type: 'user', isSidechain: true, sessionId: own.sessionId, cwd: workspace, message: { content: 'child' } }]));
+    writeFileSync(join(nested, 'agent-a1.meta.json'), '{}');
+    appendFileSync(own.path, jsonl([{ type: 'ai-title', sessionId: own.sessionId, aiTitle: 'Generated Claude title' }]));
+    const parent = codex(); const childId = randomUUID();
+    writeFileSync(join(codexHome, 'sessions', '2026', '10', '16', `rollout-${childId}.jsonl`), jsonl([{ type: 'session_meta', timestamp: '2026-10-15T12:05:00Z', payload: { id: childId, cwd: workspace, source: { subagent: { thread_spawn: { parent_thread_id: parent.sessionId, agent_nickname: 'Worker' } } } } }]));
+    const list = async () => (await (await request(`projects/${project.id}/sessions`)).json()).items as Array<{ id: string; sessionId: string; title: string; subagentCount?: number }>;
+    let items = await list(); const find = (id: string) => items.find((item) => item.sessionId === id)!;
+    expect(find(own.sessionId)).toMatchObject({ title: 'Generated Claude title', subagentCount: 3 });
+    expect(find(parent.sessionId).subagentCount).toBe(1);
+    expect(items.some((item) => item.sessionId === childId)).toBe(false);
+    appendFileSync(own.path, jsonl([{ type: 'custom-title', sessionId: own.sessionId, customTitle: 'Renamed in Claude' }, { type: 'ai-title', sessionId: own.sessionId, aiTitle: 'Later generated title' }]));
+    writeFileSync(join(codexHome, 'session_index.jsonl'), jsonl([{ id: parent.sessionId, thread_name: 'Renamed in Codex' }]));
+    items = await list();
+    expect(find(own.sessionId).title).toBe('Renamed in Claude');
+    expect(find(parent.sessionId).title).toBe('Renamed in Codex');
+    const tree = await (await request(`projects/${project.id}/sessions/${find(own.sessionId).id}/agents`)).json();
+    expect(tree.agentTree.agents.length).toBeGreaterThan(1);
+  });
   it('reads a task continuation from its worktree without exposing it through another project', async () => {
     const { server, project, otherProject, workspace, other, request, codex } = await setup();
     const source = codex(other), imported = codex();

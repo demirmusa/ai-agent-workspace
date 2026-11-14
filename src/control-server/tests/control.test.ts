@@ -98,13 +98,15 @@ describe('local control center', () => {
     const task = service.createTask({ projectId: project.id, title: 'Retry failure', provider: 'command', command: { executable: process.execPath, args: ['-e', "const fs=require('node:fs');if(!fs.existsSync('ran')){fs.writeFileSync('ran','');process.exit(7)}setInterval(()=>{},1000)"] } });
     const original = service.startTask(task.id);
     await waitFor(() => service.run(original.id).status, status => status === 'failed');
-    const saved = structuredClone(service.run(original.id));
+    // A save moves a finished run's terminal replay from memory to disk at any moment; the run record itself must stay unchanged.
+    const record = (run: Run) => { const { terminalOutput: _output, ...rest } = structuredClone(run); return rest; };
+    const saved = record(service.run(original.id));
     const response = await fetch(`${server.url}/api/tasks/${task.id}/restart`, { method: 'POST' });
     expect(response.status).toBe(201);
     const restarted = await response.json() as Run;
     expect(restarted.id).not.toBe(original.id);
     expect(service.task(task.id).currentRunId).toBe(restarted.id);
-    expect(service.run(original.id)).toEqual(saved);
+    expect(record(service.run(original.id))).toEqual(saved);
     expect((await fetch(`${server.url}/api/tasks/${task.id}/restart`, { method: 'POST' })).status).toBe(409);
     await service.stop(restarted.id);
   });

@@ -10,6 +10,20 @@
 .history-session-list{display:block;transition:opacity var(--dur-fast) var(--ease-out)}
 .history-session-card{display:flex;align-items:flex-start;gap:12px;width:100%;border:1px solid var(--line);background:var(--surface);border-radius:6px;padding:12px 14px;text-align:left;color:var(--ink);cursor:pointer;box-shadow:none}
 .history-session-card:hover{background:var(--surface-hover);border-color:var(--line-strong);box-shadow:none}
+.history-session-node{margin-bottom:8px}
+.history-subagents-toggle{display:inline-flex;align-items:center;gap:6px;margin:6px 0 0 14px;padding:2px 6px;border:0;background:none;color:var(--muted);font-size:12px;cursor:pointer}
+.history-subagents-toggle:hover{color:var(--ink)}
+.history-subagents-caret{display:inline-block;transition:transform var(--dur-fast) var(--ease-out)}
+.history-session-node.is-expanded .history-subagents-caret{transform:rotate(90deg)}
+.history-subagents{margin:4px 0 0 26px;padding-left:12px;border-left:1px solid var(--line)}
+.history-subagent-branch{list-style:none;margin:0;padding:0}
+.history-subagent-branch .history-subagent-branch{margin-left:16px;padding-left:10px;border-left:1px solid var(--line)}
+.history-subagent-row{display:flex;align-items:center;flex-wrap:wrap;gap:8px;width:100%;margin:3px 0;padding:6px 10px;border:1px solid var(--line);border-radius:6px;background:var(--surface);color:var(--ink);font-size:12.5px;text-align:left;cursor:pointer}
+.history-subagent-row:hover:not(:disabled){background:var(--surface-hover);border-color:var(--line-strong)}
+.history-subagent-row:disabled{cursor:default;opacity:.7}
+.history-subagent-row.is-group{border-style:dashed;background:none;cursor:default}
+.history-subagent-name{font-weight:600;overflow-wrap:anywhere}
+.history-subagents-note{display:flex;align-items:center;gap:8px;padding:6px 0;font-size:12px;color:var(--muted)}
 .history-provider-avatar{display:grid;place-items:center;flex:none;width:36px;height:36px;border:0;border-radius:4px;background:var(--raised);color:var(--ink-strong);font-size:11px}
 .history-session-content{flex:1;min-width:0}
 .history-session-content>span{display:flex;align-items:center;flex-wrap:wrap;gap:9px}
