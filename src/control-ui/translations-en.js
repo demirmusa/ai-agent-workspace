@@ -192,7 +192,6 @@ window.AIWSTranslationsEn = {
   "Sen": "You",
   "Uygun agent bekleniyor": "Waiting for an available agent",
   "Otomatik agent": "Automatic agent",
-  "Oturuma devam et": "Continue session",
   "Sohbet": "Chat",
   "Model bilgisi bekleniyor": "Waiting for model information",
   "Branch bilgisi yok": "No branch information",

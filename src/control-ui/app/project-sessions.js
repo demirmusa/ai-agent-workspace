@@ -69,7 +69,7 @@ function bindProjectSessions(root){
     for(const menu of root.querySelectorAll('.history-session-actions[open]'))if(!menu.contains(target))menu.open=false;
     if(target.closest('.history-session-actions>summary')||target.closest('.history-session-menu')&&!target.closest('[data-history-action]'))return;
     if(action)action.closest('details').open=false;
-    if(action?.dataset.historyAction==='resume'){resumeHistoryModal(value.id,session);return;}
+    if(action?.dataset.historyAction==='resume'){void resumeHistorySession(value.id,session);return;}
     if(action?.dataset.historyAction==='compact'){compactHistoryModal(value.id,session);return;}
     if(action?.dataset.historyAction==='task'){openTask(action.dataset.taskId);if(task()?.sessionContinuation&&state.runs.find(run=>run.id===task().currentRunId)?.terminalMode==='pty'){detailTab='terminal';render();}return;}
     if(action?.dataset.historyAction==='convert'){void convertHistorySession(value,session);return;}
