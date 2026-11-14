@@ -3,6 +3,8 @@
 // The files panel opens on the right like a mirror of the sidebar. One explorer per project folder
 // keeps its expanded folders while switching projects; a clicked file opens in the project's editor (file-editor.js).
 const projectFileViews=new Map();
+// A `files` event from the server's watcher: every explorer of that project reloads the folders that changed.
+function projectFilesChanged(change){for(const view of projectFileViews.values())if(view.projectId===change.projectId)view.changed(change);}
 function filesPanelOpen(){return localStorage.getItem('aiws.files-panel')==='true';}
 function renderFilesPanel(){
   const current=activeScreen==='board'?project():null,open=Boolean(current)&&filesPanelOpen(),panel=$('#files-panel'),toggle=$('#files-toggle'),label=globalThis.AIWSI18n.text(open?'Dosyaları gizle':'Dosyaları göster');

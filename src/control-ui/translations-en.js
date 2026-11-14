@@ -1687,6 +1687,8 @@ window.AIWSTranslationsEn = {
   "Dosyaları yenile": "Refresh files",
   "Tüm klasörleri daralt": "Collapse all folders",
   "Boş klasör": "Empty folder",
+  "Dosyaları ada göre ara": "Search files by name",
+  "Eşleşen dosya yok": "No matching files",
   "İlk 5000 öğe gösteriliyor": "Showing the first 5000 items",
   "Bu klasör boş.": "This folder is empty.",
   "Yol kopyalandı": "Path copied",

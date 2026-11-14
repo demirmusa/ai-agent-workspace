@@ -1,5 +1,6 @@
 /* Project explorer: a VS Code style folder tree, shown as a panel on the right. A click (or Enter) on a file opens it in the project's
- * editor through `onOpen`; "New file" asks `onNewFile(folder)` for a file in the selected folder; the context menu copies paths or hands them to the OS, and a dragged row drops its project-relative path into a
+ * editor through `onOpen`; the search field filters the tree to the files and folders whose name contains what is typed; open folders
+ * follow the file system through the server's `files` events (`changed`), and reload on a timer when the folder cannot be watched; "New file" asks `onNewFile(folder)` for a file in the selected folder; the context menu copies paths or hands them to the OS, and a dragged row drops its project-relative path into a
  * task description or its absolute path into a terminal. */
 (function () {
   'use strict';
@@ -12,13 +13,19 @@
   const refreshIcon = headerIcon('<path d="M13.25 8a5.25 5.25 0 1 1-1.54-3.71"/><path d="M13.5 2.5v2.75h-2.75"/>'), collapseIcon = headerIcon('<rect x="2.25" y="2.25" width="11.5" height="11.5" rx="2.5"/><path d="M5.5 8h5"/>');
   // A folder's chevron turns over this long; a redraw during the turn continues it instead of jumping (styles/file-tree.css, .file-twisty.turning).
   const turnMs = 180;
+  // Keystrokes closer than this make one search; without a file system watcher, open folders reload this often.
+  const searchDelayMs = 80, pollMs = 5000, searchLimit = 200;
   function create({ projectId, api, toast, onClose, onOpen, onNewFile }) {
     const element = document.createElement('section');
     element.className = 'project-files'; element.setAttribute('aria-label', t('Proje dosyaları'));
-    element.innerHTML = `<header class="project-files-header"><span class="project-files-title" title=""></span><div class="project-files-actions">${onNewFile ? `<button type="button" class="icon-button" data-files-new title="${esc(t('Yeni dosya'))}" aria-label="${esc(t('Yeni dosya'))}">${newFileIcon}</button>` : ''}<button type="button" class="icon-button" data-files-refresh title="${esc(t('Yenile'))}" aria-label="${esc(t('Dosyaları yenile'))}">${refreshIcon}</button><button type="button" class="icon-button" data-files-collapse title="${esc(t('Tüm klasörleri daralt'))}" aria-label="${esc(t('Tüm klasörleri daralt'))}">${collapseIcon}</button>${onClose ? `<button type="button" class="icon-button" data-files-close title="${esc(t('Dosyaları kapat'))}" aria-label="${esc(t('Dosyaları kapat'))}">${icon('x')}</button>` : ''}</div></header><div class="project-files-tree" role="tree" aria-label="${esc(t('Proje dosyaları'))}"></div><p class="project-files-hint">${esc(t('Bir dosyayı görev açıklamasına, terminale veya bir kartın üstüne sürükleyip bırak.'))}</p>`;
-    const tree = element.querySelector('.project-files-tree'), title = element.querySelector('.project-files-title');
+    element.innerHTML = `<header class="project-files-header"><span class="project-files-title" title=""></span><div class="project-files-actions">${onNewFile ? `<button type="button" class="icon-button" data-files-new title="${esc(t('Yeni dosya'))}" aria-label="${esc(t('Yeni dosya'))}">${newFileIcon}</button>` : ''}<button type="button" class="icon-button" data-files-refresh title="${esc(t('Yenile'))}" aria-label="${esc(t('Dosyaları yenile'))}">${refreshIcon}</button><button type="button" class="icon-button" data-files-collapse title="${esc(t('Tüm klasörleri daralt'))}" aria-label="${esc(t('Tüm klasörleri daralt'))}">${collapseIcon}</button>${onClose ? `<button type="button" class="icon-button" data-files-close title="${esc(t('Dosyaları kapat'))}" aria-label="${esc(t('Dosyaları kapat'))}">${icon('x')}</button>` : ''}</div></header><div class="project-files-search"><input type="search" data-files-search placeholder="${esc(t('Dosya ara'))}" aria-label="${esc(t('Dosyaları ada göre ara'))}" spellcheck="false" autocomplete="off"></div><div class="project-files-tree" role="tree" aria-label="${esc(t('Proje dosyaları'))}"></div><p class="project-files-hint">${esc(t('Bir dosyayı görev açıklamasına, terminale veya bir kartın üstüne sürükleyip bırak.'))}</p>`;
+    const tree = element.querySelector('.project-files-tree'), title = element.querySelector('.project-files-title'), searchInput = element.querySelector('[data-files-search]');
     const folders = new Map(); const expanded = new Set(['']);
     let root = '', selected = '', loaded = false, turned = { path: null, at: 0 }, changes = changeIndex([]);
+    // Search: the typed text, its matches (null while they load) and a counter that drops answers to older keystrokes.
+    let query = '', matches = null, searchError = '', searchRound = 0, searchTimer = 0;
+    // Watching: when the server's lease ends, its renewal, and whether the open folders reload on a timer instead.
+    let watchUntil = 0, watchTimer = 0, polling = false;
 
     async function loadChanges() {
       try { changes = changeIndex((await api(`/projects/${encodeURIComponent(projectId)}/git/changes`)).files); }
@@ -39,6 +46,13 @@
     }
     function rows() {
       const list = [];
+      if (query) {
+        if (searchError) list.push({ kind: 'message', depth: 0, text: searchError, error: true });
+        else if (!matches) list.push({ kind: 'message', depth: 0, text: t('Aranıyor…') });
+        else if (!matches.length) list.push({ kind: 'message', depth: 0, text: t('Eşleşen dosya yok') });
+        else for (const item of matches) list.push({ kind: 'item', depth: 0, item, location: item.path.includes('/') ? item.path.slice(0, item.path.lastIndexOf('/')) : '' });
+        return list;
+      }
       const visit = (path, depth) => {
         const folder = folders.get(path);
         if (!folder) return;
@@ -64,14 +78,16 @@
         const indent = `style="--depth:${row.depth}"`;
         if (row.kind === 'message') return `<div class="file-row file-message${row.error ? ' error' : ''}" role="none" ${indent}>${esc(row.text)}</div>`;
         const item = row.item, directory = item.type === 'directory', change = directory ? changes.folders.get(item.path) : changes.paths.get(item.path), open = directory && expanded.has(item.path), turn = directory && item.path === turning;
-        return `<div class="file-row${item.ignored ? ' ignored' : ''}${change ? ' changed' : ''}${item.path === selected ? ' selected' : ''}"${change ? ` data-change="${esc(change)}"` : ''} role="treeitem" ${indent} tabindex="${item.path === selected ? 0 : -1}" aria-level="${row.depth + 1}" aria-selected="${item.path === selected}"${directory ? ` aria-expanded="${open}"` : ''} draggable="true" data-file-path="${esc(item.path)}" data-file-type="${esc(item.type)}" title="${esc(item.absolutePath)}"><span class="file-twisty${directory ? '' : ' leaf'}${open ? ' open' : ''}${turn ? ' turning' : ''}"${turn ? ` style="--turn-delay:${turnDelay}ms"` : ''}>${directory ? chevron : ''}</span><span class="file-icon ${directory ? 'folder' : 'file'}">${directory ? folderIcon(open) : fileIcon}</span><span class="file-name">${esc(item.name)}</span>${directory ? (changes.folders.has(item.path) ? changeDot(changes.folders.get(item.path)) : '') : changes.paths.has(item.path) ? changeBadge(changes.paths.get(item.path)) : ''}</div>`;
+        return `<div class="file-row${item.ignored ? ' ignored' : ''}${change ? ' changed' : ''}${item.path === selected ? ' selected' : ''}"${change ? ` data-change="${esc(change)}"` : ''} role="treeitem" ${indent} tabindex="${item.path === selected ? 0 : -1}" aria-level="${row.depth + 1}" aria-selected="${item.path === selected}"${directory ? ` aria-expanded="${open}"` : ''} draggable="true" data-file-path="${esc(item.path)}" data-file-type="${esc(item.type)}" title="${esc(item.absolutePath)}"><span class="file-twisty${directory ? '' : ' leaf'}${open ? ' open' : ''}${turn ? ' turning' : ''}"${turn ? ` style="--turn-delay:${turnDelay}ms"` : ''}>${directory ? chevron : ''}</span><span class="file-icon ${directory ? 'folder' : 'file'}">${directory ? folderIcon(open) : fileIcon}</span><span class="file-name">${esc(item.name)}</span>${row.location ? `<small class="file-location">${esc(row.location)}</small>` : ''}${directory ? (changes.folders.has(item.path) ? changeDot(changes.folders.get(item.path)) : '') : changes.paths.has(item.path) ? changeBadge(changes.paths.get(item.path)) : ''}</div>`;
       }).join('') || `<div class="file-row file-message" role="none">${esc(t('Bu klasör boş.'))}</div>`;
       // Rows that just appeared (an opened folder's children) fade in; rows already on screen stay still.
       motion.enter(tree, '[role=treeitem]', 'data-file-path', { stagger: 14, max: 12, className: 'ui-enter-fade' });
       if (focused && selected) tree.querySelector(`[data-file-path="${CSS.escape(selected)}"]`)?.focus();
     }
     const entryOf = row => {
-      const path = row.dataset.filePath, parent = path.includes('/') ? path.slice(0, path.lastIndexOf('/')) : '';
+      const path = row.dataset.filePath;
+      if (query) return matches?.find(item => item.path === path);
+      const parent = path.includes('/') ? path.slice(0, path.lastIndexOf('/')) : '';
       return folders.get(parent)?.items?.find(item => item.path === path);
     };
     function select(row, focus = true) {
@@ -80,6 +96,8 @@
       if (focus) row.focus();
     }
     function toggle(path, open = !expanded.has(path)) {
+      // A folder found by the search opens in the tree.
+      if (query) { clearSearch(); void reveal(path, true); return; }
       if (open === expanded.has(path)) return;
       turned = { path, at: performance.now() };
       if (open) { expanded.add(path); void load(path); } else expanded.delete(path);
@@ -89,9 +107,9 @@
     const folderOf = item => !item ? '' : item.type === 'directory' ? item.path : item.path.includes('/') ? item.path.slice(0, item.path.lastIndexOf('/')) : '';
     const selectedItem = () => { const row = selected && tree.querySelector(`[data-file-path="${CSS.escape(selected)}"]`); return row ? entryOf(row) : undefined; };
     /** Shows a file that was just created: its folders open, the file selected. */
-    async function reveal(path) {
+    async function reveal(path, open = false) {
       const parts = path.split('/');
-      for (let depth = 1; depth < parts.length; depth++) expanded.add(parts.slice(0, depth).join('/'));
+      for (let depth = 1; depth < parts.length + (open ? 1 : 0); depth++) expanded.add(parts.slice(0, depth).join('/'));
       await Promise.all([...expanded].map(folder => load(folder, true)));
       // Selected once its folder is listed: a draw while it loads would select another row.
       selected = path; draw();
@@ -165,14 +183,67 @@
     element.querySelector('[data-files-collapse]').addEventListener('click', () => { expanded.clear(); expanded.add(''); draw(); });
     element.querySelector('[data-files-close]')?.addEventListener('click', () => onClose());
 
+    async function search() {
+      const round = ++searchRound, text = query;
+      try {
+        const result = await api(`/projects/${encodeURIComponent(projectId)}/files/search?${new URLSearchParams({ q: text, limit: String(searchLimit) })}`);
+        if (round !== searchRound) return;
+        // The server also ranks folder paths and scattered letters; the explorer keeps the entries whose own name contains the text.
+        const needle = text.toLocaleLowerCase().replace(/\s+/g, '');
+        matches = result.items.filter(item => item.name.toLocaleLowerCase().includes(needle)); searchError = '';
+      } catch (error) { if (round !== searchRound) return; matches = []; searchError = error.message; }
+      draw();
+    }
+    function setQuery(value) {
+      const next = value.trim();
+      if (next === query) return;
+      query = next; matches = null; searchError = ''; clearTimeout(searchTimer); searchRound++;
+      if (query) searchTimer = setTimeout(() => void search(), searchDelayMs);
+      draw();
+    }
+    function clearSearch() { searchInput.value = ''; setQuery(''); }
+    searchInput.addEventListener('input', () => setQuery(searchInput.value));
+    searchInput.addEventListener('keydown', event => {
+      const first = tree.querySelector('[role=treeitem]');
+      if (event.key === 'Escape' && searchInput.value) { event.preventDefault(); event.stopPropagation(); clearSearch(); }
+      else if (event.key === 'ArrowDown' && first) { event.preventDefault(); select(first); }
+      else if (event.key === 'Enter' && first) { event.preventDefault(); select(first); first.click(); }
+    });
+
+    // The files panel hides with the `hidden` attribute; a detached or hidden explorer lets its lease lapse.
+    const visible = () => element.isConnected && !element.closest('[hidden]');
+    /** Asks the server to watch the project folder while the panel is shown, renewing the lease before it ends. */
+    async function watch() {
+      clearTimeout(watchTimer);
+      if (!visible()) { watchUntil = 0; return; }
+      let next = pollMs;
+      try {
+        const lease = await api(`/projects/${encodeURIComponent(projectId)}/files/watch`, 'POST', {});
+        if (polling && !lease.watching) refresh(false);
+        polling = !lease.watching; watchUntil = Date.now() + lease.leaseMs;
+        if (lease.watching) next = lease.leaseMs / 2;
+      } catch { polling = false; watchUntil = 0; }
+      watchTimer = setTimeout(() => void watch(), next);
+    }
+    function ensureWatch() { if (Date.now() >= watchUntil) void watch(); }
+    /** A `files` event: reloads the open folders whose entries were created, deleted or renamed, the Git markers and the search. */
+    function changed(change) {
+      if (change.all) { refresh(false); return; }
+      for (const folder of change.folders || []) if (expanded.has(folder)) void load(folder, true); else folders.delete(folder);
+      void loadChanges();
+      if (query) void search();
+    }
+
     /** Reloads every open folder; collapsed folders are dropped so they load fresh when reopened. */
-    function refresh() {
+    function refresh(renew = true) {
       for (const path of [...folders.keys()]) if (!expanded.has(path)) folders.delete(path);
       for (const path of expanded) void load(path, true);
       void loadChanges();
+      if (query) void search();
+      if (renew) ensureWatch();
     }
-    function show() { if (!loaded) { void load(''); void loadChanges(); } else refresh(); }
-    return { element, show, refresh, reveal, refreshChanges: loadChanges };
+    function show() { if (!loaded) { void load(''); void loadChanges(); ensureWatch(); } else refresh(); }
+    return { element, projectId, show, refresh, reveal, changed, refreshChanges: loadChanges };
   }
   Object.assign(window.AIWSFiles, { create });
 })();
