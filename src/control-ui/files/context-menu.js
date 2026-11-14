@@ -12,12 +12,13 @@
     restore?.focus?.();
   }
   function outside(event) { if (menu && !menu.element.contains(event.target)) closeMenu(); }
-  /** Shows a small context menu at a viewport point; each item is { label, run }. */
+  /** Shows a small context menu at a viewport point; each item is { label, run, disabled? }, and the string '-' draws a separator. */
   function showMenu(x, y, items, restore) {
     closeMenu();
     const element = document.createElement('div');
     element.className = 'file-context-menu popup-menu'; element.setAttribute('role', 'menu');
-    element.innerHTML = items.map((item, index) => `<button type="button" role="menuitem" tabindex="-1" data-menu-index="${index}">${esc(item.label)}</button>`).join('');
+    element.innerHTML = items.map((item, index) => item === '-' ? '<div class="file-context-menu-separator" role="separator"></div>'
+      : `<button type="button" role="menuitem" tabindex="-1" data-menu-index="${index}"${item.disabled ? ' disabled' : ''}>${esc(item.label)}</button>`).join('');
     // Inside an open dialog the rest of the page is inert, so the menu joins the dialog.
     (restore?.closest?.('dialog[open]') || document.body).append(element);
     const width = element.offsetWidth, height = element.offsetHeight;
@@ -26,7 +27,7 @@
     menu = { element, restore };
     element.addEventListener('click', event => {
       const button = event.target.closest('[data-menu-index]'); if (!button) return;
-      const item = items[Number(button.dataset.menuIndex)]; closeMenu(); void item.run();
+      const item = items[Number(button.dataset.menuIndex)]; if (item.disabled) return; closeMenu(); void item.run();
     });
     element.addEventListener('keydown', event => {
       if (event.key === 'Escape' || event.key === 'Tab') { event.preventDefault(); event.stopPropagation(); closeMenu(); return; }
@@ -34,7 +35,7 @@
     });
     document.addEventListener('pointerdown', outside, true); window.addEventListener('blur', closeMenu); window.addEventListener('resize', closeMenu);
     document.addEventListener('scroll', closeMenu, true);
-    element.querySelector('button')?.focus();
+    element.querySelector('button:not(:disabled)')?.focus();
   }
   // Drag data type of an absolute path dragged from the files panel; terminals type it at the cursor.
   const absolutePathType = 'application/x-aiws-absolute-path';
