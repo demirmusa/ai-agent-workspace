@@ -104,7 +104,9 @@ describe('local control center', () => {
     const restarted = await response.json() as Run;
     expect(restarted.id).not.toBe(original.id);
     expect(service.task(task.id).currentRunId).toBe(restarted.id);
-    expect(service.run(original.id)).toEqual(saved);
+    // A save drops the in-memory terminal replay of finished runs at any moment; it is a cache, not part of the run.
+    const withoutReplay = ({ terminalOutput: _output, ...run }: Run) => run;
+    expect(withoutReplay(service.run(original.id))).toEqual(withoutReplay(saved));
     expect((await fetch(`${server.url}/api/tasks/${task.id}/restart`, { method: 'POST' })).status).toBe(409);
     await service.stop(restarted.id);
   });

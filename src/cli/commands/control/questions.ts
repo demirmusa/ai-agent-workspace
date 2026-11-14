@@ -42,6 +42,7 @@ export function registerQuestionCommands(control: Command): void {
       while (Date.now() < end) {
         const current = await request(command, `/api/questions/${segment(question.id)}`);
         if (current?.answer !== undefined && current?.answer !== null) { process.stdout.write(`${current.answer}\n`); return; }
+        if (current?.status && current.status !== 'pending') throw new Error(`Question ${question.id} was dismissed: the operator replied in the terminal or with a new instruction.`);
         const run = await request(command, `/api/runs/${segment(options.run)}`);
         if (ENDED_RUN_STATUSES.includes(run.status)) throw new Error(`Run ${options.run} ended before the question was answered.`);
         await new Promise((done) => setTimeout(done, 1000));
