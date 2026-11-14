@@ -77,7 +77,7 @@ async function sessions(c: RouteContext, projectId: string): Promise<boolean> {
     if (!c.parts[6]) return c.send(200, await service.agentGraph.tree(project, { sourceId }));
     if (c.parts[7] === 'transcript') return c.send(200, await service.agentGraph.transcript(project, { sourceId }, c.parts[6], c.params()));
   }
-  if (!sourceId && c.method === 'GET') { const page = await service.history.list(project, c.params()); await service.historyImporter.reconcile(project, page.items); return c.send(200, page); }
+  if (!sourceId && c.method === 'GET') { const page = await service.history.list(project, c.params(), { subagents: (pointer) => service.agentGraph.subagentCount(pointer) }); await service.historyImporter.reconcile(project, page.items); return c.send(200, page); }
   if (sourceId && !step && c.method === 'GET') return c.send(200, await service.history.detail(project, sourceId, c.params()));
   if (sourceId && step === 'resume' && c.method === 'POST') return c.send(201, await service.resumeSession(projectId, sourceId, await c.body()));
   if (sourceId && step === 'compact' && c.method === 'POST') return c.send(201, await service.compactSession(projectId, sourceId, await c.body()));

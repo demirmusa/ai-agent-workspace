@@ -1698,6 +1698,15 @@ describe('control center renderer with the real local API', () => {
   });
 
 
+  it('nests subagent sessions under their parent session in a collapsible tree and opens a subagent from it', async () => {
+    const {childIds}=seedCodexAgentFamily(join(directory,'codex-history'),directory);
+    await createProject();click('#project-tab-sessions');await wait(()=>expect(window.document.querySelectorAll('.history-session-card')).toHaveLength(1));
+    const toggle=element('[data-history-subagents]');expect(toggle.textContent).toContain('5 alt agent');expect(toggle.getAttribute('aria-expanded')).toBe('false');expect(window.document.querySelector('.history-subagents')).toBeNull();
+    click('[data-history-subagents]');await wait(()=>expect(window.document.querySelectorAll('.history-subagents [data-history-subagent]')).toHaveLength(5));expect(element('[data-history-subagents]').getAttribute('aria-expanded')).toBe('true');expect(element('.history-subagents [role=tree]').getAttribute('aria-label')).toBe('Alt agent oturumları');expect(server.service.snapshot().tasks).toHaveLength(0);
+    click(`[data-history-subagent="codex:${childIds[0]}"]`);await wait(()=>expect(element('#agent-child-panel .cv-timeline').textContent).toContain('CHILD_PUBLIC_1'));
+    click('#close-child-agent');click('#close-panel');click('[data-history-subagents]');await wait(()=>expect(window.document.querySelector('.history-subagents')).toBeNull());
+  },20000);
+
   it('shows five actual provider subagents in history and live consoles, lazily polls child output, and never sends root input to a child', async () => {
     const family=seedCodexAgentFamily(join(directory,'codex-history'),directory),{rootId,childIds}=family;
     await appendFile(family.children[0]!.path,[{type:'response_item',timestamp:new Date().toISOString(),ordinal:13,payload:{type:'custom_tool_call',call_id:'public-web-call',name:'exec',input:'text(await tools.web__run({search_query:[{q:"PUBLIC_WEB_QUERY_EVIDENCE",domains:["example.com"]}]}));'}},{type:'response_item',timestamp:new Date().toISOString(),ordinal:14,payload:{type:'custom_tool_call_output',call_id:'public-web-call',output:[{type:'input_text',text:'Actual API public source (https://example.com/evidence)\nRetained source excerpt.'}]}}].map(row=>JSON.stringify(row)).join('\n')+'\n');

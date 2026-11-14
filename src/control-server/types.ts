@@ -28,7 +28,7 @@ export interface ContextBlock { id: string; kind: ContextKind; label?: string; p
 export interface ContextWindowSnapshot { provider: HistoryProvider; model?: string; window: number | null; used: number; measured: boolean; blocks: ContextBlock[]; compactions: number; updatedAt?: string }
 export interface ContextWindowResult { agents: AgentExecutionNode[]; agentId: string; snapshot: ContextWindowSnapshot | null; warnings: string[] }
 export interface AgentTranscript { runs: Run[]; events: ControlEvent[]; messages: TaskMessage[]; questions: Question[]; nextCursor: string | null; truncated: boolean; warnings: string[] }
-export interface HistoricalSession { id: string; provider: HistoryProvider; sessionId: string; title: string; firstUserMessage?: string; status?: AgentExecutionStatus; cwd: string; createdAt: string; updatedAt: string; canResume: boolean }
+export interface HistoricalSession { id: string; provider: HistoryProvider; sessionId: string; title: string; firstUserMessage?: string; status?: AgentExecutionStatus; cwd: string; createdAt: string; updatedAt: string; canResume: boolean; /** Provider subagent sessions this root session spawned, listed on demand from its agent tree. */ subagentCount?: number }
 export type SessionActivity = 'working' | 'idle' | 'unknown';
 export interface LiveSession extends HistoricalSession { projectId: string | null; projectName: string; processId: number; active: true; activity: SessionActivity; external: true; readOnly: true }
 export interface LiveSessionPage { items: LiveSession[]; managedTitles: Record<string, string>; warnings: string[] }

@@ -140,6 +140,30 @@ export class AgentGraph {
     if (!await isUnlinkedFile(path, root)) return null; const file = await openReadOnly(path);
     try { return jsonRow((await readRange(file, 0, 16 * 1024)).toString('utf8')); } catch { return null; } finally { await file.close(); }
   }
+  /** How many subagent sessions a root session spawned, counted without reading their transcripts. */
+  async subagentCount(rootPointer: HistoryPointer): Promise<number> {
+    if (rootPointer.session.provider === 'codex') {
+      const { entries } = await this.codexSources(); const found = new Set([rootPointer.session.sessionId]);
+      for (let depth = 0; depth < AGENT_GRAPH_LIMITS.depth; depth++) { let added = 0; for (const entry of entries) if (entry.parent && found.has(entry.parent) && !found.has(entry.pointer.session.sessionId)) { found.add(entry.pointer.session.sessionId); added++; } if (!added) break; }
+      return Math.min(found.size - 1, AGENT_GRAPH_LIMITS.agents);
+    }
+    const subagents = join(dirname(rootPointer.path), rootPointer.session.sessionId, 'subagents');
+    const agents = async (directory: string): Promise<{ count: number; workflows: string[] }> => {
+      const result = { count: 0, workflows: [] as string[] };
+      try {
+        if ((await lstat(directory)).isSymbolicLink() || await realpath(directory) !== directory) return result;
+        for await (const entry of await opendir(directory)) {
+          if (entry.isSymbolicLink()) continue;
+          if (entry.isFile() && /^agent-[a-zA-Z0-9_-]{1,200}\.jsonl$/.test(entry.name)) result.count++;
+          else if (entry.isDirectory() && entry.name === 'workflows') result.workflows.push(join(directory, entry.name));
+        }
+      } catch { /* No child source directory is normal for a session without subagents. */ }
+      return result;
+    };
+    const direct = await agents(subagents); let count = direct.count;
+    for (const folder of direct.workflows) try { for await (const entry of await opendir(folder)) if (entry.isDirectory() && !entry.isSymbolicLink() && WORKFLOW_RUN_ID.test(entry.name)) count += (await agents(join(folder, entry.name))).count; } catch { /* Unreadable workflow folders add no agents. */ }
+    return Math.min(count, AGENT_GRAPH_LIMITS.agents);
+  }
   async tree(project: Project, context: AgentGraphContext): Promise<AgentGraphResult> { return (await this.build(project, context)).result; }
   private async build(project: Project, context: AgentGraphContext): Promise<Built> {
     const warnings = new Set<string>(); let rootPointer: HistoryPointer | null = null;

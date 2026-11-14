@@ -1212,6 +1212,8 @@ window.AIWSTranslationsEn = {
   "Görevi aç": "Open task",
   "Dönüştürülüyor…": "Converting…",
   "Göreve dönüştür": "Convert to task",
+  "Alt agent oturumları": "Subagent sessions",
+  "Bu oturumun alt agent kaydı bulunamadı.": "No subagent records were found for this session.",
   "İçe aktarma başarısız.": "Import failed.",
   "Bildirimi kapat": "Dismiss notice",
   "görev eklendi": "tasks added",
