@@ -240,15 +240,28 @@ describe('control center renderer with the real local API', () => {
     click('[data-file-path="photo.png"]');
     await wait(()=>expect(element<HTMLImageElement>('.file-editor-preview img').getAttribute('src')).toBe(`data:image/png;base64,${Buffer.from([0x89,0x50,0x4e,0x47]).toString('base64')}`));
     expect(element('.file-editor-host').hidden).toBe(true);expect(element('.file-editor-message').hidden).toBe(true);
-    // "New file" takes the name with its extension and a folder, creates the file there and opens it.
-    click('[data-files-new]');await wait(()=>expect(element('#modal-title').textContent).toBe('Yeni dosya'));assertModalShell();
-    expect(element<HTMLInputElement>('#field-folder').value).toBe('');
-    input('#field-name','todo.ts');input('#field-folder','docs');submit('#modal form');
+    // "New file" opens a name box inside the tree (no dialog), after the folders of the selected file's folder; Escape drops it.
+    const box=()=>window.document.querySelector<HTMLInputElement>('.file-new-input');
+    const press=(key:string)=>box()!.dispatchEvent(new window.KeyboardEvent('keydown',{key,bubbles:true,cancelable:true}) as unknown as Event);
+    click('[data-files-new]');await wait(()=>expect(box()).toBeTruthy());
+    expect(element('#modal').hasAttribute('open')).toBe(false);expect(window.document.activeElement).toBe(box());
+    const around=box()!.closest('.file-row')!;expect(around.previousElementSibling!.getAttribute('data-file-type')).toBe('directory');expect(around.nextElementSibling!.getAttribute('data-file-type')).toBe('file');
+    input('.file-new-input','dropped.txt');press('Escape');expect(box()).toBeNull();
+    // From a collapsed folder's context menu the box opens inside it, the folder expands, and Enter creates, shows and opens the file.
+    element('[data-file-path="docs"]').dispatchEvent(new window.MouseEvent('contextmenu',{bubbles:true,cancelable:true,clientX:20,clientY:20}) as unknown as Event);
+    [...window.document.querySelectorAll<HTMLButtonElement>('.file-context-menu button')].find(item=>item.textContent==='Yeni dosya…')!.click();
+    await wait(()=>expect(box()).toBeTruthy());expect(element('[data-file-path="docs"]').getAttribute('aria-expanded')).toBe('true');
+    expect(box()!.closest<HTMLElement>('.file-row')!.style.getPropertyValue('--depth')).toBe('1');await wait(()=>expect(window.document.activeElement).toBe(box()));
+    input('.file-new-input','todo.ts');press('Enter');
     await wait(async()=>expect(await readFile(join(directory,'docs','todo.ts'),'utf8')).toBe(''));
-    await wait(()=>expect(openTabs()).toContain('docs/todo.ts'));await wait(()=>expect(element('[data-file-path="docs/todo.ts"]')).toBeTruthy());
-    click('[data-files-new]');await wait(()=>expect(element('#modal').hasAttribute('open')).toBe(true));expect(element<HTMLInputElement>('#field-folder').value).toBe('docs');
-    input('#field-name','todo.ts');submit('#modal form');await wait(()=>expect(element('#modal .form-error').textContent).toContain('already exists'));click('#close-modal');
-    await wait(()=>expect(element('#modal').hasAttribute('open')).toBe(false));
+    await wait(()=>expect(openTabs()).toContain('docs/todo.ts'));await wait(()=>expect(element('[data-file-path="docs/todo.ts"]').classList.contains('selected')).toBe(true));
+    expect(box()).toBeNull();
+    await expect(readFile(join(directory,'dropped.txt'),'utf8')).rejects.toThrow();
+    // A refused name stays in the box with the reason; the selected file's folder is where the box opens.
+    click('[data-files-new]');await wait(()=>expect(box()).toBeTruthy());expect(box()!.closest('.file-row')!.previousElementSibling).toBe(element('[data-file-path="docs"]'));
+    input('.file-new-input','todo.ts');press('Enter');
+    await wait(()=>expect(element('.file-new-error').textContent).toContain('already exists'));expect(element<HTMLElement>('.file-new-error').hidden).toBe(false);expect(box()).toBeTruthy();
+    press('Escape');expect(box()).toBeNull();
     click('[data-editor-close="docs/todo.ts"]');click('[data-editor-close="photo.png"]');
     click('[data-editor-close="image.bin"]');click('[data-editor-close="other.txt"]');
     await wait(()=>expect(element('#project-tab-editor').hidden).toBe(true));expect(element('#project-tab-board').getAttribute('aria-selected')).toBe('true');
