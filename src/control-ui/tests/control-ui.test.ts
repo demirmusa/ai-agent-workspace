@@ -3080,6 +3080,29 @@ describe('control center renderer with the real local API', () => {
     expect(element('[data-detail-tab="console"]').getAttribute('aria-selected')).toBe('true');click('[data-detail-tab="info"]');
     expect(window.document.querySelector('.snapshot-details')).toBeNull();
   });
+  it('lists the claude-swap accounts in the terminal menu only when there are several and follows changes', async () => {
+    const accounts=aiProviders.require('claude').accounts!,account=(id:string,label:string,active:boolean)=>({id,email:`${label}@example.com`,label,active,disabled:false,status:'ok',short:null,weekly:null,updatedAt:null});
+    const tool={name:'claude-swap',command:'cswap',url:'',installed:true,installer:'uv' as const},listing=(...items:ReturnType<typeof account>[])=>({tool,checkedAt:new Date().toISOString(),accounts:items}) as unknown as ProviderAccountsStatus;
+    const status=vi.spyOn(accounts,'status').mockResolvedValue(listing(account('1','main',true)));
+    vi.spyOn(server.service.projectTerminals,'agents').mockResolvedValue([{provider:'claude',label:'Claude Code',available:true,path:'claude'},{provider:'codex',label:'Codex',available:true,path:'codex'}]);
+    await createProject();click('#project-tab-terminal');
+    const items=()=>[...window.document.querySelectorAll<HTMLElement>('[data-terminal-menu-list] [data-terminal-open^="agent:"],[data-terminal-menu-list] [data-terminal-open^="login:"]')].map(item=>item.dataset.terminalOpen);
+    click('[data-terminal-menu]');
+    await wait(()=>expect(items()).toEqual(expect.arrayContaining(['agent:claude','agent:codex'])));
+    await wait(()=>expect(status).toHaveBeenCalled());
+    expect(items().filter(item=>item!.startsWith('agent:claude'))).toEqual(['agent:claude']);expect(items().some(item=>item!.startsWith('login:'))).toBe(false);
+    click('[data-terminal-menu]');
+    // An account added in claude-swap shows up the next time the menu opens.
+    status.mockResolvedValue(listing(account('1','main',true),account('2','work',false),account('3','side',false)));
+    click('[data-terminal-menu]');
+    await wait(()=>expect(items().filter(item=>item!.startsWith('agent:claude'))).toEqual(['agent:claude','agent:claude:2','agent:claude:3']));
+    expect(items().filter(item=>item!.startsWith('agent:codex'))).toEqual(['agent:codex']);expect(items().some(item=>item!.startsWith('login:'))).toBe(false);
+    click('[data-terminal-menu]');
+    // A removed account disappears again.
+    status.mockResolvedValue(listing(account('1','main',true),account('3','side',false)));
+    click('[data-terminal-menu]');
+    await wait(()=>expect(items().filter(item=>item!.startsWith('agent:claude'))).toEqual(['agent:claude','agent:claude:3']));
+  });
   it('manages Claude Code accounts in work settings, assigns one to a task and opens a terminal as it', async () => {
     const accounts=aiProviders.require('claude').accounts!,window5h=(usedPercent:number)=>({usedPercent,resetsAt:null,windowMinutes:300}),weekly=(usedPercent:number)=>({usedPercent,resetsAt:null,windowMinutes:10080});
     const listed:ProviderAccountsStatus={tool:{name:'claude-swap',command:'cswap',url:'https://github.com/realiti4/claude-swap',installed:true,installer:'uv'},checkedAt:new Date().toISOString(),accounts:[
