@@ -59,6 +59,34 @@ describe('image description editor', () => {
       expect(window.URL.revokeObjectURL).toHaveBeenCalledWith('blob:http://localhost/image');
     } finally { window.close(); }
   });
+  it('switches between edit and preview from the toolbar without losing the text', async () => {
+    const { window } = new JSDOM('', { url: 'http://localhost', runScripts: 'outside-only', pretendToBeVisual: true });
+    window.focus = () => {};
+    window.Range.prototype.getBoundingClientRect = () => ({ left: 0, top: 0, right: 0, bottom: 0, width: 0, height: 0, x: 0, y: 0, toJSON() {} });
+    window.Range.prototype.getClientRects = () => [] as any;
+    try {
+      window.document.write('<dialog open><form><textarea name="description" id="description">**Draft**</textarea></form></dialog>');
+      for (const path of ['../../node_modules/easymde/dist/easymde.min.js', '../../node_modules/dompurify/dist/purify.min.js', '../i18n.js', '../ui-common.js', '../images/attachments.js', '../images/file-mentions.js', '../images/markdown-editor.js']) window.eval(await readFile(new URL(path, import.meta.url), 'utf8'));
+      const editor = (window as any).AIWSImages.editor(window.document.querySelector('textarea')!, { api: vi.fn(), onError: vi.fn(), projectId: () => 'project-1' });
+      const button = window.document.querySelector<HTMLButtonElement>('.editor-toolbar button.preview')!;
+      const bold = window.document.querySelector<HTMLButtonElement>('.editor-toolbar button.bold')!;
+      const toolbar = window.document.querySelector('.editor-toolbar')!;
+      // EasyMDE's stylesheet blocks every toolbar button without no-disable while the preview is shown.
+      expect(button.classList.contains('no-disable')).toBe(true);
+      expect(bold.classList.contains('no-disable')).toBe(false);
+      button.click();
+      await vi.waitFor(() => expect(editor.isPreviewActive()).toBe(true));
+      expect(window.document.querySelector('.editor-preview-active strong')?.textContent).toBe('Draft');
+      expect(toolbar.classList.contains('disabled-for-preview')).toBe(true);
+      button.click();
+      expect(editor.isPreviewActive()).toBe(false);
+      expect(toolbar.classList.contains('disabled-for-preview')).toBe(false);
+      editor.codemirror.replaceRange(' more', { line: 0, ch: 9 });
+      expect(editor.value()).toBe('**Draft** more');
+      button.click();
+      await vi.waitFor(() => expect(window.document.querySelector('.editor-preview-active')?.textContent).toContain('Draft more'));
+    } finally { window.close(); }
+  });
   it('uploads pasted terminal images and sends paths without submitting', async () => {
     const { window } = new JSDOM('<div id="host"></div>', { url: 'http://localhost', runScripts: 'outside-only', pretendToBeVisual: true });
     try {
