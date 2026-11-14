@@ -2027,7 +2027,6 @@ window.AIWSTranslationsEn = {
   "Mevcut giriş eklendi": "Current login added",
   "Hesap claude-swap’ten kaldırılsın mı? Yeniden kullanmak için tekrar giriş yapman gerekir.": "Remove the account from claude-swap? You will need to sign in again to use it.",
   "Hesap kaldırıldı": "Account removed",
-  "Ayrı profilde giriş yap; hesap otomatik eklenir": "Sign in in a separate profile; the account is added automatically",
   "Değişiklikler kaydedilmedi": "Changes not saved",
   "Kaydedilmemiş değişiklikler silinsin mi?": "Discard unsaved changes?",
   "Değişiklikleri sil": "Discard changes",

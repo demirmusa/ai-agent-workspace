@@ -36,7 +36,7 @@ function shellEntry(id){
       if(target.hasAttribute('data-terminal-menu'))toggleTerminalMenu(id);
       else if(target.dataset.terminalOpen){toggleTerminalMenu(id,false);const [kind,provider,account]=target.dataset.terminalOpen.split(':');if(kind==='session')openProjectSession(id,provider);else void openProjectTerminal(id,kind==='agent'||kind==='login'?{kind,provider,...(account?{account}:{})}:{kind:'shell'});}
       else if(target.dataset.sessionToTerminal)moveSessionToTerminal(id,target.dataset.sessionToTerminal);
-      else if(target.hasAttribute('data-terminal-agents-refresh')){void loadTerminalAgents(true);updateShell(id);}
+      else if(target.hasAttribute('data-terminal-agents-refresh')){void loadTerminalAgents(true);loadTerminalAccounts();updateShell(id);}
       else if(target.hasAttribute('data-shell-close'))void closeAllProjectTerminals(id);
     });
     element.querySelector('[data-terminal-menu-list]').addEventListener('keydown',event=>{
