@@ -94,7 +94,7 @@ export function providerUsageResetAt(provider: string, account: string | undefin
 }
 
 export function validateHandoffMode(value: unknown, field = 'agentHandoffMode'): AgentHandoffMode {
-  if (value !== 'fresh' && value !== 'transcript') throw new ControlError(`${field} must be fresh or transcript.`);
+  if (value !== 'fresh' && value !== 'transcript' && value !== 'summary') throw new ControlError(`${field} must be fresh, transcript or summary.`);
   return value;
 }
 
@@ -133,4 +133,9 @@ export async function handoffBrief(input: HandoffBriefInput): Promise<string> {
 export function handoffTranscript(previousAgent: string, previousProvider: string, reason: string | undefined, history: string): string {
   const body = history.replace(/^Previous conversation\.[^\n]*\n/, '');
   return `AGENT HANDOFF: Another agent (${previousAgent}, provider ${previousProvider}) worked on this task and stopped${reason ? ` (${reason})` : ''}. Its whole conversation is copied below. Continue the task from where it left off in the same workspace and branch; check git status and git diff first, do not repeat finished work. Old run IDs and completion commands in the transcript are obsolete; use only the current AIWS run's commands.\n<previous-conversation>\n${body}\n</previous-conversation>`;
+}
+
+/** Context for a new agent whose earlier conversation was compacted by a (smaller) summary model; `lead` says where the work happened. */
+export function compactedContext(lead: string, summarizer: string, summary: string): string {
+  return `${lead}\n\nA compact summary of the earlier conversation, written by ${summarizer}, replaces it. Use it as the context of the work so far; when it disagrees with the repository, trust the repository. Old run IDs and completion commands in it are obsolete.\n<conversation-summary>\n${summary}\n</conversation-summary>`;
 }

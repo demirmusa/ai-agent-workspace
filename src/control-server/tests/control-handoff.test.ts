@@ -72,7 +72,7 @@ describe('agent handoff after a usage limit', () => {
   it('rejects an unknown or disabled target', async () => {
     const { service, task } = await fixture(); const run = service.startTask(task.id); callbacks(run.id).close(1);
     await expect(service.handoffTask(task.id, { provider: 'nobody' })).rejects.toThrow('Select an agent or a provider');
-    await expect(service.handoffTask(task.id, { provider: 'codex', mode: 'copy' })).rejects.toThrow('mode must be fresh or transcript');
+    await expect(service.handoffTask(task.id, { provider: 'codex', mode: 'copy' })).rejects.toThrow('mode must be fresh, transcript or summary');
   });
   it('parses quota reset timestamps from CLI output and provider usage windows', () => {
     const base = Date.parse('2026-11-05T13:00:00.000Z');

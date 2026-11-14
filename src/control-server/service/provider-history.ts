@@ -1,5 +1,6 @@
 import { join } from 'node:path';
 import type { HistoryPointer, SessionHistory } from '../history.js';
+import { transferTranscript } from '../history-transfer.js';
 import type { HistoryProvider, Project, Run, SessionHistoryDetail } from '../types.js';
 
 const MAX_PAGES = 500, PAGE_SIZE = 200;
@@ -23,4 +24,17 @@ export async function readSessionPages(history: SessionHistory, pointer: History
     onPage(page); cursor = page.nextCursor;
   } while (cursor && ++pages < MAX_PAGES);
   return !cursor;
+}
+
+/** Appends a provider session's history as readable transcript records; false when it has more pages than are read. */
+export function readSessionTranscript(history: SessionHistory, pointer: HistoryPointer, append: (record: string) => void): Promise<boolean> {
+  return readSessionPages(history, pointer, (page) => {
+    for (const message of page.messages) append(`[${message.authorType}] ${message.text}`);
+    for (const event of page.events) {
+      const formatted = event.type === 'stdout' ? transferTranscript([], [{ ...event, id: event.id ?? 'event', createdAt: event.createdAt ?? '' }]) : '';
+      append(formatted || `[${event.type}] ${event.message}`);
+    }
+    for (const warning of page.warnings) append(`[History warning] ${warning}`);
+    if (page.truncated && !page.nextCursor) append('[History warning] Provider history contains shortened or omitted records.');
+  });
 }

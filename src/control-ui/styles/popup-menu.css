@@ -4,4 +4,4 @@
 :is(.popup-menu,.terminal-shortcuts-pop):not([hidden]){animation:ui-pop var(--dur) var(--ease-out)}
 :is(.popup-menu,.terminal-shortcuts-pop)[hidden]{opacity:0;transform:translateY(-2px) scale(.98);pointer-events:none}
 @keyframes ui-pop{from{opacity:0;transform:translateY(-3px) scale(.97)}}
-:is(.terminal-menu-item,.git-menu-item,.file-context-menu button,.detail-more-menu .button):is(:hover:not(:disabled),:focus-visible),.file-mention-option[aria-selected=true],.model-option:focus,.context-agent-option:is(:hover,:focus-visible),.model-provider:is(:hover:not(:disabled),:focus),.model-toggle:focus-within{background:var(--raised);color:var(--ink-strong);outline:none}
+:is(.terminal-menu-item,.git-menu-item,.history-session-menu-item,.file-context-menu button,.detail-more-menu .button):is(:hover:not(:disabled),:focus-visible),.file-mention-option[aria-selected=true],.model-option:focus,.context-agent-option:is(:hover,:focus-visible),.model-provider:is(:hover:not(:disabled),:focus),.model-toggle:focus-within{background:var(--raised);color:var(--ink-strong);outline:none}

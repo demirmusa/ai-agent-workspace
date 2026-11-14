@@ -1,4 +1,6 @@
+import { compactedContext } from '../agent-handoff.js';
 import { aiProviders } from '../ai-providers/index.js';
+import { compactConversation } from '../history-compact.js';
 import type { HistoricalSession, HistoryProvider, Project, Run, Task, TerminalMode } from '../types.js';
 import { ControlError } from '../types.js';
 import type { HistoryTaskImporter } from '../history-import.js';
@@ -8,6 +10,7 @@ import { TERMINAL_TASK_MESSAGE, type ProjectTerminal, type ProjectTerminals } fr
 import { jsonObject } from '../validation.js';
 import { text } from './common.js';
 import type { ControlContext } from './context.js';
+import { readSessionTranscript } from './provider-history.js';
 import type { Conversations } from './conversations.js';
 
 export interface ProviderSessionDependencies {
@@ -70,6 +73,35 @@ export class ProviderSessions {
     const task = deps.createTask({ projectId, title, description: message, provider, agentId: null, terminalMode, workflowId: null, autoMerge: false, status: 'backlog', ...(account ? { account } : {}) });
     const stored = ctx.task(task.id); stored.historyResume = { provider, sessionId, sourceId, initialMessage: message }; stored.sessionContinuation = true; stored.status = 'ready';
     ctx.changed();
+    return deps.conversations.startOrQueue(stored);
+  }
+  /**
+   * Compacts a past provider session with a (smaller) summary model and continues it in a new
+   * session: the new task starts with the summary instead of resuming the long conversation.
+   */
+  async compactSession(projectId: string, sourceId: string, input: unknown): Promise<{ task: Task; run?: Run }> {
+    const { ctx, deps } = this;
+    const value = jsonObject(input); const project = ctx.project(projectId); const pointer = await deps.history.resolve(project, sourceId);
+    if (ctx.closing) throw new ControlError('Service is shutting down.', 409);
+    const session = pointer.session;
+    const optional = (field: string): string | undefined => value[field] === undefined || value[field] === null || value[field] === '' ? undefined : text(value[field], field, 200).trim() || undefined;
+    const provider = optional('provider') ?? session.provider;
+    if (!aiProviders.has(provider)) throw new ControlError('Select a provider to continue with.');
+    const summaryProvider = optional('summaryProvider') ?? provider, summaryModel = optional('summaryModel'), model = optional('model');
+    if (!aiProviders.has(summaryProvider)) throw new ControlError('Select a provider to write the summary.');
+    const message = text(value.message, 'message', 100000, '').trim();
+    const terminalMode = value.terminalMode ?? 'stream';
+    if (!['pty', 'stream'].includes(String(terminalMode))) throw new ControlError('terminalMode must be stream or pty.');
+    const records: string[] = [];
+    if (!await readSessionTranscript(deps.history, pointer, (record) => records.push(record))) throw new ControlError('The session history is too long to read completely.', 409);
+    const summary = await compactConversation({ provider: summaryProvider, ...(summaryModel ? { model: summaryModel } : {}), workspacePath: session.cwd || project.repositoryPath, transcript: records.join('\n') });
+    const summarizer = `${summaryProvider}${summaryModel ? ` (${summaryModel})` : ''}`;
+    const title = text(value.title, 'title', 500, '').trim() || `Continue: ${(session.title || session.sessionId).slice(0, 200)}`;
+    const description = message || 'Continue the work from the compacted conversation summary: check the current state of the repository first, then finish what is left without repeating completed work.';
+    const task = deps.createTask({ projectId, title, description, provider, agentId: null, terminalMode, workflowId: null, autoMerge: false, status: 'backlog', ...(model ? { model } : {}), ...(value.reasoningEffort ? { reasoningEffort: value.reasoningEffort } : {}) });
+    const stored = ctx.task(task.id);
+    stored.conversationContext = compactedContext(`CONTINUED SESSION: This task continues the ${aiProviders.require(session.provider).name} session ${session.sessionId}${session.cwd ? ` that worked in ${session.cwd}` : ''}. Its conversation is not included.`, summarizer, summary);
+    stored.status = 'ready'; ctx.changed();
     return deps.conversations.startOrQueue(stored);
   }
   /** Continues an agent terminal's conversation as a running task: the terminal closes and AIWS resumes the same provider session. */

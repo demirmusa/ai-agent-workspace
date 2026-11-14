@@ -385,6 +385,7 @@ export class ControlService extends EventEmitter {
   taskHistoryContext(taskId: string): { project: Project; sourceId: string } { return this.sessions.taskHistoryContext(taskId); }
   liveSessionsPage(): ReturnType<ProviderSessions['liveSessionsPage']> { return this.sessions.liveSessionsPage(); }
   resumeSession(projectId: string, sourceId: string, input: unknown): Promise<{ task: Task; run?: Run }> { return this.sessions.resumeSession(projectId, sourceId, input); }
+  compactSession(projectId: string, sourceId: string, input: unknown): Promise<{ task: Task; run?: Run }> { return this.sessions.compactSession(projectId, sourceId, input); }
   /** Continues an agent terminal's conversation as a running task: the terminal closes and AIWS resumes the same provider session. */
   convertTerminalToTask(projectId: string, terminalId: string): Promise<{ task: Task; run?: Run }> { return this.sessions.convertTerminalToTask(projectId, terminalId); }
   openRunSessionTerminal(runId: string): Promise<ProjectTerminal> { return this.sessions.openRunSessionTerminal(runId); }

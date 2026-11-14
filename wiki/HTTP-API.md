@@ -106,6 +106,7 @@ A keepalive comment is sent every 15 seconds. A client that falls more than 4 MB
 | `/api/projects/:id/terminals[/:terminalId]` | GET, POST, PATCH, DELETE | Project terminals, plus `/input`, `/resize`, `/restart` |
 | `/api/projects/:id/sessions[/:sessionId]` | GET | Provider session history of the project folder |
 | `/api/projects/:id/sessions/:sessionId/resume`, `/import` | POST | Continue the original session; convert it to a task |
+| `/api/projects/:id/sessions/:sessionId/compact` | POST | Compact the session with `summaryModel` (and optional `summaryProvider`) and continue in a new task with `provider`, `model`, `message`, `terminalMode` |
 
 ## Tasks
 
