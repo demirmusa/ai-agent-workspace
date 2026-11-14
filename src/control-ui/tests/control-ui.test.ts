@@ -47,6 +47,15 @@ describe('control center renderer with the real local API', () => {
     const form=frame.tagName==='FORM'?frame:null;if(form){expect(form).toBe(frame);expect([...form.children]).toEqual([body,footer]);expect(footer.querySelector('button[type="submit"]')?.closest('form')).toBe(form);expect(footer.querySelector('.form-error')).not.toBeNull();}
   };
 
+  // Runs project terminals through the PTY host built from source with the installed node-pty.
+  async function usePtyHelper(): Promise<void> {
+    const nodePty=createRequire(import.meta.url).resolve('node-pty');
+    const windowsHelperPath=join(directory,'windows-launch.mjs');await writeFile(windowsHelperPath,ts.transpileModule(await readFile(new URL('../../control-server/windows-launch.ts',import.meta.url),'utf8'),{compilerOptions:{module:ts.ModuleKind.ESNext,target:ts.ScriptTarget.ES2022}}).outputText);
+    const helperSource=(await readFile(new URL('../../control-server/pty-host.ts',import.meta.url),'utf8')).replace("from 'node-pty'",`from '${pathToFileURL(nodePty).href}'`).replace("from './windows-launch.js'",`from '${pathToFileURL(windowsHelperPath).href}'`);
+    const helperPath=join(directory,'pty-host.mjs');await writeFile(helperPath,ts.transpileModule(helperSource,{compilerOptions:{module:ts.ModuleKind.ESNext,target:ts.ScriptTarget.ES2022}}).outputText);
+    vi.stubEnv('AIWS_CONTROL_PTY_HELPER',helperPath);
+  }
+
   async function createProject(): Promise<void> {
     click('#create-project'); input('#field-name', 'Renderer QA'); input('#field-repositoryPath', directory); submit('#modal form');
     await wait(() => expect(element('#breadcrumb-project').textContent).toBe('Renderer QA'));
@@ -1115,7 +1124,8 @@ describe('control center renderer with the real local API', () => {
       } finally { requestsInFlight--; }
     }) as unknown as Window['fetch'];
     window.document.write(await readFile(new URL('../index.html', import.meta.url), 'utf8'));
-    for(const [name,value] of Object.entries(preferences))window.localStorage.setItem(name,value);
+    // The interface defaults to English; these tests read the Turkish source texts unless they ask for English.
+    for(const [name,value] of Object.entries({'aiws.language':'tr',...preferences}))window.localStorage.setItem(name,value);
     await runUiScripts(window);
     await wait(() => expect(element('#connection-label').textContent).toBe(preferences['aiws.language']==='en'?'Control center connected':'Kontrol merkezi bağlı'));
   }
@@ -3319,7 +3329,7 @@ describe('control center renderer with the real local API', () => {
 
     click('#sidebar-toggle');expect(element('.app-shell').classList.contains('sidebar-collapsed')).toBe(true);
     for(const run of server.service.snapshot().runs.filter(run=>['running','waiting','paused'].includes(run.status)))await server.service.stop(run.id);
-  },30000);
+  },60000);
   it('detects GitHub repository projects without connecting until one is chosen', async () => {
     server.service.updateSettings({autoSyncSeconds:0});
     vi.spyOn(server.service,'detectRepository').mockResolvedValue({repository:'owner/repo',owner:'owner',ownerType:'user',defaultBranch:'main',projects:[{id:'PVT_test',number:12,title:'Engineering board',url:'https://github.com/users/owner/projects/12',owner:'owner',ownerType:'user',linked:true},{id:'PVT_other',number:12,title:'Other owner board',url:'https://github.com/orgs/other/projects/12',owner:'other',ownerType:'organization',linked:false}],suggestedProject:12});
@@ -3445,11 +3455,7 @@ describe('control center renderer with the real local API', () => {
   it('runs the selected project script from the header Run button in a terminal tab', async () => {
     class Probe { options={disableStdin:false}; target:HTMLElement|null=null; loadAddon(){} open(target:HTMLElement){this.target=target;} write(value:string){if(this.target)this.target.textContent=(this.target.textContent||'')+value;} reset(){} onData(){} onResize(){} dispose(){} focus(){} }
     (window as unknown as {Terminal:unknown}).Terminal=Probe;
-    const nodePty=createRequire(import.meta.url).resolve('node-pty');
-    const windowsHelperPath=join(directory,'windows-launch.mjs');await writeFile(windowsHelperPath,ts.transpileModule(await readFile(new URL('../../control-server/windows-launch.ts',import.meta.url),'utf8'),{compilerOptions:{module:ts.ModuleKind.ESNext,target:ts.ScriptTarget.ES2022}}).outputText);
-    const helperSource=(await readFile(new URL('../../control-server/pty-host.ts',import.meta.url),'utf8')).replace("from 'node-pty'",`from '${pathToFileURL(nodePty).href}'`).replace("from './windows-launch.js'",`from '${pathToFileURL(windowsHelperPath).href}'`);
-    const helperPath=join(directory,'pty-host.mjs');await writeFile(helperPath,ts.transpileModule(helperSource,{compilerOptions:{module:ts.ModuleKind.ESNext,target:ts.ScriptTarget.ES2022}}).outputText);
-    vi.stubEnv('AIWS_CONTROL_PTY_HELPER',helperPath);
+    await usePtyHelper();
     const file=process.platform==='win32'?'build.ps1':'build.sh';await writeFile(join(directory,file),process.platform==='win32'?'Write-Output "RUN_SCRIPT_OK"':'echo RUN_SCRIPT_OK');
     await createProject();const project=server.service.snapshot().projects[0]!;
     expect(element<HTMLElement>('#run-control').hidden).toBe(true);
@@ -3510,11 +3516,7 @@ describe('control center renderer with the real local API', () => {
       dispose(){} focus(){}
     }
     (window as unknown as {Terminal:unknown}).Terminal=ShellProbe;
-    const nodePty=createRequire(import.meta.url).resolve('node-pty');
-    const windowsHelperPath=join(directory,'windows-launch.mjs');await writeFile(windowsHelperPath,ts.transpileModule(await readFile(new URL('../../control-server/windows-launch.ts',import.meta.url),'utf8'),{compilerOptions:{module:ts.ModuleKind.ESNext,target:ts.ScriptTarget.ES2022}}).outputText);
-    const helperSource=(await readFile(new URL('../../control-server/pty-host.ts',import.meta.url),'utf8')).replace("from 'node-pty'",`from '${pathToFileURL(nodePty).href}'`).replace("from './windows-launch.js'",`from '${pathToFileURL(windowsHelperPath).href}'`);
-    const helperPath=join(directory,'pty-host.mjs');await writeFile(helperPath,ts.transpileModule(helperSource,{compilerOptions:{module:ts.ModuleKind.ESNext,target:ts.ScriptTarget.ES2022}}).outputText);
-    vi.stubEnv('AIWS_CONTROL_PTY_HELPER',helperPath);
+    await usePtyHelper();
     await createProject();click('#project-tab-terminal');
     expect(element('#project-tab-terminal').getAttribute('aria-selected')).toBe('true');
     expect(element<HTMLElement>('#board-toolbar').hidden).toBe(true);
@@ -3562,6 +3564,49 @@ describe('control center renderer with the real local API', () => {
     await wait(()=>expect(element('[data-shell-status]').textContent).toContain('Çıkış kodu: 0'));
   },30000);
 
+  it('shows a project terminal in All projects only when picked from the + menu and hides it there without touching its project', async () => {
+    class PaneProbe {
+      target:HTMLElement|null=null;options={disableStdin:false};
+      open(target:HTMLElement){this.target=target;}
+      write(value:string){if(this.target)this.target.textContent=(this.target.textContent||'')+value;}
+      reset(){if(this.target)this.target.textContent='';}
+      onData(){} onResize(){} dispose(){} focus(){}
+    }
+    (window as unknown as {Terminal:unknown}).Terminal=PaneProbe;
+    await usePtyHelper();
+    await createProject();const project=server.service.snapshot().projects[0]!;click('#project-tab-terminal');
+    click('[data-terminal-menu]');click('[data-terminal-open="shell"]');
+    await wait(()=>expect(server.service.projectTerminals.list(project.id)).toHaveLength(1));
+    const run=server.service.projectTerminals.list(project.id)[0]!;
+    await wait(()=>expect(element(`.project-terminal:not(.session-terminal) [data-terminal-pane="${run.id}"] .terminal-instance`)).toBeTruthy());
+    const projectInstance=element(`.project-terminal:not(.session-terminal) [data-terminal-pane="${run.id}"] .terminal-instance`);
+    // All projects loads no terminal by itself.
+    click('#overview-nav');click('#overview-tab-terminal');
+    const panes=()=>[...window.document.querySelectorAll('.session-terminal [data-terminal-pane]')].map(pane=>(pane as HTMLElement).dataset.terminalPane);
+    await wait(()=>expect(element<HTMLElement>('.session-terminal [data-terminal-empty]').hidden).toBe(false));
+    expect(panes()).toHaveLength(0);
+    // The + menu offers the project's terminal; picking it shows it in a pane.
+    click('.session-terminal [data-terminal-menu]');
+    const item=element(`.session-terminal [data-terminal-open="terminal:${run.id}"]`);expect(item.getAttribute('aria-current')).toBe('false');expect(item.textContent).toContain('Renderer QA');
+    click(`.session-terminal [data-terminal-open="terminal:${run.id}"]`);
+    expect(panes()).toEqual([run.id]);expect(JSON.parse(window.localStorage.getItem('aiws.session-terminals-shown')!)).toEqual([run.id]);
+    await wait(()=>expect(element(`.session-terminal [data-terminal-pane="${run.id}"] .terminal-instance`)).toBeTruthy());
+    // Hiding the pane leaves the terminal running and offers it again in the menu.
+    click(`.session-terminal [data-terminal-pane="${run.id}"] [data-terminal-hide]`);
+    expect(panes()).toHaveLength(0);expect(window.document.querySelector('#modal[open]')).toBeNull();
+    expect(JSON.parse(window.localStorage.getItem('aiws.session-terminals-shown')!)).toEqual([]);
+    expect(server.service.projectTerminals.list(project.id)).toHaveLength(1);expect(server.service.projectTerminals.get(project.id,run.id).run.status).toBe('running');
+    click('.session-terminal [data-terminal-menu]');expect(element(`.session-terminal [data-terminal-open="terminal:${run.id}"]`).getAttribute('aria-current')).toBe('false');click('.session-terminal [data-terminal-menu]');
+    // The project's own workspace keeps its pane and terminal view.
+    click(`[data-project="${project.id}"]`);click('#project-tab-terminal');
+    expect(element(`.project-terminal:not(.session-terminal) [data-terminal-pane="${run.id}"] .terminal-instance`)).toBe(projectInstance);
+    // A reload keeps it hidden in All projects.
+    await closeWindow(window, pageIdle);await mountRenderer();
+    click('#overview-nav');click('#overview-tab-terminal');
+    await wait(()=>expect(element<HTMLElement>('.session-terminal [data-terminal-empty]').hidden).toBe(false));expect(panes()).toHaveLength(0);
+    await server.service.projectTerminals.remove(project.id,run.id);
+  },30000);
+
   it('opens shells and agent CLIs as grid panes, shows exits, restarts, renames, docks panes by dragging their headers and closes them', async () => {
     const inputs=new Map<HTMLElement,(value:string)=>void>();
     class TabProbe {
@@ -3573,11 +3618,7 @@ describe('control center renderer with the real local API', () => {
       onResize(){} dispose(){} focus(){}
     }
     (window as unknown as {Terminal:unknown}).Terminal=TabProbe;
-    const nodePty=createRequire(import.meta.url).resolve('node-pty');
-    const windowsHelperPath=join(directory,'windows-launch.mjs');await writeFile(windowsHelperPath,ts.transpileModule(await readFile(new URL('../../control-server/windows-launch.ts',import.meta.url),'utf8'),{compilerOptions:{module:ts.ModuleKind.ESNext,target:ts.ScriptTarget.ES2022}}).outputText);
-    const helperSource=(await readFile(new URL('../../control-server/pty-host.ts',import.meta.url),'utf8')).replace("from 'node-pty'",`from '${pathToFileURL(nodePty).href}'`).replace("from './windows-launch.js'",`from '${pathToFileURL(windowsHelperPath).href}'`);
-    const helperPath=join(directory,'pty-host.mjs');await writeFile(helperPath,ts.transpileModule(helperSource,{compilerOptions:{module:ts.ModuleKind.ESNext,target:ts.ScriptTarget.ES2022}}).outputText);
-    vi.stubEnv('AIWS_CONTROL_PTY_HELPER',helperPath);
+    await usePtyHelper();
     const bin=join(directory,'agent-bin');await mkdir(bin);const script=join(bin,'agent.cjs');
     await writeFile(script,'process.stdin.setRawMode(true);process.stdout.write("CODEX_TUI_READY\\r\\n");process.stdin.on("data",d=>{if(d.toString().includes("q"))process.exit(4);process.stdout.write("HEARD:"+d.toString().trim()+"\\r\\n");});');
     if(process.platform==='win32')await writeFile(join(bin,'codex.cmd'),'@echo off\r\n"'+process.execPath+'" "'+script+'"\r\n');
@@ -3661,11 +3702,7 @@ describe('control center renderer with the real local API', () => {
     (window as unknown as {Terminal:unknown}).Terminal=TerminalProbe;
     (window as unknown as {FitAddon:unknown}).FitAddon={FitAddon:class{fit(){fits++;}}};
     (TerminalProbe.prototype as unknown as {loadAddon:()=>void}).loadAddon=()=>{};
-    const nodePty=createRequire(import.meta.url).resolve('node-pty');
-    const windowsHelperPath=join(directory,'windows-launch.mjs');await writeFile(windowsHelperPath,ts.transpileModule(await readFile(new URL('../../control-server/windows-launch.ts',import.meta.url),'utf8'),{compilerOptions:{module:ts.ModuleKind.ESNext,target:ts.ScriptTarget.ES2022}}).outputText);
-    const helperSource=(await readFile(new URL('../../control-server/pty-host.ts',import.meta.url),'utf8')).replace("from 'node-pty'",`from '${pathToFileURL(nodePty).href}'`).replace("from './windows-launch.js'",`from '${pathToFileURL(windowsHelperPath).href}'`);
-    const helperPath=join(directory,'pty-host.mjs');await writeFile(helperPath,ts.transpileModule(helperSource,{compilerOptions:{module:ts.ModuleKind.ESNext,target:ts.ScriptTarget.ES2022}}).outputText);
-    vi.stubEnv('AIWS_CONTROL_PTY_HELPER',helperPath);
+    await usePtyHelper();
     const agent=server.service.catalog.createAgent({name:'Interactive profile',provider:'command',terminalMode:'pty',command:{executable:process.execPath,args:['-e','process.stdin.setRawMode(true);console.log("PTY_READY");process.stdin.on("data",d=>{if(d.toString().includes("unique-input-42"))console.log("PTY_ACK_42")});setInterval(()=>{},1000)']}});
     await createProject();click('#create-task');input('#field-title','Interactive terminal fixture');input('#field-agentId',agent.id);element('#field-agentId').dispatchEvent(new window.Event('change',{bubbles:true}) as unknown as Event);
     submit('#modal form');

@@ -113,10 +113,10 @@ async function openProjectTerminal(id,spec,placement=null,path=`/projects/${id}/
   finally{entry.pending=entry.pending.filter(item=>item!==pending);updateShell(id);}
 }
 // Closing kills the shell or agent and its process tree; the pane goes away at once.
-async function closeProjectTerminal(id,runId){
+async function closeProjectTerminal(id,runId,confirmed=false){
   const entry=shellEntry(id),target=entry.items.find(run=>run.id===runId);if(!target)return;
   if(target.taskId){closeProjectSession(id,runId);return;}
-  if(target.status==='running'&&!await confirmModal(globalThis.AIWSI18n.text('Terminal kapatılsın mı?'),globalThis.AIWSI18n.text('Çalışan işlemler sonlandırılır.'),{confirmLabel:globalThis.AIWSI18n.text('Terminali kapat'),danger:true}))return;
+  if(!confirmed&&target.status==='running'&&!await confirmModal(globalThis.AIWSI18n.text('Terminal kapatılsın mı?'),globalThis.AIWSI18n.text('Çalışan işlemler sonlandırılır.'),{confirmLabel:globalThis.AIWSI18n.text('Terminali kapat'),danger:true}))return;
   entry.version++;forgetTerminalPane(entry,runId);updateShell(id);
   const next=entry.selected;if(next&&terminalVisible(id))requestAnimationFrame(()=>{if(entry.selected===next)entry.views.get(next)?.view?.terminal?.focus?.();});
   try{await api(`/projects/${id}/terminals/${runId}`,'DELETE');}catch(error){toast(error.message);void loadProjectShells(id);}

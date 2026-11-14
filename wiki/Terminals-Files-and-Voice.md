@@ -21,7 +21,7 @@ Things to know:
 - **They stay open.** Terminals live on the server. Switching tabs or reloading the page does not close them. After the control center restarts, each terminal comes back with its output; shells open a fresh prompt and agent terminals resume the same provider session.
 - **Agent terminal to task.** A session started in an agent terminal can be converted into a board task later, and the task continues the same session.
 - **Closing.** **Close terminal** ends that process; **Close all terminals** ends all of them. Quitting the control center ends every terminal.
-- **All projects.** **All projects → Terminal** shows the terminals and opened task sessions of every project in one workspace; the **+** menu asks which project the new terminal belongs to.
+- **All projects.** **All projects → Terminal** gathers terminals and task sessions of every project in one workspace. Nothing opens there by itself: pick a project terminal or a running session from the **+** menu, or open a new terminal. The eye button on a project terminal's pane hides it from All projects only; the terminal keeps running and stays open in its project, and the **+** menu shows it again.
 
 Project terminals are not agent runs: they are not scheduled, do not use an execution slot and do not receive run credentials.
 

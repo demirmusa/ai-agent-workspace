@@ -130,7 +130,7 @@ Click a card to open the detail panel on the right (about 45% of the window, res
 
 - **Board** shows every project's columns under one fixed header; each project is a collapsible row.
 - **Live sessions** lists all running sessions as cards, including Codex and Claude Code sessions started outside AIWS on the same machine (read-only).
-- **Terminal** shows terminals and opened task sessions from all projects in one workspace.
+- **Terminal** shows the project terminals and task sessions you pick from the **+** menu, from all projects in one workspace.
 
 ## Dashboard
 
